@@ -17,21 +17,46 @@ function create() {
 			backgroundTiles[y][x] = gameDisplayWindow.add.sprite(x * tileHeight, y * tileWidth, tileSheet, tileTypes[y][x]);
 	}
 	var commands = [
-		{id: 'player', cmd: 'create', type: 'player', x: 6, y: 6},
+        { id: 'diamond', cmd: 'create', type: 'diamond', x: 15, y: 10 },
+		{id: 'player', cmd: 'create', type: 'player', x: 5, y: 6},
 		{id: 'star', cmd: 'create', type: 'star', x: Math.floor(Math.random() * tileColumns), y: Math.floor(Math.random() * tileRows)},
-		{id: 'diamond', cmd: 'create', type: 'diamond', x: Math.floor(Math.random() * tileColumns), y: Math.floor(Math.random() * tileRows)},
 		{id: 'player', cmd: 'move', x: 5, y: 5},
 		{id: 'player', cmd: 'move', x: 5, y: 6},
 		{id: 'player', cmd: 'move', x: 6, y: 6},
 		{id: 'player', cmd: 'move', x: 6, y: 5},
-		{id: 'player', cmd: 'move', x: 5, y: 5},
+		{id: 'player', cmd: 'move', x: 7, y: 5 },
+        {id: 'player', cmd: 'move', x: 7, y: 6 },
+        {id: 'player', cmd: 'move', x: 8, y: 6 },
+        {id: 'player', cmd: 'move', x: 8, y: 7 },
+        {id: 'player', cmd: 'move', x: 9, y: 7 },
+        {id: 'player', cmd: 'move', x: 9, y: 8 },
+        {id: 'player', cmd: 'move', x: 10, y: 8 },
+        {id: 'player', cmd: 'move', x: 10, y: 9 },
+        {id: 'player', cmd: 'move', x: 11, y: 9 },
+        {id: 'player', cmd: 'move', x: 11, y: 10 },
+        {id: 'player', cmd: 'move', x: 12, y: 10 },
+        {id: 'player', cmd: 'move', x: 12, y: 11 },
+        {id: 'player', cmd: 'move', x: 13, y: 11 },
+        {id: 'player', cmd: 'move', x: 13, y: 12 },
+        { id: 'player', cmd: 'move', x: 14, y: 12 },
+        { id: 'player', cmd: 'move', x: 15, y: 12 },
+        { id: 'player', cmd: 'move', x: 15, y: 11 },
+        { id: 'player', cmd: 'move', x: 15, y: 10 },
+        { id: 'player', cmd: 'move', x: 16, y: 10 },
+        { id: 'player', cmd: 'move', x: 16, y: 9 },
+        { id: 'player', cmd: 'move', x: 16, y: 8 },
+        { id: 'player', cmd: 'move', x: 15, y: 8 },
+        { id: 'player', cmd: 'move', x: 14, y: 8 },
+        { id: 'player', cmd: 'move', x: 14, y: 9 },
+        { id: 'player', cmd: 'move', x: 14, y: 10 },
+        { id: 'player', cmd: 'move', x: 15, y: 10 },
 		{id: 'player', cmd: 'playAnimation', anim: 'move_left'},
 		{id: 'player', cmd: 'playAnimation', anim: 'move_right'},
+		{id: 'diamond', cmd: 'move', x: 15, y: 11},
 		{id: 'diamond', cmd: 'move', x: 15, y: 10},
-		{id: 'diamond', cmd: 'move', x: 15, y: 9},
 		{id: 'diamond', cmd: 'wait'},
-		{id: 'diamond', cmd: 'move', x: 14, y: 9},
-		{cmd: 'notification', text: 'example notification'}
+		{id: 'diamond', cmd: 'move', x: 15, y: 9},
+		{cmd: 'notification', text: 'example notification' }
 	];
 	var graphics = gameDisplayWindow.add.graphics(0, 0);
     graphics.beginFill(0x000000, 1);
@@ -67,6 +92,7 @@ function makeGameState(commands){
 			}
 			e.commands.push(c);
 		}
+		
 	}
 }
 
