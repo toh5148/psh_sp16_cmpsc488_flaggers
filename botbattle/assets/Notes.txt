@@ -3,6 +3,8 @@ Playback mode: GSD is passed all commands for the game and instantly computes al
 Testing Mode: GSD instantly computes next game state when given commands and then animates
 Basically, if a turn is available, then the GSD knows its game state info
 
+All commands on a turn execute simultaneously, except for multiple commands for the same entity, which execute sequentially
+
 Storing Data
 -For every map:
 --Store a 2d array of background tiles for the initial game state.
