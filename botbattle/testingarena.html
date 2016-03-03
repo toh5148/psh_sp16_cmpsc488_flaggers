@@ -1,0 +1,54 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Testing Arena</title>
+    <style type="text/css">
+        body {
+            margin-top: 50px;
+        }
+        #div_editor { 
+            margin:15%;
+            width: 70%;
+            height: 300px;
+        }
+        #div_leftHolder { 
+            display:inline-block;
+            width:49%;
+        }
+        #div_inputType {
+
+        }
+        #div_gameCanvas { 
+            display:inline-block;
+            width:49%;
+        }
+    </style>
+
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <script type="text/javascript" src="assets/TestGame1/TestGame1.js"></script>
+    <script type="text/javascript" src="assets/GameDisplayModule.js"></script>
+</head>
+<body>
+    <div id="div_mainHolder">
+        <div id="div_leftHolder">
+            <div id="div_inputType">
+                Input Type
+                <form>
+                    <input type="radio" name="inputType" value="Bot">Bot<br>
+                    <input type="radio" name="inputType" value="User">User<br>
+                </form>
+            </div>
+        </div>
+        <div id="div_gameCanvas"></div>
+    </div>
+    <div id="div_editor">/* Work on your code in here */</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("div_editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.getSession().setMode("ace/mode/java");
+    </script>
+</body>
+</html>

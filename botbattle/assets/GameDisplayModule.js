@@ -1,6 +1,6 @@
 const gameWidth=tileWidth*tileColumns,gameHeight=tileHeight*tileRows,
 	notificationAreaHeight=32,notificationX=gameWidth/2,notificationY=gameHeight+notificationAreaHeight/2;
-var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight+notificationAreaHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update }),
+var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight+notificationAreaHeight, Phaser.AUTO, 'div_gameCanvas', { preload: preload, create: create, update: update }),
 	tileSheetIndices=[], backgroundTiles=[], entities=[], animatingEnts=[],
 	notification;
 
