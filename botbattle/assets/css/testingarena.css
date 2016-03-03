@@ -1,0 +1,22 @@
+﻿body {
+    margin-top: 50px;
+}
+
+#div_editor {
+    margin: 15%;
+    width: 70%;
+    height: 300px;
+}
+
+#div_leftHolder {
+    display: inline-block;
+    width: 49%;
+}
+
+#div_inputType {
+}
+
+#div_gameCanvas {
+    display: inline-block;
+    width: 49%;
+}
