@@ -6,9 +6,81 @@
 
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
 	<script type="text/javascript" src="assets/TestGame1/TestGame1.js" ></script>
-	<script type="text/javascript" src="assets/GameDisplayModule.js" ></script>
+	<script type="text/javascript" src="assets/js/GameDisplayModule.js" ></script>
+
+    <script>
+        function GoToStart_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Go To Start. This is not yet implemented.";
+        }
+
+        function StepBack_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Step Back One Turn. This is not yet implemented.";
+        }
+
+        function Pause_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Pause. This is not yet implemented.";
+        }
+
+        function Play_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Play. This is not yet implemented.";
+        }
+
+        function StepForward_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Step Forward One Turn. This is not yet implemented.";
+        }
+
+        function GoToEnd_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Go To End. This is not yet implemented.";
+        }
+
+        function Speed_change() {
+            var newSpeed = document.getElementById("sldr_Speed").value;
+            document.getElementById("tester").innerHTML = "You changed the speed slider. The current speed is now set at " + newSpeed;
+        }
+    </script>
+
+    <link href="/assets/css/playback.css" type="text/css" rel="stylesheet" />
+
 </head>
 <body>
-    <div id="div_gameCanvas"></div>
+    <div id="div_gameHolder">
+        <div id="div_gameCanvas" />
+    </div>
+    <div id="div_controlsHolder">
+        <!--All input device functions are hooked up to change display message in 'tester' div-->
+        <div id="div_controlsBar">
+            <button id="btn_GoToStart" onclick="GoToStart_click()">Go To Start</button>
+            <button id="btn_StepBack" onclick="StepBack_click()">Step Back One Turn</button>
+            <button id="btn_Pause" onclick="Pause_click()">Pause</button>
+            <button id="btn_Play" onclick="Play_click()">Play</button>
+            <button id="btn_StepForward" onclick="StepForward_click()">Step Forward One Turn</button>
+            <button id="btn_GoToEnd" onclick="GoToEnd_click()">Go To End</button>
+
+            <input id="sldr_Speed" type="range" min="-4" max="4" step="1" value="1" onchange="Speed_change()" />
+        </div>
+    </div>
+
+    <!--REMOVE THIS WHEN DONE-->
+    <div id="tester">Initial</div> 
+
+    <!--TODO: Check with Blum to see what information he wants to be visible-->
+    <div id="div_statusHolder"> 
+        <div id="div_columnContainer">
+            <div class="StatusColumn">
+                <h2>Standard Output</h2>
+                <div id="div_stdOutput" class="ScrollingBox">out</div>
+                <h2>Move List</h2>
+                <div id="div_moveList" class="ScrollingBox">moves</div>
+            </div>
+
+            <div class="StatusColumn">
+                <h2>Standard Input</h2>
+                <div id="div_stdInput" class="ScrollingBox">in</div>
+                <h2>Board</h2>
+                <div id="div_board" class="ScrollingBox">board</div>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

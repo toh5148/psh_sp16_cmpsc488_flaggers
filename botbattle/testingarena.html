@@ -8,29 +8,95 @@
     <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
 
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <script src="//cdn.jsdelivr.net/ace/1.2.3/min/ace.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="assets/TestGame1/TestGame1.js"></script>
-    <script type="text/javascript" src="assets/GameDisplayModule.js"></script>
+    <script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
+
+    <script>
+        function Edit_click() {
+            document.getElementById("div_uploadFile").style = "display:none";
+            document.getElementById("div_editor").style = "display:block";
+        }
+
+        function Upload_click() {
+            document.getElementById("div_editor").style = "display:none";
+            document.getElementById("div_uploadFile").style = "display:block";
+        }
+
+    </script>
+
 </head>
 <body>
     <div id="div_mainHolder">
-        <div id="div_leftHolder">
-            <div id="div_inputType">
-                Input Type
-                <form>
-                    <input type="radio" name="inputType" value="Bot">Bot<br>
-                    <input type="radio" name="inputType" value="User">User<br>
-                </form>
-            </div>
-        </div>
-        <div id="div_gameCanvas"></div>
-    </div>
-    <div id="div_editor">/* Work on your code in here */</div>
+        <div id="div_mainCenter">
+            <div id="div_controlInformation">
+                <div id="div_inputType">
+                    <span class="headerText">Change Bot</span>
+                    <form>
+                        <input type="radio" name="inputType" value="Upload" onclick="Upload_click()" checked="checked"/>Upload a file<br />
+                        <input type="radio" name="inputType" value="Edit" onclick="Edit_click()" />Edit your code<br />
+                    </form>
+                </div>
+                <div id="div_uploadFile">
+                    <form>
+                        <br />
+                        <input type="file" />
+                    </form>
+                </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js" type="text/javascript" charset="utf-8"></script>
+
+                <!-- Most recent email makes no reference to the user
+                    being able to provide user input, asking Blum about this
+
+                    <div id="div_userCommands">
+                    User Command
+                    <form>
+                        <input type="radio" name="inputChoice" value="Up">Up<br>
+                        <input type="radio" name="inputChoice" value="Down">Down<br>
+                        <input type="radio" name="inputChoice" value="Left">Up<br>
+                        <input type="radio" name="inputChoice" value="Right">Down<br>
+                    </form>
+                </div>-->
+
+                <br /><br />
+                <div id="div_submit">
+                    <button id="submitButton">Submit</button>
+                </div>
+
+            </div>
+            <div id="div_gameCanvas"></div>
+        </div>
+    </div>
+
+    <div id="div_editor" style="display:none;">/* Work on your code in here */</div>
+
     <script>
         var editor = ace.edit("div_editor");
         editor.setTheme("ace/theme/monokai");
         editor.getSession().setMode("ace/mode/java");
+        editor.setShowPrintMargin(false);
     </script>
+
+
+
+    <!--TODO: Check with Blum to see what information he wants to be visible-->
+    <div id="div_statusHolder">
+        <div id="div_columnContainer">
+            <div class="StatusColumn">
+                <h2>Standard Output</h2>
+                <div id="div_stdOutput" class="ScrollingBox">out</div>
+                <h2>Move List</h2>
+                <div id="div_moveList" class="ScrollingBox">moves</div>
+            </div>
+
+            <div class="StatusColumn">
+                <h2>Standard Input</h2>
+                <div id="div_stdInput" class="ScrollingBox">in</div>
+                <h2>Board</h2>
+                <div id="div_board" class="ScrollingBox">board</div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
