@@ -3,14 +3,24 @@
 }
 
 #div_editor {
-    margin: 15%;
-    width: 70%;
+    margin:0 auto;
+    margin-top: 50px;
+    width: 1100px;
     height: 300px;
 }
 
-#div_leftHolder {
+#div_mainHolder {
+    width:100%;
+}
+
+#div_mainCenter {
+    width:1100px;
+    margin:0 auto;
+}
+
+#div_controlInformation {
     display: inline-block;
-    width: 49%;
+    width: 270px;
     vertical-align:top;
 }
 
@@ -19,5 +29,34 @@
 
 #div_gameCanvas {
     display: inline-block;
-    width: 49%;
+    width: 825px;
+}
+
+/*Status Bar Stuff*/
+
+#div_statusHolder {
+    width:100%;
+}
+
+#div_columnContainer {
+    width:1100px;
+    margin:0 auto;
+}
+.ScrollingBox {
+    width:540px;
+    height:300px;
+    overflow-y:scroll;
+    background-color:#EEEEEE;
+}
+
+.StatusColumn {
+    display:inline-block;
+    width: 545px;
+    margin:0 auto;
+}
+
+/*End Status Bar Stuff*/
+
+.headerText {
+    font-weight:bold;
 }
