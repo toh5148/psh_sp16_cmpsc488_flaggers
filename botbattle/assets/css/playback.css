@@ -34,15 +34,16 @@
     margin:0 auto;
 }
 .ScrollingBox {
-    width:500px;
+    width:535px;
     height:300px;
+    padding:5px;
     overflow-y:scroll;
     background-color:#EEEEEE;
 }
 
 .StatusColumn {
     display:inline-block;
-    width: 525px;
+    width: 545px;
     margin:0 auto;
 }
 

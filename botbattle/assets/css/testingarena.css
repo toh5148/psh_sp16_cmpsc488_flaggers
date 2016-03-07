@@ -43,8 +43,9 @@
     margin:0 auto;
 }
 .ScrollingBox {
-    width:540px;
+    width:535px;
     height:300px;
+    padding:5px;
     overflow-y:scroll;
     background-color:#EEEEEE;
 }

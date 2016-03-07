@@ -14,13 +14,13 @@
 
     <script>
         function Edit_click() {
-            document.getElementById("div_uploadFile").style = "display:none";
-            document.getElementById("div_editor").style = "display:block";
+            document.getElementById("div_uploadFile").style.display = "none";
+            document.getElementById("div_editor").style.display = "block";
         }
 
         function Upload_click() {
-            document.getElementById("div_editor").style = "display:none";
-            document.getElementById("div_uploadFile").style = "display:block";
+            document.getElementById("div_editor").style.display= "none";
+            document.getElementById("div_uploadFile").style.display = "block";
         }
 
     </script>
@@ -43,7 +43,6 @@
                         <input type="file" />
                     </form>
                 </div>
-
 
                 <!-- Most recent email makes no reference to the user
                     being able to provide user input, asking Blum about this
@@ -68,7 +67,7 @@
         </div>
     </div>
 
-    <div id="div_editor" style="display:none;">/* Work on your code in here */</div>
+    <div id="div_editor" style="display:none;">/* Write or paste your code in here */</div>
 
     <script>
         var editor = ace.edit("div_editor");
