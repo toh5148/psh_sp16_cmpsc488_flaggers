@@ -9,11 +9,12 @@
     height: 300px;
 }
 
-#div_mainHolder {
-    width:100%;
+#div_container {
+    width:1100px;
+    margin:0 auto;
 }
 
-#div_mainCenter {
+#div_mainHolder {
     width:1100px;
     margin:0 auto;
 }
@@ -34,4 +35,8 @@
 
 .headerText {
     font-weight:bold;
+}
+
+.div_selectBot {
+
 }

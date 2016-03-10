@@ -50,42 +50,46 @@
     database for this match id's data.-->
 
     <a href="testingarena.html">Go to testing arena.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE!!-->
+    <div id="div_container">
 
-    <div id="div_gameHolder">
-        <div id="div_gameCanvas" />
-    </div>
-    <div id="div_controlsHolder">
-        <!--All input device functions are hooked up to change display message in 'tester' div-->
-        <div id="div_controlsBar">
-            <button id="btn_GoToStart" onclick="GoToStart_click()">Go To Start</button>
-            <button id="btn_StepBack" onclick="StepBack_click()">Step Back One Turn</button>
-            <button id="btn_Pause" onclick="Pause_click()">Pause</button>
-            <button id="btn_Play" onclick="Play_click()">Play</button>
-            <button id="btn_StepForward" onclick="StepForward_click()">Step Forward One Turn</button>
-            <button id="btn_GoToEnd" onclick="GoToEnd_click()">Go To End</button>
+        <!--REMOVE THIS WHEN DONE-->
+        <div id="tester">Initial Text (you haven't hit any buttons yet...)</div>
 
-            <input id="sldr_Speed" type="range" min="-4" max="4" step="1" value="1" onchange="Speed_change()" />
+        <div id="div_gameHolder">
+            <div id="div_gameCanvas" />
         </div>
-    </div>
+        <div id="div_controlsHolder">
+            <!--All input device functions are hooked up to change display message in 'tester' div-->
+            <div id="div_controlsBar">
+                <button id="btn_GoToStart" onclick="GoToStart_click()">Go To Start</button>
+                <button id="btn_StepBack" onclick="StepBack_click()">Step Back One Turn</button>
+                <button id="btn_Pause" onclick="Pause_click()">Pause</button>
+                <button id="btn_Play" onclick="Play_click()">Play</button>
+                <button id="btn_StepForward" onclick="StepForward_click()">Step Forward One Turn</button>
+                <button id="btn_GoToEnd" onclick="GoToEnd_click()">Go To End</button>
 
-    <!--REMOVE THIS WHEN DONE-->
-    <div id="tester">Initial</div> 
-
-    <!--TODO: Check with Blum to see what information he wants to be visible-->
-    <div id="div_statusHolder"> 
-        <div id="div_columnContainer">
-            <div class="StatusColumn">
-                <div class="StatusHeader">Standard Output</div>
-                <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />Hello</div>
-                <div class="StatusHeader">Standard Error</div>
-                <div id="div_stdError" class="ScrollingBox">This will hold all standard error messages (Written by a bot).</div>
+                <input id="sldr_Speed" type="range" min="-4" max="4" step="1" value="1" onchange="Speed_change()" />
             </div>
+        </div>
 
-            <div class="StatusColumn">
-                <div class="StatusHeader">Standard Input</div>
-                <div id="div_stdInput" class="ScrollingBox">This will hold all standard input messages.</div>
-                <div class="StatusHeader">Move List</div>
-                <div id="div_moveList" class="ScrollingBox">This will hold a list of previous moves.</div>
+        <hr />
+
+        <!--TODO: Check with Blum to see what information he wants to be visible-->
+        <div id="div_statusHolder">
+            <div id="div_columnContainer">
+                <div class="StatusColumn">
+                    <div class="StatusHeader">Standard Output</div>
+                    <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />Hello</div>
+                    <div class="StatusHeader">Standard Error</div>
+                    <div id="div_stdError" class="ScrollingBox">This will hold all standard error messages (Written by a bot).</div>
+                </div>
+
+                <div class="StatusColumn">
+                    <div class="StatusHeader">Standard Input</div>
+                    <div id="div_stdInput" class="ScrollingBox">This will hold all standard input messages.</div>
+                    <div class="StatusHeader">Move List</div>
+                    <div id="div_moveList" class="ScrollingBox">This will hold a list of previous moves.</div>
+                </div>
             </div>
         </div>
     </div>
