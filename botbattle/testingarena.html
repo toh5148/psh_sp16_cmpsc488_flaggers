@@ -5,7 +5,7 @@
     <title>Testing Arena</title>
     <style type="text/css"></style>
 
-    <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
+    
 
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -25,8 +25,11 @@
 
     </script>
 
+    <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
+    <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
+    <a href="playback.html">Go to playback mode.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE-->
     <div id="div_mainHolder">
         <div id="div_mainCenter">
             <div id="div_controlInformation">
@@ -82,17 +85,17 @@
     <div id="div_statusHolder">
         <div id="div_columnContainer">
             <div class="StatusColumn">
-                <h2>Standard Output</h2>
-                <div id="div_stdOutput" class="ScrollingBox">out</div>
-                <h2>Move List</h2>
-                <div id="div_moveList" class="ScrollingBox">moves</div>
+                <div class="StatusHeader">Standard Output</div>
+                <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />Hello</div>
+                <div class="StatusHeader">Standard Error</div>
+                <div id="div_stdError" class="ScrollingBox">This will hold all standard error messages (Written by a bot).</div>
             </div>
 
             <div class="StatusColumn">
-                <h2>Standard Input</h2>
-                <div id="div_stdInput" class="ScrollingBox">in</div>
-                <h2>Board</h2>
-                <div id="div_board" class="ScrollingBox">board</div>
+                <div class="StatusHeader">Standard Input</div>
+                <div id="div_stdInput" class="ScrollingBox">This will hold all standard input messages.</div>
+                <div class="StatusHeader">Move List</div>
+                <div id="div_moveList" class="ScrollingBox">This will hold a list of previous moves.</div>
             </div>
         </div>
     </div>

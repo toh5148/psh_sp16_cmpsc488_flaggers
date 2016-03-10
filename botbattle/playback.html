@@ -40,9 +40,17 @@
     </script>
 
     <link href="/assets/css/playback.css" type="text/css" rel="stylesheet" />
+    <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
 
 </head>
 <body>
+
+    <!--The game id that we will be retrieving from the database should be included 
+    in a query string on the redirect to this page. We'll have to query the 
+    database for this match id's data.-->
+
+    <a href="testingarena.html">Go to testing arena.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE!!-->
+
     <div id="div_gameHolder">
         <div id="div_gameCanvas" />
     </div>
@@ -67,17 +75,17 @@
     <div id="div_statusHolder"> 
         <div id="div_columnContainer">
             <div class="StatusColumn">
-                <h2>Standard Output</h2>
-                <div id="div_stdOutput" class="ScrollingBox">out</div>
-                <h2>Move List</h2>
-                <div id="div_moveList" class="ScrollingBox">moves</div>
+                <div class="StatusHeader">Standard Output</div>
+                <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />Hello</div>
+                <div class="StatusHeader">Standard Error</div>
+                <div id="div_stdError" class="ScrollingBox">This will hold all standard error messages (Written by a bot).</div>
             </div>
 
             <div class="StatusColumn">
-                <h2>Standard Input</h2>
-                <div id="div_stdInput" class="ScrollingBox">in</div>
-                <h2>Board</h2>
-                <div id="div_board" class="ScrollingBox">board</div>
+                <div class="StatusHeader">Standard Input</div>
+                <div id="div_stdInput" class="ScrollingBox">This will hold all standard input messages.</div>
+                <div class="StatusHeader">Move List</div>
+                <div id="div_moveList" class="ScrollingBox">This will hold a list of previous moves.</div>
             </div>
         </div>
     </div>
