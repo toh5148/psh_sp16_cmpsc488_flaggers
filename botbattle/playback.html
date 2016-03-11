@@ -10,32 +10,33 @@
 
     <script>
         function GoToStart_click() {
-            document.getElementById("tester").innerHTML = "You clicked on Go To Start. This is not yet implemented.";
+            document.getElementById("div_status").innerHTML = "Status: Paused, went back to start";
         }
 
         function StepBack_click() {
-            document.getElementById("tester").innerHTML = "You clicked on Step Back One Turn. This is not yet implemented.";
+            document.getElementById("div_status").innerHTML = "Status: Paused, stepped back one turn";
         }
 
         function Pause_click() {
-            document.getElementById("tester").innerHTML = "You clicked on Pause. This is not yet implemented.";
+            document.getElementById("div_status").innerHTML = "Status: Paused";
         }
 
         function Play_click() {
-            document.getElementById("tester").innerHTML = "You clicked on Play. This is not yet implemented.";
+            var speed = document.getElementById("sldr_Speed").value;
+            document.getElementById("div_status").innerHTML = "Status: Playing at " + speed + "x normal speed";
         }
 
         function StepForward_click() {
-            document.getElementById("tester").innerHTML = "You clicked on Step Forward One Turn. This is not yet implemented.";
+            document.getElementById("div_status").innerHTML = "Status: Paused, stepped forward one turn";
         }
 
         function GoToEnd_click() {
-            document.getElementById("tester").innerHTML = "You clicked on Go To End. This is not yet implemented.";
+            document.getElementById("div_status").innerHTML = "Status: Paused, at end of game";
         }
 
         function Speed_change() {
             var newSpeed = document.getElementById("sldr_Speed").value;
-            document.getElementById("tester").innerHTML = "You changed the speed slider. The current speed is now set at " + newSpeed;
+            document.getElementById("div_status").innerHTML = "Status: Playing at " + newSpeed + "x normal speed";
         }
     </script>
 
@@ -52,9 +53,6 @@
     <a href="testingarena.html">Go to testing arena.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE!!-->
     <div id="div_container">
 
-        <!--REMOVE THIS WHEN DONE-->
-        <div id="tester">Initial Text (you haven't hit any buttons yet...)</div>
-
         <div id="div_gameHolder">
             <div id="div_gameCanvas" />
         </div>
@@ -70,6 +68,8 @@
 
                 <input id="sldr_Speed" type="range" min="-4" max="4" step="1" value="1" onchange="Speed_change()" />
             </div>
+            <br />
+            <div id="div_status">Status: Paused</div>
         </div>
 
         <hr />
