@@ -9,11 +9,12 @@
     height: 300px;
 }
 
-#div_mainHolder {
-    width:100%;
+#div_container {
+    width:1100px;
+    margin:0 auto;
 }
 
-#div_mainCenter {
+#div_mainHolder {
     width:1100px;
     margin:0 auto;
 }
@@ -32,31 +33,10 @@
     width: 825px;
 }
 
-/*Status Bar Stuff*/
-
-#div_statusHolder {
-    width:100%;
-}
-
-#div_columnContainer {
-    width:1100px;
-    margin:0 auto;
-}
-.ScrollingBox {
-    width:540px;
-    height:300px;
-    overflow-y:scroll;
-    background-color:#EEEEEE;
-}
-
-.StatusColumn {
-    display:inline-block;
-    width: 545px;
-    margin:0 auto;
-}
-
-/*End Status Bar Stuff*/
-
 .headerText {
     font-weight:bold;
+}
+
+.div_selectBot {
+
 }
