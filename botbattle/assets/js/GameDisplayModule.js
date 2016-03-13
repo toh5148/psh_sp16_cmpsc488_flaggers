@@ -1,5 +1,5 @@
 const gameWidth=800,gameHeight=600,tileWidth=50,tileHeight=50,tileColumns=gameWidth/tileWidth,tileRows=gameHeight/tileHeight,fps=60;
-var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update }),
+var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas', { preload: preload, create: create, update: update }),
 	defaultTimestep,turnTime,timeIncr;
 	entities = [];
 
