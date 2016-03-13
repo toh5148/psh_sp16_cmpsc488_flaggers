@@ -5,28 +5,11 @@
     <title>Testing Arena</title>
     <style type="text/css"></style>
 
-    
-
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
-    <script src="//cdn.jsdelivr.net/ace/1.2.3/min/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" src="assets/TestGame1/TestGame1.js"></script>
+    <script src="//cdn.jsdelivr.net/ace/1.2.3/min/ace.js" type="text/javascript" charset="utf-8"></script> 
     <script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
 
     <script>
-        function EditType_click() {
-            document.getElementById("div_editor").style.display = "block";
-
-            document.getElementById("div_Player1Upload").style.display = "none";
-            document.getElementById("div_Player1Edit").style.display = "block";
-        }
-
-        function UploadType_click() {
-            document.getElementById("div_editor").style.display = "none";
-
-            document.getElementById("div_Player1Upload").style.display = "block";
-            document.getElementById("div_Player1Edit").style.display = "none";
-        }
-
         function p1Upload_click() {
             document.getElementById("file_p1Upload").style.display = "block";
         }
@@ -44,10 +27,28 @@
 
         function UploadBots_click() {
             document.getElementById("btn_nextMove").style.display = "block";
+            
+            var editor = ace.edit("div_editor");
+            var text = editor.getSession().getValue(); //text holds the text from the ace editor
         }
 
         function NextMove_click() {
             //Only visible if bots have been stored, start next move procedure
+        }
+
+        function toggleEdit(on) {
+            if (on == "true") {
+                document.getElementById("div_editor").style.display = "block";
+
+                document.getElementById("div_Player1Upload").style.display = "none";
+                document.getElementById("div_Player1Edit").style.display = "block";
+            }
+            else if(on== "false") {
+                document.getElementById("div_editor").style.display = "none";
+
+                document.getElementById("div_Player1Upload").style.display = "block";
+                document.getElementById("div_Player1Edit").style.display = "none";
+            }
         }
 
     </script>
@@ -63,10 +64,11 @@
                 <div id="div_inputType">
                     <span class="headerText">Change Bot</span>
                     <form>
-                        <input type="radio" name="inputType" value="Upload" onclick="UploadType_click()" checked="checked" />Upload a file<br />
-                        <input type="radio" name="inputType" value="Edit" onclick="EditType_click()" />Edit your code<br />
+                        <input type="radio" name="inputType" value="Upload" onclick="toggleEdit('false')" checked="checked" />Upload a file<br />
+                        <input type="radio" name="inputType" value="Edit" onclick="toggleEdit('true')" />Edit your code<br />
                     </form>
                 </div>
+
                 <br /><hr /><br />
 
                 <!--Only one of the next 2 div's is visible at a time-->
@@ -82,7 +84,6 @@
                     Edit your code in the text editor below.
                 </div>
                 <!--Only one of the previous 2 div's is visible at a time-->
-
 
                <br /><hr /><br />
 
@@ -118,10 +119,8 @@
                         <input type="radio" name="inputChoice" value="Right">Down<br>
                     </form>
                 </div>-->
-
-                
-
             </div>
+
             <div id="div_gameCanvas"></div>
         </div>
 
@@ -135,14 +134,15 @@
             editor.setShowPrintMargin(false);
         </script>
 
+        <div id="testing"></div>
+
         <hr />
 
-        <!--TODO: Check with Blum to see what information he wants to be visible-->
         <div id="div_statusHolder">
             <div id="div_columnContainer">
                 <div class="StatusColumn">
                     <div class="StatusHeader">Standard Output</div>
-                    <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />Hello</div>
+                    <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.</div>
                     <div class="StatusHeader">Standard Error</div>
                     <div id="div_stdError" class="ScrollingBox">This will hold all standard error messages (Written by a bot).</div>
                 </div>
@@ -150,8 +150,6 @@
                 <div class="StatusColumn">
                     <div class="StatusHeader">Standard Input</div>
                     <div id="div_stdInput" class="ScrollingBox">This will hold all standard input messages.</div>
-                    <div class="StatusHeader">Move List</div>
-                    <div id="div_moveList" class="ScrollingBox">This will hold a list of previous moves.</div>
                 </div>
             </div>
         </div>
