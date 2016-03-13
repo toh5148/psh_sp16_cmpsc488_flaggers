@@ -27,6 +27,9 @@
 
         function UploadBots_click() {
             document.getElementById("btn_nextMove").style.display = "block";
+            
+            var editor = ace.edit("div_editor");
+            var text = editor.getSession().getValue(); //text holds the text from the ace editor
         }
 
         function NextMove_click() {
@@ -130,6 +133,8 @@
             editor.getSession().setMode("ace/mode/java");
             editor.setShowPrintMargin(false);
         </script>
+
+        <div id="testing"></div>
 
         <hr />
 
