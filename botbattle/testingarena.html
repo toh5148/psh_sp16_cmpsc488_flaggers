@@ -30,6 +30,8 @@
             
             var editor = ace.edit("div_editor");
             var text = editor.getSession().getValue(); //text holds the text from the ace editor
+            document.getElementById("testing").innerHTML = text;
+
         }
 
         function NextMove_click() {
@@ -74,7 +76,7 @@
                 <!--Only one of the next 2 div's is visible at a time-->
                 <div id="div_Player1Upload" class="div_selectBot">
                     <div class="headerText">Player 1</div> 
-                    <input type="radio" name="p1BotType" onclick="p1Upload_click()" value="UploadFile" checked="checked" />Upload
+                    <input type="radio" name="p1BotType" onclick="p1Upload_click()" value="UploadFile" checked="checked" />Upload<br />
                     <input type="radio" name="p1BotType" onclick="p1Preload_click()" value="PreloadedBot" />Preloaded Bot<br /><br />
                     <input id="file_p1Upload"type="file" />
                 </div>
@@ -89,7 +91,7 @@
 
                 <div id="div_Player2" class="div_selectBot">
                     <div class="headerText">Player 2</div>
-                    <input type="radio" name="p2BotType" onclick="p2Upload_click()" value="UploadFile" checked="checked" />Upload
+                    <input type="radio" name="p2BotType" onclick="p2Upload_click()" value="UploadFile" checked="checked" />Upload<br />
                     <input type="radio" name="p2BotType" onclick="p2Preload_click()" value="PreloadedBot" />Preloaded Bot<br /><br />
                     <input id="file_p2Upload" type="file" />
                 </div>
