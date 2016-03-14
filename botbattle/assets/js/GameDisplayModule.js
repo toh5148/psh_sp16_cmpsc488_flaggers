@@ -1,7 +1,7 @@
 const gameWidth=800,gameHeight=600,tileWidth=50,tileHeight=50,tileColumns=gameWidth/tileWidth,tileRows=gameHeight/tileHeight,fps=60;
-var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas', { preload: preload, create: create, update: update }),
-	defaultTimestep,turnTime,timeIncr;
-	entities = [];
+var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update }),
+	turn,defaultTimestep,turnTime,timeIncr,turnLength,
+	entities, entityChangeNums;
 
 var gameInitializer = {
 	background: 'background.png',
@@ -30,50 +30,106 @@ var gameInitializer = {
 	}]
 }
 
-var changes = [
+var turns = [
 	{
-		id: 101,
-		changes: [
+		timeScale: 1,
+		turnChanges: [
 			{
-				action: 'move',
-				start: 0,
-				end: .2,
-				startX: 1,
-				startY: 2,
-				x: 6,
-				y: 4
+				id: 101,
+				changes: [
+					{
+						action: 'move',
+						start: 0,
+						end: .2,
+						startX: 1,
+						startY: 2,
+						x: 6,
+						y: 4
+					},
+					{
+						action: 'move',
+						start: .2,
+						end: .3,
+						startX: 6,
+						startY: 4,
+						x: 7,
+						y: 3
+					},
+					{
+						action: 'move',
+						start: .3,
+						end: 1,
+						startX: 7,
+						startY: 3,
+						x: 6,
+						y: 1
+					}
+				]
 			},
 			{
-				action: 'move',
-				start: .2,
-				end: .3,
-				startX: 6,
-				startY: 4,
-				x: 7,
-				y: 3
-			},
-			{
-				action: 'move',
-				start: .3,
-				end: 1,
-				startX: 7,
-				startY: 3,
-				x: 6,
-				y: 1
+				id: 102,
+				changes: [
+					{
+						action: 'move',
+						start: .2,
+						end: .8,
+						startX: 10,
+						startY: 8,
+						x: 11,
+						y: 9
+					}
+				]
 			}
 		]
 	},
 	{
-		id: 102,
-		changes: [
+		timeScale: 2,
+		turnChanges: [
 			{
-				action: 'move',
-				start: .2,
-				end: .8,
-				startX: 10,
-				startY: 8,
-				x: 11,
-				y: 9
+				id: 101,
+				changes: [
+					{
+						action: 'move',
+						start: 0,
+						end: .2,
+						startX: 1,
+						startY: 2,
+						x: 6,
+						y: 4
+					},
+					{
+						action: 'move',
+						start: .2,
+						end: .3,
+						startX: 6,
+						startY: 4,
+						x: 7,
+						y: 3
+					},
+					{
+						action: 'move',
+						start: .3,
+						end: 1,
+						startX: 7,
+						startY: 3,
+						x: 6,
+						y: 1
+					}
+				]
+			},
+			{
+				id: 102,
+				changes: [
+					{
+						action: 'move',
+						start: .2,
+						end: .8,
+						startX: 10,
+						startY: 8,
+						x: 11,
+						y: 9
+					}
+				]
 			}
 		]
 	}
@@ -86,23 +142,40 @@ function preload(){
 
 function create(){
 	gameDisplayWindow.add.image(0,0,'background');
-	defaultTimestep=gameInitializer.defaultTimestep;
-	timeIncr=1/(fps*defaultTimestep);
+	entities=[];
 	var e=gameInitializer.entity;
 	for(var i=0;i<e.length;i++){
-		entities[e[i].id]=new entity(e[i]);
+		var ent=new entity(e[i]);
+		entities[e[i].id] = ent;
 	}
-	turnTime=0;
+	defaultTimestep=gameInitializer.defaultTimestep;
+	turn=-1;
+	turnTime=Infinity;
+	turnLength=0;
+	timeIncr=0;
 }
 
 function update(){
-	for(var i=0;i<changes.length;i++){
-		var c = changes[i], e = entities[c.id];
-		if(e.changeNum<c.changes.length){
-			if(c.changes[e.changeNum].end<turnTime)
-				e.changeNum++;
-			if(e.changeNum<c.changes.length){
-				var c2 = c.changes[e.changeNum];
+	if(turnTime>1){
+		turn++;
+		turnTime=0;
+		turnLength=defaultTimestep*turns[turn].timeScale; // * playback factor
+		timeIncr=1/(fps*turnLength);
+		entityChangeNums = {};
+	}
+	var tc=turns[turn].turnChanges;
+	for(var i=0;i<tc.length;i++){
+		var c = tc[i], e = entities[c.id];
+		if(!(e.id in entityChangeNums))
+			entityChangeNums[e.id]=0;
+		var cn=entityChangeNums[e.id];
+		if(cn<c.changes.length){
+			if(c.changes[cn].end<turnTime){
+				entityChangeNums[e.id]++;
+				cn=entityChangeNums[e.id];
+			}
+			if(cn<c.changes.length){
+				var c2 = c.changes[cn];
 				if(turnTime>=c2.start && turnTime<=c2.end)
 					e[c2.action](c2);
 			}
@@ -122,7 +195,6 @@ function entity(e){
 	this.flipped = e.flipped;
 	this.rotation = e.rotation;
 	this.sprite = gameDisplayWindow.add.sprite(this.x*tileWidth,this.y*tileHeight,'zombie');
-	this.changeNum = 0;
 	this.animations = [];
 	this.move = function(f){
 		// position
