@@ -5,42 +5,38 @@
     <title>Bot!Battle!</title>
 
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
-	<script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
-    <script type="text/javascript" src="assets/js/playback.js"></script>
+	<script type="text/javascript" src="assets/TestGame1/TestGame1.js" ></script>
+	<script type="text/javascript" src="assets/js/GameDisplayModule.js" ></script>
 
     <script>
-        function btn_click(ele) {
-            var ID = ele.id;
-
-            switch (ID) {
-                case "btn_GoToStart":
-                    document.getElementById("div_status").innerHTML = "Status: Paused, went back to start";
-                    testing();
-                    break;
-                case "btn_StepBack":
-                    document.getElementById("div_status").innerHTML = "Status: Paused, stepped back one turn";
-                    break;
-                case "btn_Pause":
-                    document.getElementById("div_status").innerHTML = "Status: Paused";
-                    break;
-                case "btn_Play":
-                    var speed = document.getElementById("sldr_Speed").value;
-                    document.getElementById("div_status").innerHTML = "Status: Playing at " + speed + "x normal speed";
-                    break;
-                case "btn_StepForward":
-                    document.getElementById("div_status").innerHTML = "Status: Paused, stepped forward one turn";
-                    break;
-                case "btn_GoToEnd":
-                    document.getElementById("div_status").innerHTML = "Status: Paused, at end of game";
-                    break;
-            }
+        function GoToStart_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Go To Start. This is not yet implemented.";
         }
 
-        function speed_change() {
+        function StepBack_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Step Back One Turn. This is not yet implemented.";
+        }
+
+        function Pause_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Pause. This is not yet implemented.";
+        }
+
+        function Play_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Play. This is not yet implemented.";
+        }
+
+        function StepForward_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Step Forward One Turn. This is not yet implemented.";
+        }
+
+        function GoToEnd_click() {
+            document.getElementById("tester").innerHTML = "You clicked on Go To End. This is not yet implemented.";
+        }
+
+        function Speed_change() {
             var newSpeed = document.getElementById("sldr_Speed").value;
-            document.getElementById("div_status").innerHTML = "Status: Playing at " + newSpeed + "x normal speed";
+            document.getElementById("tester").innerHTML = "You changed the speed slider. The current speed is now set at " + newSpeed;
         }
-
     </script>
 
     <link href="/assets/css/playback.css" type="text/css" rel="stylesheet" />
@@ -56,31 +52,34 @@
     <a href="testingarena.html">Go to testing arena.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE!!-->
     <div id="div_container">
 
+        <!--REMOVE THIS WHEN DONE-->
+        <div id="tester">Initial Text (you haven't hit any buttons yet...)</div>
+
         <div id="div_gameHolder">
             <div id="div_gameCanvas" />
         </div>
         <div id="div_controlsHolder">
+            <!--All input device functions are hooked up to change display message in 'tester' div-->
             <div id="div_controlsBar">
-                <button id="btn_GoToStart" onclick="btn_click(this)">Go To Start</button>
-                <button id="btn_StepBack" onclick="btn_click(this)">Step Back One Turn</button>
-                <button id="btn_Pause" onclick="btn_click(this)">Pause</button>
-                <button id="btn_Play" onclick="btn_click(this)">Play</button>
-                <button id="btn_StepForward" onclick="btn_click(this)">Step Forward One Turn</button>
-                <button id="btn_GoToEnd" onclick="btn_click(this)">Go To End</button>
+                <button id="btn_GoToStart" onclick="GoToStart_click()">Go To Start</button>
+                <button id="btn_StepBack" onclick="StepBack_click()">Step Back One Turn</button>
+                <button id="btn_Pause" onclick="Pause_click()">Pause</button>
+                <button id="btn_Play" onclick="Play_click()">Play</button>
+                <button id="btn_StepForward" onclick="StepForward_click()">Step Forward One Turn</button>
+                <button id="btn_GoToEnd" onclick="GoToEnd_click()">Go To End</button>
 
-                <input id="sldr_Speed" type="range" min="-4" max="4" step="1" value="1" onchange="speed_change()" />
+                <input id="sldr_Speed" type="range" min="-4" max="4" step="1" value="1" onchange="Speed_change()" />
             </div>
-            <br />
-            <div id="div_status">Status: Paused</div>
         </div>
 
         <hr />
 
+        <!--TODO: Check with Blum to see what information he wants to be visible-->
         <div id="div_statusHolder">
             <div id="div_columnContainer">
                 <div class="StatusColumn">
                     <div class="StatusHeader">Standard Output</div>
-                    <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.</div>
+                    <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />Hello</div>
                     <div class="StatusHeader">Standard Error</div>
                     <div id="div_stdError" class="ScrollingBox">This will hold all standard error messages (Written by a bot).</div>
                 </div>
@@ -88,6 +87,8 @@
                 <div class="StatusColumn">
                     <div class="StatusHeader">Standard Input</div>
                     <div id="div_stdInput" class="ScrollingBox">This will hold all standard input messages.</div>
+                    <div class="StatusHeader">Move List</div>
+                    <div id="div_moveList" class="ScrollingBox">This will hold a list of previous moves.</div>
                 </div>
             </div>
         </div>
