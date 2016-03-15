@@ -104,3 +104,11 @@ function UploadBot_click(ele) {
         document.getElementById("div_uploadWarnings").style.display = "none";
     }
 }
+
+function next_click() {
+
+}
+
+function undo_click() {
+
+}
