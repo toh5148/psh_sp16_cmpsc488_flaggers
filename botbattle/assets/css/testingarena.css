@@ -2,11 +2,10 @@
     margin-top: 50px;
 }
 
-#div_editor {
-    margin:0 auto;
-    margin-top: 50px;
-    width: 1100px;
-    height: 300px;
+.IDE {
+    display:inline-block;
+    width: 550px;
+    height: 700px;
 }
 
 #div_container {
@@ -28,9 +27,19 @@
 #div_inputType {
 }
 
+#div_GameDisplayTab {
+
+
+}
+
 #div_gameCanvas {
-    display: inline-block;
     width: 825px;
+    margin:0 auto;
+}
+
+#div_uploadWarnings {
+    color: #FF0000;
+    text-align:center;
 }
 
 .headerText {
@@ -39,4 +48,56 @@
 
 .div_selectBot {
 
+}
+
+.tab_select {
+    display:inline-block;
+    padding:3px;
+    width: 100px;
+    color:#000000;
+    border:2px solid black;
+    border-bottom:1px solid black;
+    font-weight:bold;
+}
+
+.tab_noselect {
+    display:inline-block;
+    padding:3px;
+    width: 100px;
+    color:#000000;
+    border:1px solid black;
+}
+
+.tab_noselect:hover, .tab_select:hover {
+    background-color:#EFEFEF;
+    cursor:pointer;
+    
+}
+
+.main_tab {
+    width:1080px;
+    border:1px solid black;
+    padding:10px;
+}
+
+.main_tab_hidden{
+    display:none;
+}
+
+.main_left {
+    display:inline-block;
+    vertical-align:top;
+    width:500px;
+}
+
+#btn_undoTurn {
+    display:inline-block;
+}
+
+#btn_nextTurn {
+    display:inline-block;
+}
+
+#div_GameDisplayButtons {
+    text-align: center;
 }
