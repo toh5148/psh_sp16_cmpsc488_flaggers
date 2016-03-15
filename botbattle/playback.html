@@ -5,8 +5,11 @@
     <title>Bot!Battle!</title>
 
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+
+
 	<script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
     <script type="text/javascript" src="assets/js/playback.js"></script>
+    <script type="text/javascript" src="assets/js/statusbar.js"></script>
 
     <script>
         function btn_click(ele) {
@@ -41,6 +44,10 @@
             document.getElementById("div_status").innerHTML = "Status: Playing at " + newSpeed + "x normal speed";
         }
 
+        function addRow1() {
+            addRow("3", "a", "b", "c");
+        }
+
     </script>
 
     <link href="/assets/css/playback.css" type="text/css" rel="stylesheet" />
@@ -54,6 +61,8 @@
     database for this match id's data.-->
 
     <a href="testingarena.html">Go to testing arena.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE!!-->
+    <button id="btn_GoToStart" onclick="addRow1()">Add Row</button>
+    <div id="testing"></div>
     <div id="div_container">
 
         <div id="div_gameHolder">
@@ -77,19 +86,14 @@
         <hr />
 
         <div id="div_statusHolder">
-            <div id="div_columnContainer">
-                <div class="StatusColumn">
-                    <div class="StatusHeader">Standard Output</div>
-                    <div id="div_stdOutput" class="ScrollingBox">This will hold all standard output messages.</div>
-                    <div class="StatusHeader">Standard Error</div>
-                    <div id="div_stdError" class="ScrollingBox">This will hold all standard error messages (Written by a bot).</div>
-                </div>
-
-                <div class="StatusColumn">
-                    <div class="StatusHeader">Standard Input</div>
-                    <div id="div_stdInput" class="ScrollingBox">This will hold all standard input messages.</div>
-                </div>
-            </div>
+            <table id="tbl_status">
+                <tr id="status_rowHeader">
+                    <td class="turn_column">Turn</td>
+                    <td class="data_column">Standard Input</td>
+                    <td class="data_column">Standard Output</td>
+                    <td class="data_column">Standard Error</td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>
