@@ -18,23 +18,28 @@
             switch (ID) {
                 case "btn_GoToStart":
                     document.getElementById("div_status").innerHTML = "Status: Paused, went back to start";
-                    testing();
+					GoToStart();
                     break;
                 case "btn_StepBack":
                     document.getElementById("div_status").innerHTML = "Status: Paused, stepped back one turn";
+					StepBackOneTurn();
                     break;
                 case "btn_Pause":
                     document.getElementById("div_status").innerHTML = "Status: Paused";
+					Pause();
                     break;
                 case "btn_Play":
                     var speed = document.getElementById("sldr_Speed").value;
                     document.getElementById("div_status").innerHTML = "Status: Playing at " + speed + "x normal speed";
+					Play(speed);
                     break;
                 case "btn_StepForward":
                     document.getElementById("div_status").innerHTML = "Status: Paused, stepped forward one turn";
+					StepForwardOneTurn();
                     break;
                 case "btn_GoToEnd":
                     document.getElementById("div_status").innerHTML = "Status: Paused, at end of game";
+					GoToEnd();
                     break;
             }
         }
@@ -42,6 +47,7 @@
         function speed_change() {
             var newSpeed = document.getElementById("sldr_Speed").value;
             document.getElementById("div_status").innerHTML = "Status: Playing at " + newSpeed + "x normal speed";
+			ChangePlaybackSpeed(newSpeed);
         }
 
         function addRow1() {
