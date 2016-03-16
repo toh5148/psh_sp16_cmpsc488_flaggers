@@ -1,7 +1,7 @@
 const gameWidth=800,gameHeight=600,tileWidth=50,tileHeight=50,tileColumns=gameWidth/tileWidth,tileRows=gameHeight/tileHeight,fps=60;
-var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update }),
-	turn,defaultTimestep,turnTime,timeIncr,turnLength,
-	entities, entityChangeNums;
+var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas', { preload: preload, create: create, update: update }),
+	playing, turn, defaultTimestep, turnTime, timeIncr, turnLength,
+	entities, entityList, entityChangeNums, gameStates;
 
 var gameInitializer = {
 	background: 'background.png',
@@ -92,8 +92,8 @@ var turns = [
 						action: 'move',
 						start: 0,
 						end: .2,
-						startX: 1,
-						startY: 2,
+						startX: 6,
+						startY: 1,
 						x: 6,
 						y: 4
 					},
@@ -112,8 +112,8 @@ var turns = [
 						end: 1,
 						startX: 7,
 						startY: 3,
-						x: 6,
-						y: 1
+						x: 1,
+						y: 2
 					}
 				]
 			},
@@ -141,28 +141,29 @@ function preload(){
 }
 
 function create(){
+	playing=false;
 	gameDisplayWindow.add.image(0,0,'background');
 	entities=[];
 	var e=gameInitializer.entity;
+	entityList=[];
 	for(var i=0;i<e.length;i++){
 		var ent=new entity(e[i]);
 		entities[e[i].id] = ent;
+		entityList.push(ent);
 	}
 	defaultTimestep=gameInitializer.defaultTimestep;
 	turn=-1;
 	turnTime=Infinity;
 	turnLength=0;
 	timeIncr=0;
+	generateGameStates();
 }
 
 function update(){
-	if(turnTime>1){
-		turn++;
-		turnTime=0;
-		turnLength=defaultTimestep*turns[turn].timeScale; // * playback factor
-		timeIncr=1/(fps*turnLength);
-		entityChangeNums = {};
-	}
+	if(!playing)
+		return;
+	if(turnTime>1)
+		startTurn(turn+1,false);
 	var tc=turns[turn].turnChanges;
 	for(var i=0;i<tc.length;i++){
 		var c = tc[i], e = entities[c.id];
@@ -184,17 +185,90 @@ function update(){
 	turnTime += timeIncr;
 }
 
+function generateGameStates(){
+	gameStates = [];
+	var initialgs={};
+	for(var i=0;i<entityList.length;i++){
+		var entId=entityList[i].id, ent=entities[entId];
+		initialgs[entId]={
+			x: ent.initX,
+			y: ent.initY
+		};
+	}
+	gameStates.push(initialgs);
+	for(var i=0;i<turns.length;i++){
+		var gs={};
+		var tc=turns[i].turnChanges;
+		for(var j=0;j<tc.length;j++){
+			var entId=tc[j].id, ent=entities[entId], changes=tc[j].changes, k=changes.length-1;
+			while(k>=0 && changes[k].action!='move')
+				k--;
+			if(k>=0){
+				var moveChange=changes[k];
+				gs[entId]={
+					x: moveChange.x,
+					y: moveChange.y
+				};
+			}
+		}
+		gameStates.push(gs);
+	}
+}
+
+function restoreGameState(n){
+	for(var i=0;i<entityList.length;i++){
+		var j=n,ent=entityList[i],entId=ent.id;
+		while(!(entId in gameStates[j]))
+			j--;
+		var eInfo=gameStates[j][entId];
+		ent.sprite.x=eInfo.x*tileWidth;
+		ent.sprite.y=eInfo.y*tileHeight;
+	}
+}
+
+function startTurn(tn,tm){
+	turn=tn;
+	if(tm)
+		turnTime=1;
+	else
+		turnTime=0;
+	turnLength=defaultTimestep*turns[turn].timeScale; // * playback factor
+	timeIncr=1/(fps*turnLength);
+	entityChangeNums = {};
+}
+
+/*function addChangeInfo(){
+	for(var t=0;t<turns.length;t++){
+		var tc=turns[t].turnChanges;
+		for(var c=0;c<tc.length;c++){
+			var change=tc[c];
+			switch(change.action){
+				case 'move':
+					if(!(startX in change)){
+						if(c==0){
+							if(t==0)
+								change.startX=entities[change.id].x;
+							else
+								change.startX=turns[t-1].turnChanges
+						}
+					}
+					break;
+			}
+		}
+	}
+}*/
+
 function entity(e){
 	this.id = e.id;
 	this.type = e.type;
 	this.visible = e.visible;
-	this.x = e.initX;
-	this.y = e.initY;
+	this.initX = e.initX;
+	this.initY = e.initY;
 	this.width = e.width;
 	this.height = e.height;
 	this.flipped = e.flipped;
 	this.rotation = e.rotation;
-	this.sprite = gameDisplayWindow.add.sprite(this.x*tileWidth,this.y*tileHeight,'zombie');
+	this.sprite = gameDisplayWindow.add.sprite(this.initX*tileWidth,this.initY*tileHeight,'zombie');
 	this.animations = [];
 	this.move = function(f){
 		// position
@@ -216,7 +290,10 @@ function entity(e){
 			else
 				anim=this.animations['move_right'];
 		}
-		this.sprite.frame=anim.frames[Math.floor((turnTime-f.start)*anim.speed)%anim.frames.length];
+		this.sprite.frame=this.getFrame((turnTime-f.start),anim);
+	}
+	this.getFrame = function(num,anim){
+		return anim.frames[Math.floor(num*anim.speed)%anim.frames.length];
 	}
 	this.addAnimations = function(){
 		switch(this.type){
@@ -229,4 +306,22 @@ function entity(e){
 		}
 	}
 	this.addAnimations();
+}
+
+function Play_click(){
+	playing=true;
+}
+
+function Pause_click(){
+	playing=false;
+}
+
+function GoToStart_click(){
+	restoreGameState(0);
+	startTurn(0,false);
+}
+
+function GoToEnd_click(){
+	restoreGameState(turns.length);
+	startTurn(turns.length,false);
 }
