@@ -1,7 +1,7 @@
 const gameWidth=800,gameHeight=600,tileWidth=50,tileHeight=50,tileColumns=gameWidth/tileWidth,tileRows=gameHeight/tileHeight,fps=60;
-var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update }),
-	turn,defaultTimestep,turnTime,timeIncr,turnLength,
-	entities, entityChangeNums;
+var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas', { preload: preload, create: create, update: update }),
+	playing, turn, defaultTimestep, turnTime, timeIncr, turnLength, playbackSpeed,
+	entities, entityList, entityChangeNums, gameStates;
 
 var gameInitializer = {
 	background: 'background.png',
@@ -41,28 +41,28 @@ var turns = [
 						action: 'move',
 						start: 0,
 						end: .2,
-						startX: 1,
-						startY: 2,
-						x: 6,
-						y: 4
+						x1: 1,
+						y1: 2,
+						x2: 6,
+						y2: 4
 					},
 					{
 						action: 'move',
 						start: .2,
 						end: .3,
-						startX: 6,
-						startY: 4,
-						x: 7,
-						y: 3
+						x1: 6,
+						y1: 4,
+						x2: 7,
+						y2: 3
 					},
 					{
 						action: 'move',
 						start: .3,
 						end: 1,
-						startX: 7,
-						startY: 3,
-						x: 6,
-						y: 1
+						x1: 7,
+						y1: 3,
+						x2: 6,
+						y2: 1
 					}
 				]
 			},
@@ -73,10 +73,10 @@ var turns = [
 						action: 'move',
 						start: .2,
 						end: .8,
-						startX: 10,
-						startY: 8,
-						x: 11,
-						y: 9
+						x1: 10,
+						y1: 8,
+						x2: 11,
+						y2: 9
 					}
 				]
 			}
@@ -92,28 +92,28 @@ var turns = [
 						action: 'move',
 						start: 0,
 						end: .2,
-						startX: 1,
-						startY: 2,
-						x: 6,
-						y: 4
+						x1: 6,
+						y1: 1,
+						x2: 6,
+						y2: 4
 					},
 					{
 						action: 'move',
 						start: .2,
 						end: .3,
-						startX: 6,
-						startY: 4,
-						x: 7,
-						y: 3
+						x1: 6,
+						y1: 4,
+						x2: 7,
+						y2: 3
 					},
 					{
 						action: 'move',
 						start: .3,
 						end: 1,
-						startX: 7,
-						startY: 3,
-						x: 6,
-						y: 1
+						x1: 7,
+						y1: 3,
+						x2: 1,
+						y2: 2
 					}
 				]
 			},
@@ -124,10 +124,10 @@ var turns = [
 						action: 'move',
 						start: .2,
 						end: .8,
-						startX: 10,
-						startY: 8,
-						x: 11,
-						y: 9
+						x1: 10,
+						y1: 8,
+						x2: 11,
+						y2: 9
 					}
 				]
 			}
@@ -144,25 +144,23 @@ function create(){
 	gameDisplayWindow.add.image(0,0,'background');
 	entities=[];
 	var e=gameInitializer.entity;
+	entityList=[];
 	for(var i=0;i<e.length;i++){
 		var ent=new entity(e[i]);
 		entities[e[i].id] = ent;
+		entityList.push(ent);
 	}
 	defaultTimestep=gameInitializer.defaultTimestep;
-	turn=-1;
-	turnTime=Infinity;
-	turnLength=0;
-	timeIncr=0;
+	playbackSpeed=1;
+	generateGameStates();
+	restoreGameState(0);
 }
 
 function update(){
-	if(turnTime>1){
-		turn++;
-		turnTime=0;
-		turnLength=defaultTimestep*turns[turn].timeScale; // * playback factor
-		timeIncr=1/(fps*turnLength);
-		entityChangeNums = {};
-	}
+	if(!playing) return;
+	if(turnTime>1)
+		startTurn(turn+1,false);
+	if(!playing) return;
 	var tc=turns[turn].turnChanges;
 	for(var i=0;i<tc.length;i++){
 		var c = tc[i], e = entities[c.id];
@@ -177,33 +175,99 @@ function update(){
 			if(cn<c.changes.length){
 				var c2 = c.changes[cn];
 				if(turnTime>=c2.start && turnTime<=c2.end)
-					e[c2.action](c2);
+					e[c2.action](c2,turnTime);
 			}
 		}
 	}
-	turnTime += timeIncr;
+	turnTime += timeIncr*playbackSpeed;
+}
+
+function generateGameStates(){
+	gameStates = [];
+	var initialgs={};
+	for(var i=0;i<entityList.length;i++){
+		var entId=entityList[i].id, ent=entities[entId];
+		initialgs[entId]={
+			x: ent.initX,
+			y: ent.initY
+		};
+	}
+	gameStates.push(initialgs);
+	for(var i=0;i<turns.length;i++){
+		var gs={};
+		var tc=turns[i].turnChanges;
+		for(var j=0;j<tc.length;j++){
+			var entId=tc[j].id, ent=entities[entId], changes=tc[j].changes, k=changes.length-1;
+			while(k>=0 && changes[k].action!='move')
+				k--;
+			if(k>=0)
+				gs[entId]=changes[k];
+		}
+		gameStates.push(gs);
+	}
+}
+
+function restoreGameState(n){
+	if(n<0)
+		n=0;
+	for(var i=0;i<entityList.length;i++){
+		var j=n,ent=entityList[i],entId=ent.id;
+		while(!(entId in gameStates[j]))
+			j--;
+		if(j==0){
+			var eInfo=gameStates[j][entId];
+			ent.sprite.x=eInfo.x*tileWidth;
+			ent.sprite.y=eInfo.y*tileHeight;
+			ent.sprite.frame=0;
+		}
+		else{
+			var act=gameStates[j][entId];
+			ent.move(act,1);
+		}
+	}
+	startTurn(n,false);
+	playing=false;
+}
+
+function startTurn(tn,tm){
+	if(tn<0)
+		tn=0;
+	if(tn>=turns.length){
+		playing=false;
+		turnTime=Infinity;
+		turn=turns.length;
+		return;
+	}
+	turn=tn;
+	if(tm)
+		turnTime=1;
+	else
+		turnTime=0;
+	turnLength=defaultTimestep*turns[turn].timeScale;
+	timeIncr=1/(fps*turnLength);
+	entityChangeNums = {};
 }
 
 function entity(e){
 	this.id = e.id;
 	this.type = e.type;
 	this.visible = e.visible;
-	this.x = e.initX;
-	this.y = e.initY;
+	this.initX = e.initX;
+	this.initY = e.initY;
 	this.width = e.width;
 	this.height = e.height;
 	this.flipped = e.flipped;
 	this.rotation = e.rotation;
-	this.sprite = gameDisplayWindow.add.sprite(this.x*tileWidth,this.y*tileHeight,'zombie');
+	this.sprite = gameDisplayWindow.add.sprite(this.initX*tileWidth,this.initY*tileHeight,'zombie');
 	this.animations = [];
-	this.move = function(f){
+	this.move = function(f,t){
 		// position
 		var m = 1/(f.end-f.start);
-		var t1 = (f.end-turnTime)*m,t2 = (turnTime-f.start)*m;
-		this.sprite.x = (f.startX*t1+f.x*t2)*tileWidth;
-		this.sprite.y = (f.startY*t1+f.y*t2)*tileHeight;
+		var t1 = (f.end-t)*m,t2 = (t-f.start)*m;
+		this.sprite.x = (f.x1*t1+f.x2*t2)*tileWidth;
+		this.sprite.y = (f.y1*t1+f.y2*t2)*tileHeight;
 		// animation
-		var anim,xDist=f.x-f.startX,yDist=f.y-f.startY;
+		var anim,xDist=f.x2-f.x1,yDist=f.y2-f.y1;
 		if(Math.abs(yDist)>Math.abs(xDist)){
 			if(yDist<0)
 				anim=this.animations['move_up'];
@@ -216,7 +280,10 @@ function entity(e){
 			else
 				anim=this.animations['move_right'];
 		}
-		this.sprite.frame=anim.frames[Math.floor((turnTime-f.start)*anim.speed)%anim.frames.length];
+		this.sprite.frame=this.getFrame((t-f.start),anim);
+	}
+	this.getFrame = function(num,anim){
+		return anim.frames[Math.floor(num*anim.speed)%anim.frames.length];
 	}
 	this.addAnimations = function(){
 		switch(this.type){

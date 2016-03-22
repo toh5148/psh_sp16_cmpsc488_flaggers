@@ -8,6 +8,7 @@
 
 
 	<script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
+    <script type="text/javascript" src="assets/js/TestGameCommands.js"></script>
     <script type="text/javascript" src="assets/js/playback.js"></script>
     <script type="text/javascript" src="assets/js/statusbar.js"></script>
 
@@ -18,23 +19,28 @@
             switch (ID) {
                 case "btn_GoToStart":
                     document.getElementById("div_status").innerHTML = "Status: Paused, went back to start";
-                    testing();
+					GoToStart();
                     break;
                 case "btn_StepBack":
                     document.getElementById("div_status").innerHTML = "Status: Paused, stepped back one turn";
+					StepBackOneTurn();
                     break;
                 case "btn_Pause":
                     document.getElementById("div_status").innerHTML = "Status: Paused";
+					Pause();
                     break;
                 case "btn_Play":
                     var speed = document.getElementById("sldr_Speed").value;
                     document.getElementById("div_status").innerHTML = "Status: Playing at " + speed + "x normal speed";
+					Play(speed);
                     break;
                 case "btn_StepForward":
                     document.getElementById("div_status").innerHTML = "Status: Paused, stepped forward one turn";
+					StepForwardOneTurn();
                     break;
                 case "btn_GoToEnd":
                     document.getElementById("div_status").innerHTML = "Status: Paused, at end of game";
+					GoToEnd();
                     break;
             }
         }
@@ -42,10 +48,14 @@
         function speed_change() {
             var newSpeed = document.getElementById("sldr_Speed").value;
             document.getElementById("div_status").innerHTML = "Status: Playing at " + newSpeed + "x normal speed";
+			ChangePlaybackSpeed(newSpeed);
         }
 
         function addRow1() {
-            addRow("3", "a", "b", "c");
+            addRow("3",
+                "This would be a standard input message. La do de da do de da do la do.",
+                "This would be a standard output message. La do de da do de da do la do.",
+                "This would be a standard error message.");
         }
 
     </script>
@@ -77,7 +87,7 @@
                 <button id="btn_StepForward" onclick="btn_click(this)">Step Forward One Turn</button>
                 <button id="btn_GoToEnd" onclick="btn_click(this)">Go To End</button>
 
-                <input id="sldr_Speed" type="range" min="-4" max="4" step="1" value="1" onchange="speed_change()" />
+                <input id="sldr_Speed" type="range" min=".25" max="2" step=".25" value="1" onchange="speed_change()" />
             </div>
             <br />
             <div id="div_status">Status: Paused</div>

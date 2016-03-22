@@ -11,15 +11,27 @@
 
 
     <script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
+    <script type="text/javascript" src="assets/js/TestGameCommands.js"></script>
     <script type="text/javascript" src="assets/js/TestingArenaButtonClicks.js"></script>
     <script type="text/javascript" src="assets/js/TestingModeController.js"></script>
     <script type="text/javascript" src="assets/js/statusbar.js"></script>
 
     <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
     <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
+
+    <script>
+        function addRow1() {
+            addRow("3",
+                "This would be a standard input message. La do de da do de da do la do.",
+                "This would be a standard output message. La do de da do de da do la do.",
+                "This would be a standard error message.");
+        }
+    </script>
+
 </head>
 <body>
     <a href="playback.html">Go to playback mode.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE-->
+    <button id="btn_GoToStart" onclick="addRow1()">Add Row</button>
     <div id="div_container">
         <div id="div_mainHolder">
 
