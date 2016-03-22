@@ -7,42 +7,18 @@
     width: 960px;
 }
 
-/*******************
-    NAV BAR
-*******************/
+.studentName {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 
-ul {
-    list-style-type: none;
+.div_studentAbout {
     width: 960px;
-    margin: 0 auto;
-    padding: 0;
-    overflow: hidden;
-    background-color: #01305C;
+    margin: 5px;
 }
 
-li {
-    float:left;
-    width: 20%;
-    margin: 0 auto;
+.div_studentInfo {
+    font-size: 16px;
 }
-
-li a {
-    display: block;
-    font-size: 18px;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-li a:hover {
-    background-color: #000000;
-}
-
-.active {
-    background-color: #FFFFFF;
-}
-
-/*******************
-   END NAV BAR
-*******************/

@@ -1,13 +1,4 @@
-﻿body {
-    margin:0;
-}
-
-#container {
-    margin: 0 auto;
-    width: 960px;
-}
-
-/*******************
+﻿/*******************
     NAV BAR
 *******************/
 
@@ -17,7 +8,7 @@ ul {
     margin: 0 auto;
     padding: 0;
     overflow: hidden;
-    background-color: #01305C;
+    background-color: #23527E;
 }
 
 li {
@@ -40,7 +31,7 @@ li a:hover {
 }
 
 .active {
-    background-color: #FFFFFF;
+    background-color: #01305C;
 }
 
 /*******************
