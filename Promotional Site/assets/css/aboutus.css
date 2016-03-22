@@ -15,10 +15,11 @@
 }
 
 .div_studentAbout {
-    width: 960px;
-    margin: 5px;
+    width: 940px;
+    margin: 10px;
 }
 
-.div_studentInfo {
+.studentInfo {
     font-size: 16px;
+    padding-left:20px;
 }
