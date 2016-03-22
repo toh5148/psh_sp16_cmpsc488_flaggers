@@ -1,3 +1,48 @@
 ﻿body {
     margin:0;
 }
+
+#container {
+    margin: 0 auto;
+    width: 960px;
+}
+
+/*******************
+    NAV BAR
+*******************/
+
+ul {
+    list-style-type: none;
+    width: 960px;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+    background-color: #01305C;
+}
+
+li {
+    float:left;
+    width: 20%;
+    margin: 0 auto;
+}
+
+li a {
+    display: block;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #000000;
+}
+
+.active {
+    background-color: #FFFFFF;
+}
+
+/*******************
+   END NAV BAR
+*******************/

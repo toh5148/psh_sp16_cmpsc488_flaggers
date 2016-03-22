@@ -3,7 +3,7 @@
                     "<td class='turn_column'>#TURN#</td>" +
                     "<td class='data_column'>#STDIN#</td>" +
                     "<td class='data_column'>#STDOUT#</td>" +
-                    "<td class='data_column'>#STDERR#</td>" +
+                    "<td class='data_column_red'>#STDERR#</td>" +
                     "</tr>";
     newRow = newRow.replace("#TURN#", turnNum);
     newRow = newRow.replace("#STDIN#", stdIn);
