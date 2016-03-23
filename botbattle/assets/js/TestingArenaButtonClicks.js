@@ -1,4 +1,4 @@
-﻿var P1_Change = true, P2_Change = true;
+﻿var P1_Change = -1, P2_Change = -1;
 
 function tab_click(ele) {
     var ID = ele.id;
