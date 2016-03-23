@@ -5,7 +5,6 @@ function GoToStart() {
     /*If we're storing the entire set of moves, we should just be 
     able to grab the 'Game Initialization Message' to line pieces up */
 	restoreGameState(0);
-	startTurn(0,false);
 }
 
 function StepBackOneTurn() {
