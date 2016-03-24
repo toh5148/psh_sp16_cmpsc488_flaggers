@@ -5,7 +5,6 @@ function GoToStart() {
     /*If we're storing the entire set of moves, we should just be 
     able to grab the 'Game Initialization Message' to line pieces up */
 	restoreGameState(0);
-	startTurn(0,false);
 }
 
 function StepBackOneTurn() {
@@ -41,4 +40,17 @@ function ChangePlaybackSpeed(newSpeed) {
     /* Change the playback speed of this 'class'...should continue
     in whichever mode (play/paused) that it was in before */
 	playbackSpeed=newSpeed;
+}
+
+function retrieveMatch() {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    var matchID = -1;
+    for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        if(pair[0] == "matchid") {
+            matchID = pair[1];
+            break;
+        }
+    }
 }
