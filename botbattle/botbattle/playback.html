@@ -74,36 +74,37 @@
     <button id="btn_GoToStart" onclick="addRow1()">Add Row</button>
     <div id="testing"></div>
     <div id="div_container">
-
-        <div id="div_gameHolder">
-            <div id="div_gameCanvas" />
-        </div>
-        <div id="div_controlsHolder">
-            <div id="div_controlsBar">
-                <button id="btn_GoToStart" onclick="btn_click(this)">Go To Start</button>
-                <button id="btn_StepBack" onclick="btn_click(this)">Step Back One Turn</button>
-                <button id="btn_Pause" onclick="btn_click(this)">Pause</button>
-                <button id="btn_Play" onclick="btn_click(this)">Play</button>
-                <button id="btn_StepForward" onclick="btn_click(this)">Step Forward One Turn</button>
-                <button id="btn_GoToEnd" onclick="btn_click(this)">Go To End</button>
-
-                <input id="sldr_Speed" type="range" min=".25" max="2" step=".25" value="1" onchange="speed_change()" />
+        <div id="playback_holder">
+            <div id="div_gameHolder">
+                <div id="div_gameCanvas" />
             </div>
-            <br />
-            <div id="div_status">Status: Paused</div>
-        </div>
+            <div id="div_controlsHolder">
+                <div id="div_controlsBar">
+                    <button id="btn_GoToStart" onclick="btn_click(this)">Go To Start</button>
+                    <button id="btn_StepBack" onclick="btn_click(this)">Step Back One Turn</button>
+                    <button id="btn_Pause" onclick="btn_click(this)">Pause</button>
+                    <button id="btn_Play" onclick="btn_click(this)">Play</button>
+                    <button id="btn_StepForward" onclick="btn_click(this)">Step Forward One Turn</button>
+                    <button id="btn_GoToEnd" onclick="btn_click(this)">Go To End</button>
 
-        <hr />
+                    <input id="sldr_Speed" type="range" min=".25" max="2" step=".25" value="1" onchange="speed_change()" />
+                </div>
+                <br />
+                <div id="div_status">Status: Paused</div>
+            </div>
 
-        <div id="div_statusHolder">
-            <table id="tbl_status">
-                <tr id="status_rowHeader">
-                    <td class="turn_column">Turn</td>
-                    <td class="data_column">Standard Input</td>
-                    <td class="data_column">Standard Output</td>
-                    <td class="data_column">Standard Error</td>
-                </tr>
-            </table>
+            <hr />
+
+            <div id="div_statusHolder">
+                <table id="tbl_status">
+                    <tr id="status_rowHeader">
+                        <td class="turn_column">Turn</td>
+                        <td class="data_column">Standard Input</td>
+                        <td class="data_column">Standard Output</td>
+                        <td class="data_column">Standard Error</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </body>

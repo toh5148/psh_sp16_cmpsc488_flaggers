@@ -1,5 +1,9 @@
 ﻿
 
-function uploadFile() {
+function uploadBotFile(file) {
+    
+}
+
+function uploadBotText(text) {
 
 }

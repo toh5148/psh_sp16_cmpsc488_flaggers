@@ -42,6 +42,10 @@ function ChangePlaybackSpeed(newSpeed) {
 	playbackSpeed=newSpeed;
 }
 
+
+/* The rest of these functions are to retrieve match data from the 
+    server and set the appropriate variables for the GDM to run correctly */
+
 function retrieveMatch() {
     var query = window.location.search.substring(1);
     var vars = query.split("&");
@@ -53,4 +57,32 @@ function retrieveMatch() {
             break;
         }
     }
+    
+    //Take care of query string errors
+    if (matchID == -1) {
+        //No match id was provided in the query string
+        /*Redirect them to an error page with links and
+          possible causes of error */
+        window.location.href = "error/playbackerror.html";
+    }
+    else {
+        matchRequest(matchID);
+    }
+}
+
+function matchRequest(matchID) {
+    /* TODO: Sawyer, Taha, Jack
+    Make an ajax request to your server function to retrieve 
+    the match data associated with the matchID provided as an 
+    argument. When the match data ('Game Initialization Message' 
+    and 'Turns Data') is recieved, pass the JSON object(s) as a 
+    parameter to the function 'handleCommands()'. Tom will
+    handle the JSON object(s) and setting correct variables. */
+
+    // variable names are arbitrary, this should be the last line of this function
+    handleCommands(gameInitializationMessage, turnsData);
+}
+
+function handleCommands(initMessage, turnData) {
+    //TODO: Tom
 }
