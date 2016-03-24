@@ -13,45 +13,96 @@ var con = mysql.createConnection(
 // Try and connect to the database
 con.connect(function(err){
   if(err){
-    console.log('Error connecting to Db');
+    console.log('Error connecting to bbweb database');
     return;
   }
   console.log('Connection established');
 });
 
-/*var str = "[ { command:\"test game instance, please delete later\" } ]";
-var game_instance = { id: 105, command: str, winner_id: 20};
-con.query('INSERT INTO match_turns SET ?', game_instance, function(err,res){
+// Insert a row into the table
+/*var str = "[ { \"command\":\"test testing_arena instance, please delete later\" } ]";
+var game_instance = { challenge_id: 101, user_id: 1, command: str};
+con.query('INSERT INTO testarena_turns SET ?', game_instance, function(err,res){
   if(err) throw err;
 
-  console.log('Last insert ID:', res.insertId);
+  console.log('row inserted');
 });*/
 
-function sendRequest(id){
-	// column names: id, command, winner_id
-	con.query('SELECT command FROM match_turns  WHERE id = ?', id, function(err, rows){
-		if(err) {
-			alert("Match id not found");
-			console.log("Match id:" + id + " not found.");
-			return false;
-		}
-
-		console.log('Data received from Db:\n');	
-		// Turn the text recieved into a JSON object
-		var match_commands = JSON.parse(rows[0].command);
-		console.log(JSON.stringify(match_commands));
+/* 
+	This function queries the database for a specific match id
+	Arguments:
+		id - Match id
 		
-		return match_commands;		
+	Returns:
+		JSON Object - JSON object that contains the initialization message and turns for a match
+		false - There was an error querying the database.
+		null - Match does not exist.
+*/
+function getMatch(id){
+	// column names: challenge_id, user_id, command
+	con.query('SELECT command FROM match_turns WHERE id = ?', id, function(err, rows){
+		if(err) {
+			throw err;
+			return false;
+		} else if (rows[0] != undefined){ // Match exists				
+			console.log(JSON.stringify(rows[0].command));
+			
+			// Turn the text recieved into a JSON object
+			// Will there be more than 1 command for each id?
+			return JSON.parse(rows[0].command);			
+		}
+		else{ // Match does not exist
+			console.log("ERROR: Match with id:" + id + " not found.")
+			return null;
+		}	
 	});
 }
 
+/* 
+	This function queries the database for a specific test instance id
+	Arguments:
+		id - Test Instance id
+		
+	Returns:
+		JSON Object - JSON object that contains the next turn for the test instance.
+		false - There was an error querying the database.
+		null - Match does not exist.
+*/
+function getTestInstance(id){
+	// column names: id, command, winner_id
+	con.query('SELECT command FROM testarena_turns WHERE challenge_id = ?', id, function(err, rows){
+		if(err) {
+			throw err;
+			return false;
+		}		
+		else if (rows[0] != undefined) { // Match exists			
+			console.log(JSON.stringify(rows[0].command));	
+			
+			// Turn the text recieved into a JSON object
+			// Will there be more than 1 command for each id?
+			return JSON.parse(rows[0].command);			
+		} else{ // Match does not exist
+			console.log("ERROR: Test instance with id:" + id + " not found.")
+			return null;
+		}	
+	});
+}
+
+// Close the connection to the database
 function closeConnection(){
 	con.end(function(err) {
 	  // The connection is terminated gracefully
 	  // Ensures all previously enqueued queries are still executed
 	  // before sending a COM_QUIT packet to the MySQL server.
+	  console.log("Connection terminated.");
 	});
 }
 
-var x = sendRequest(105);
+// Tests
+getTestInstance(1011);
+getTestInstance(12011);
+getTestInstance(101);
+getMatch(101);
+getMatch(105);
+
 closeConnection();
