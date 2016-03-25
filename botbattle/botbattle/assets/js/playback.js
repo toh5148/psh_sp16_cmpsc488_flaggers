@@ -101,6 +101,8 @@ function matchRequest(matchID) {
 			console.log("The match with id:" + matchID + " does not exist.")
 		} else {
 			// Turn the string that is returned into a JSON object
+			// could throw an exception if the string is not in the
+			// correct JSON format
 			var turnsData = JSON.parse(res);
 			/*  As of right now the database is only setup to return 1 json object
 				which will contain the initilization message and turns data.
