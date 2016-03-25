@@ -70,6 +70,18 @@ function retrieveMatch() {
     }
 }
 
+// Function to get an XMLHttpRequest that will be used to send an ajax call
+function getXMLHttpRequest() {
+	var xhttp;
+	if (window.XMLHttpRequest) {
+		xhttp = new XMLHttpRequest();
+	} else {
+		// Code for IE6, IE5
+		xhttp = new ActiveObject("Microsoft.XMLHTTP");
+	}
+	return xhttp;
+}
+
 function matchRequest(matchID) {
     /* TODO: Sawyer, Taha, Jack
     Make an ajax request to your server function to retrieve 
@@ -79,8 +91,29 @@ function matchRequest(matchID) {
     parameter to the function 'handleCommands()'. Tom will
     handle the JSON object(s) and setting correct variables. */
 
+	var xhttp = getXMLHttpRequest();
+	var url = "/get_match?id=" + matchID;
+	xhttp.open("GET", url, function(req, res) {
+		console.log("website got: " + res);
+		if (res == null){ // error with the db
+			console.log("The database encountered an error.")
+		} else if (res == undefined){ // Match does not exist in db
+			console.log("The match with id:" + matchID + " does not exist.")
+		} else {
+			// Turn the string that is returned into a JSON object
+			var turnsData = JSON.parse(res);
+			/*  As of right now the database is only setup to return 1 json object
+				which will contain the initilization message and turns data.
+				I can have the ajax call return 2 objects, but i will have to parse
+				the initilization message and turnsdata from the db. they have both
+				combined into one object*/
+			//handleCommands(gameInitializationMessage, turnsData);
+			//handleCommands(turnsData);
+		}
+	});	
+	
     // variable names are arbitrary, this should be the last line of this function
-    handleCommands(gameInitializationMessage, turnsData);
+    //handleCommands(gameInitializationMessage, turnsData);
 }
 
 function handleCommands(initMessage, turnData) {

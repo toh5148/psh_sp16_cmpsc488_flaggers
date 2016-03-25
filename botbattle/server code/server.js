@@ -1,5 +1,13 @@
 // Import statements
 var mysql = require("mysql");
+var express = require("express");
+var http = require("http");
+var bodyParser = require("body-parser");
+var app = express();
+var port = 5050;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true}));
 
 // Create a connection variable
 var con = mysql.createConnection(
@@ -11,13 +19,23 @@ var con = mysql.createConnection(
 });
 
 // Try and connect to the database
-function openConnection() {
+function openConnectionToDatabase() {
 	con.connect(function(err){
 	  if(err){
 		console.log('Error connecting to bbweb database');
 		return;
 	  }
 	  console.log('Connection established');
+	});
+}
+
+// Close the connection to the database
+function closeConnectionToDatabase(){
+	con.end(function(err) {
+	  // The connection is terminated gracefully
+	  // Ensures all previously enqueued queries are still executed
+	  // before sending a COM_QUIT packet to the MySQL server.
+	  console.log("Connection terminated.");
 	});
 }
 
@@ -41,7 +59,8 @@ con.query('INSERT INTO testarena_turns SET ?', game_instance, function(err,res){
 		null - Match does not exist.
 */
 function getMatch(id){
-	// column names: challenge_id, user_id, command
+		openConnectionToDatabase();
+	// column names: id, command, winner_id
 	con.query('SELECT command FROM match_turns WHERE id = ?', id, function(err, rows){
 		if(err) {
 			throw err;
@@ -57,6 +76,7 @@ function getMatch(id){
 			return null;
 		}	
 	});
+	closeConnectionToDatabase();
 }
 
 /* 
@@ -70,7 +90,7 @@ function getMatch(id){
 		null - Match does not exist.
 */
 function getTestInstance(id){
-	// column names: id, command, winner_id
+	// column names: challenge_id, user_id, command
 	con.query('SELECT command FROM testarena_turns WHERE challenge_id = ?', id, function(err, rows){
 		if(err) {
 			throw err;
@@ -88,21 +108,36 @@ function getTestInstance(id){
 	});
 }
 
-// Close the connection to the database
-function closeConnection(){
-	con.end(function(err) {
-	  // The connection is terminated gracefully
-	  // Ensures all previously enqueued queries are still executed
-	  // before sending a COM_QUIT packet to the MySQL server.
-	  console.log("Connection terminated.");
-	});
-}
-openConnection();
-// Tests
-//getTestInstance(1011);
-//getTestInstance(12011);
-getTestInstance(101);
-//getMatch(101);
-//getMatch(105);
+// THE FOLLOWING URLS WILL PROBABLY CHANGE ALONG
+// WITH THE PARAMETERS
+app.get("/get_match", function(req, res){
+	var id = req.param('id');
+	var msg = getMatch(id);
+	
+	console.log("server sent: " + msg);
+	res.send(msg);
+});
 
-closeConnection();
+app.get("/get_test_instance", function(req, res){
+	var user_id = req.param('uid');
+	var challenge_id = req.param('cid');
+	var msg = getTestInstance(id);
+	
+	console.log(msg);
+	res.send(msg);
+});
+
+app.get("/open_database_connection", function(req, res){
+	openConnectionToDatabase();
+	res.send(true);
+});
+
+app.get("/close_database_connection", function(req, res){
+	closeConnectionToDatabase();
+	res.send(true);
+});
+
+// Start the server
+http.createServer(app).listen(port, function() {
+	console.log("Server listening on port " + port);
+});
