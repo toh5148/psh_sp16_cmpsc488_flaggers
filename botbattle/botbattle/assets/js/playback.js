@@ -90,7 +90,7 @@ function matchRequest(matchID) {
     and 'Turns Data') is recieved, pass the JSON object(s) as a 
     parameter to the function 'handleCommands()'. Tom will
     handle the JSON object(s) and setting correct variables. */
-
+    
 	var xhttp = getXMLHttpRequest();
 	var url = "/get_match?id=" + matchID;
 	xhttp.open("GET", url, function(req, res) {
@@ -103,19 +103,17 @@ function matchRequest(matchID) {
 			// Turn the string that is returned into a JSON object
 			// could throw an exception if the string is not in the
 			// correct JSON format
-			var turnsData = JSON.parse(res);
+			var json = JSON.parse(res);
+			//var gameInitializationMessage = json[0];
+			//var turnsData = json[1];
 			/*  As of right now the database is only setup to return 1 json object
 				which will contain the initilization message and turns data.
-				I can have the ajax call return 2 objects, but i will have to parse
-				the initilization message and turnsdata from the db. they have both
-				combined into one object*/
+				I can have the ajax call return 1 JSON object that contains an array of
+				2 JSON objects. 1 object in the array will be the gameInitializationMessage,
+				the 2nd object will be the turns data*/
 			//handleCommands(gameInitializationMessage, turnsData);
-			//handleCommands(turnsData);
 		}
-	});	
-	
-    // variable names are arbitrary, this should be the last line of this function
-    //handleCommands(gameInitializationMessage, turnsData);
+	});
 }
 
 function handleCommands(initMessage, turnData) {
