@@ -2,16 +2,27 @@ const gameWidth=800,gameHeight=600,tileWidth=50,tileHeight=50,fps=60,
 	halfWidth=tileWidth/2,halfHeight=tileHeight/2,tileColumns=gameWidth/tileWidth,tileRows=gameHeight/tileHeight;
 var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
     { preload: preload, create: create, update: drawTurn }),
-	playing, turn, defaultTimestep, turnTime, timeIncr, turnLength, playbackSpeed,
-	entities, entityList, entityChangeNums, gameStates;
+	playing, turn, defaultTimestep, turnTime, turnFrame, turnLength, playbackSpeed,
+	entities, entityList, entityChangeNums, gameStates,
+    defaultValues = ['visible', 'initX', 'initY', 'initWidth', 'initHeight', 'flipped', 'value'],
+    defaultReplace = ['visible', 'x', 'y', 'width', 'height', 'flipped', 'value'],
+    textProperties = ['font', 'fontStyle', 'fontVariant', 'fontWeight', 'fontSize', 'backgroundColor', 'fill', 'align',
+        'boundsAlignH','boundsAlignV', 'stroke', 'strokeThickness', 'wordWrap', 'wordWrapWidth', 'tabs'];
+    spriteActions = ['walk', 'fall', 'attack', 'defend'];
 
 function preload() {
     gameDisplayWindow.load.image('background', 'assets/images/background.png');
-    gameDisplayWindow.load.spritesheet('zombie', 'assets/images/zombie.png', 32, 32);
+    gameDisplayWindow.load.spritesheet('spriteRabbit', 'assets/images/spriteBunny.png', 800, 800);
+    gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteChicken.png', 800, 800);
+    //gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteZombie.png', 800, 800);
+    //gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteAlien.png', 800, 800);
+    gameDisplayWindow.load.image('brickWall', 'assets/images/brickWall.png');
 }
 
 function create() {
-    gameDisplayWindow.add.image(0, 0, 'background');
+    var bkg=gameDisplayWindow.add.image(0, 0, 'background');
+    bkg.width=gameWidth;
+    bkg.height=gameHeight;
     defaultTimestep = gameInitializer.defaultTimestep;
     entities = [];
     entityList = [];
@@ -35,17 +46,19 @@ function drawTurn() {
         if (!(e.id in entityChangeNums))
             entityChangeNums[e.id] = 0;
         var cn = entityChangeNums[e.id];
-        while (cn < c.changes.length && c.changes[cn].end < turnTime) {
+        var changes = c.changes;
+        while (cn < changes.length - 1 && changes[cn + 1].start <= turnTime) {
             entityChangeNums[e.id]++;
             cn = entityChangeNums[e.id];
         }
-        if (cn < c.changes.length ) {
-            var c2 = c.changes[cn];
-            if (turnTime >= c2.start && turnTime <= c2.end)
+        if (cn < changes.length) {
+            var c2 = changes[cn];
+            if (turnTime >= c2.start && (!('end' in c2) || turnTime <= c2.end))
                 e.action(c2, turnTime);
         }
     }
-    turnTime += timeIncr * playbackSpeed;
+    turnFrame++;
+    turnTime = (turnFrame * playbackSpeed) / (fps * turnLength);
 }
 
 function createEnts(){
@@ -54,53 +67,83 @@ function createEnts(){
         addEnt(e[i]);
 }
 
-function addEnt(e){
-    var ent=new Entity(e);
-    gameStates[0][e.id] = {
+function addEnt(e) {
+    var ent = new Entity(e);
+    var gs = {
         action: 'create',
         start: 0,
         end: 1,
+        visible: e.visible,
         initX: e.initX,
         initY: e.initY,
-        initWidth: e.width,
-        initHeight: e.height,
         initRotation: e.rotation,
-        flipped: e.flipped
+        flipped: e.flipped,
+        anim: {frames: [0], speed: 0}
     };
+    if (e.type == 'text') {
+        gs.value = e.value;
+        for (var i = 0; i < textProperties.length; i++) {
+            var p = textProperties[i];
+            gs[p] = ent.obj[p];
+        }
+    }
+    else {
+        gs.initWidth = e.width;
+        gs.initHeight = e.height;
+        if (e.type == 'object')
+            gs.value = e.value;
+    }
+    gameStates[0][e.id] = gs;
     entities[ent.id] = ent;
     entityList.push(ent);
 }
 
-function generateTurnChanges(){
-    var prevChange={};
-    for(var i=0;i<entityList.length;i++){
-        var id=entityList[i].id;
-        prevChange[id]=gameStates[0][id];
+function generateTurnChanges() {
+    var prevChange = {};
+    for (var i = 0; i < entityList.length; i++) {
+        var id = entityList[i].id;
+        prevChange[id] = gameStates[0][id];
     }
-    for(var i=0;i<turns.length;i++){
-        var turnChanges=turns[i].turnChanges;
-        for(var j=0;j<turnChanges.length;j++){
-            var changes=turnChanges[j].changes, id=turnChanges[j].id;
-            for(var k=0;k<changes.length;k++){
-                var c=changes[k];
-                addDefaultValues(c,prevChange[id]);
-                prevChange[id]=c;
+    for (var i = 0; i < turns.length; i++) {
+        var turnChanges = turns[i].turnChanges;
+        for (var j = 0; j < turnChanges.length; j++) {
+            var changes = turnChanges[j].changes, id = turnChanges[j].id;
+            for (var k = 0; k < changes.length; k++) {
+                var c = changes[k];
+                addDefaultValues(id, c, prevChange[id]);
+                prevChange[id] = c;
             }
         }
     }
 }
 
-var defaultValues = ['initX', 'initY', 'initWidth', 'initHeight', 'initRotation', 'flipped'];
-var defaultReplace = ['x', 'y', 'width', 'height', 'rotation', 'flipped'];
-
-function addDefaultValues(change, prevChange) {
+function addDefaultValues(id, change, prevChange) {
     for (var i = 0; i < defaultValues.length; i++) {
         var value = defaultValues[i], replace = defaultReplace[i];
         if (!(value in change)) {
             if (replace in prevChange)
                 change[value] = prevChange[replace];
-            else
+            else if(value in prevChange)
                 change[value] = prevChange[value];
+        }
+    }
+    if (!('initRotation' in change)) {
+        var initRotation = prevChange.initRotation;
+        if ('rotation' in prevChange)
+            initRotation += prevChange.rotation;
+        change.initRotation = initRotation;
+    }
+    if (!(anim in change)) {
+        var anim = entities[id].getAnimation(change);
+        if (anim == null)
+            anim = {frames: [prevChange.anim.frames[0]], speed: 0};
+        change.anim = anim;
+    }
+    if(entities[id].type=='text'){
+        for(var i=0; i<textProperties.length;i++){
+            var c= textProperties[i];
+            if((c in prevChange) && !(c in change))
+                change[c]=prevChange[c];
         }
     }
 }
@@ -144,7 +187,7 @@ function startTurn(tn,tm) {
     else
         turnTime = 0;
     turnLength = defaultTimestep * turns[turn].timeScale;
-    timeIncr = 1 / (fps * turnLength);
+    turnFrame = 0;
     entityChangeNums = {};
 }
 
@@ -155,60 +198,93 @@ function ChangePlaybackSpeed(newSpeed) {
 function Entity(e) {
     this.id = e.id;
     this.type = e.type;
-    this.sprite = gameDisplayWindow.add.sprite(0, 0, 'zombie');
-    this.sprite.anchor.setTo(0.5, 0.5);
-    this.sprite.width = e.width;
-    this.sprite.height = e.height;
-    this.animations = [];
+    this.animations = animationList[e.type];
+    if (this.type == 'object') {
+        this.obj = gameDisplayWindow.add.sprite(0, 0, e.value);
+        this.obj.anchor.setTo(0.5, 0.5);
+        this.isAnimated = false;
+    }
+    else if (this.type == 'text') {
+        this.obj = gameDisplayWindow.add.text(0, 0, e.value);
+        this.isAnimated = false;
+    }
+    else {
+        this.isAnimated = true;
+        this.obj = gameDisplayWindow.add.sprite(0, 0, e.type);
+        this.obj.anchor.setTo(0.5, 0.5);
+    }
     this.action = function (f, t) {
+        if (!f.visible) {
+            this.obj.visible = false;
+            return;
+        }
+        this.obj.visible = true;
 
         // Movement
-        var m = 1 / (f.end - f.start);
-        var t1 = (f.end - t) * m, t2 = (t - f.start) * m;
-        if('x' in f)
-            this.sprite.x = (f.initX * t1 + f.x * t2) * tileWidth;
+        var m = 1 / (f.end - f.start),
+            t1 = (f.end - t) * m, t2 = (t - f.start) * m,
+            time = t - f.start, scaledTime = time * m;
+        if ('x' in f)
+            this.obj.x = (f.initX * t1 + f.x * t2) * tileWidth;
         else
-            this.sprite.x = f.initX * tileWidth;
-        if('y' in f)
-            this.sprite.y = (f.initY * t1 + f.y * t2) * tileHeight;
+            this.obj.x = f.initX * tileWidth;
+        if ('y' in f)
+            this.obj.y = (f.initY * t1 + f.y * t2) * tileHeight;
         else
-            this.sprite.y = f.initY * tileHeight;
+            this.obj.y = f.initY * tileHeight;
+
+        if (this.type != 'text') {
+            // Sprite properties
+            if ('width' in f)
+                this.obj.width = f.initWidth * t1 + f.width * t2;
+            else
+                this.obj.width = f.initWidth;
+            if ('height' in f)
+                this.obj.height = f.initHeight * t1 + f.height * t2;
+            else
+                this.obj.height = f.initHeight;
+        }
+        if ('rotation' in f)
+            this.obj.angle = scaledTime * f.rotation + f.initRotation;
+        else
+            this.obj.angle = f.initRotation;
+        if (f.flipped)
+            this.obj.width *= -1;
+        if(this.type == 'object')
+            this.obj.sprite = f.value;
+        else if(this.type == 'text') {
+            this.obj.text = f.value;
+            for(var i=0;i<textProperties.length;i++){
+                var c=textProperties[i];
+                if(c in f)
+                    this.obj[c]=f[c];
+            }
+        }
 
         // Animation
-        var animDir, xDist, yDist;
-        if(!('x' in f))
-            xDist=0;
-        else
-            xDist = f.x - f.initX;
-        if(!('y' in f))
-            yDist=0;
-        else
-            yDist = f.y - f.initY;
-        if (Math.abs(yDist) > Math.abs(xDist)) {
-            if (yDist < 0)
-                animDir = 'up';
-            else
-                animDir = 'down';
-        }
-        else {
-            if (xDist < 0)
-                animDir = 'left';
-            else
-                animDir = 'right';
-        }
-        var anim=this.animations['walk_'+animDir];
-        this.sprite.frame = anim.frames[Math.floor((t - f.start) * anim.speed) % anim.frames.length];
-    };
-    this.addAnimations = function () {
-        switch (this.type) {
-            case 'spriteZombie':
-                this.animations['init'] = {frames: [0], speed: 0};
-                this.animations['walk_down'] = {frames: [0, 1, 2], speed: 15};
-                this.animations['walk_left'] = {frames: [3, 4, 5], speed: 15};
-                this.animations['walk_right'] = {frames: [6, 7, 8], speed: 15};
-                this.animations['walk_up'] = {frames: [9, 10, 11], speed: 15};
-                break;
+        if (this.isAnimated) {
+            var anim = f.anim;
+            this.obj.frame = anim.frames[Math.floor(time * anim.speed) % anim.frames.length];
         }
     };
-    this.addAnimations();
+    this.getAnimation = function (f) {
+        if (!('action' in f) || spriteActions.indexOf(f.action) < 0)
+            return null;
+        return this.animations[f.action];
+    };
 }
+
+var animationList = {
+    spriteRabbit: {
+        walk: {frames: [0,1,2,3,4,5,6,7,8,9], speed: 15},
+        fall: {frames: [13,14], speed: 15},
+        attack: {frames: [15,16,17,18,19], speed: 15},
+        defend: {frames: [10,11,12,12,12,12,12,11], speed: 15}
+    },
+    spriteChicken: {
+        walk: {frames: [0,1,2,3,4,5], speed: 15},
+        fall: {frames: [11], speed: 15},
+        attack: {frames: [6,7,8], speed: 15},
+        defend: {frames: [10,10,9], speed: 15}
+    }
+};
