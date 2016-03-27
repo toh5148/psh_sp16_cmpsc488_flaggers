@@ -119,6 +119,8 @@ function addEnt(e) {
 }
 
 function generateTurnChanges() {
+    // Set the initial values for all turn changes (initX, initY, etc)
+    // This enables us to fully restore the state of an entity by playing an animation
     var prevChange = {};
     for (var i = 0; i < entityList.length; i++) {
         var id = entityList[i].id;
@@ -138,6 +140,7 @@ function generateTurnChanges() {
 }
 
 function addDefaultValues(id, change, prevChange) {
+    // Add default values to an individual change
     for (var i = 0; i < defaultValues.length; i++) {
         var value = defaultValues[i], replace = defaultReplace[i];
         if (!(value in change)) {
@@ -168,8 +171,8 @@ function addDefaultValues(id, change, prevChange) {
     }
 }
 
-
 function generateGameStates() {
+    // Generate game states using the most recent change of every entity so we can restore them later
     for (var i = 0; i < turns.length; i++) {
         var gs = {}, tc = turns[i].turnChanges;
         for (var j = 0; j < tc.length; j++) {
@@ -181,6 +184,7 @@ function generateGameStates() {
 }
 
 function restoreGameState(turnNum) {
+    // Load the beginning of a turn
     if (turnNum < 0)
         turnNum = 0;
     for (var i = 0; i < entityList.length; i++) {
@@ -194,6 +198,7 @@ function restoreGameState(turnNum) {
 }
 
 function startTurn(tn,tm) {
+    // Set the beginning variables of a turn
     if (tn < 0)
         tn = 0;
     if (tn >= turns.length) {
@@ -222,6 +227,7 @@ function Entity(e) {
     this.id = e.id;
     this.type = e.type;
     this.animations = animationList[e.type];
+    // Create the sprite or text object
     if (this.type == 'object') {
         this.obj = gameDisplayWindow.add.sprite(0, 0, e.value);
         this.obj.anchor.setTo(0.5, 0.5);
@@ -236,7 +242,9 @@ function Entity(e) {
         this.obj = gameDisplayWindow.add.sprite(0, 0, e.type);
         this.obj.anchor.setTo(0.5, 0.5);
     }
+    // Code to execute when performing a change
     this.action = function (f, t) {
+        // Visibility
         if (!f.visible) {
             this.obj.visible = false;
             return;
@@ -256,8 +264,8 @@ function Entity(e) {
         else
             this.obj.y = f.initY;
 
+        // Sprite/text properties
         if (this.type != 'text') {
-            // Sprite properties
             if ('width' in f)
                 this.obj.width = f.initWidth * t1 + f.width * t2;
             else
@@ -290,6 +298,7 @@ function Entity(e) {
             this.obj.frame = anim.frames[Math.floor(time * anim.speed) % anim.frames.length];
         }
     };
+    // For default values
     this.getAnimation = function (f) {
         if (!('action' in f) || spriteActions.indexOf(f.action) < 0)
             return null;
