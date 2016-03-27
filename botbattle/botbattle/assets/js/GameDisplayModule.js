@@ -1,5 +1,4 @@
-const gameWidth=800,gameHeight=600,tileWidth=50,tileHeight=50,fps=60,
-	halfWidth=tileWidth/2,halfHeight=tileHeight/2,tileColumns=gameWidth/tileWidth,tileRows=gameHeight/tileHeight;
+const gameWidth=800,gameHeight=600,fps=60;
 var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
     { preload: preload, create: create, update: drawTurn }),
 	playing, turn, defaultTimestep, turnTime, turnFrame, turnLength, playbackSpeed,
@@ -11,37 +10,50 @@ var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div
     spriteActions = ['walk', 'fall', 'attack', 'defend'];
 
 function preload() {
+    // Load graphical assets
     gameDisplayWindow.load.image('background', 'assets/images/background.png');
     gameDisplayWindow.load.spritesheet('spriteRabbit', 'assets/images/spriteBunny.png', 800, 800);
     gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteChicken.png', 800, 800);
-    //gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteZombie.png', 800, 800);
-    //gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteAlien.png', 800, 800);
+    //gameDisplayWindow.load.spritesheet('spriteZombie', 'assets/images/spriteZombie.png', 800, 800);
+    //gameDisplayWindow.load.spritesheet('spriteAlien', 'assets/images/spriteAlien.png', 800, 800);
     gameDisplayWindow.load.image('brickWall', 'assets/images/brickWall.png');
 }
 
 function create() {
+    // Set background
     var bkg=gameDisplayWindow.add.image(0, 0, 'background');
     bkg.width=gameWidth;
     bkg.height=gameHeight;
+    // Set default timestep
     defaultTimestep = gameInitializer.defaultTimestep;
+    // Set initial variables
     entities = [];
     entityList = [];
     playbackSpeed = 1;
-    gameStates = [{}];
+    gameStates = [];
     turn = 0;
+    // Generate game
     createEnts();
     generateTurnChanges();
     generateGameStates();
+    generateRows(gameInitializer,turns);
+    // Set first turn
     restoreGameState(0);
 }
 
 function drawTurn() {
+    // Draw the state of the game every frame
     if (!playing) return;
+    // Go to next turn if current turn has ended
     if (turnTime > 1)
         startTurn(turn + 1, false);
+    // Stop if we've reached the end
     if (!playing) return;
+    // Get current turn changes
     var tc = turns[turn].turnChanges;
+    // Iterate through the turn changes
     for (var i = 0; i < tc.length; i++) {
+        // Get the change to execute for this entity
         var c = tc[i], e = entities[c.id];
         if (!(e.id in entityChangeNums))
             entityChangeNums[e.id] = 0;
@@ -51,23 +63,28 @@ function drawTurn() {
             entityChangeNums[e.id]++;
             cn = entityChangeNums[e.id];
         }
+        // Execute change
         if (cn < changes.length) {
             var c2 = changes[cn];
             if (turnTime >= c2.start && (!('end' in c2) || turnTime <= c2.end))
                 e.action(c2, turnTime);
         }
     }
+    // Increase turn time
     turnFrame++;
     turnTime = (turnFrame * playbackSpeed) / (fps * turnLength);
 }
 
 function createEnts(){
+    // Spawn all the entities
+    gameStates.push({});
     var e = gameInitializer.entity;
     for (var i = 0; i < e.length; i++)
         addEnt(e[i]);
 }
 
 function addEnt(e) {
+    // Spawn an entity and add its initial game state
     var ent = new Entity(e);
     var gs = {
         action: 'create',
@@ -84,7 +101,10 @@ function addEnt(e) {
         gs.value = e.value;
         for (var i = 0; i < textProperties.length; i++) {
             var p = textProperties[i];
-            gs[p] = ent.obj[p];
+            if (p in e)
+                gs[p] = e[p];
+            else
+                gs[p] = ent.obj[p];
         }
     }
     else {
@@ -123,7 +143,7 @@ function addDefaultValues(id, change, prevChange) {
         if (!(value in change)) {
             if (replace in prevChange)
                 change[value] = prevChange[replace];
-            else if(value in prevChange)
+            else if (value in prevChange)
                 change[value] = prevChange[value];
         }
     }
@@ -139,14 +159,15 @@ function addDefaultValues(id, change, prevChange) {
             anim = {frames: [prevChange.anim.frames[0]], speed: 0};
         change.anim = anim;
     }
-    if(entities[id].type=='text'){
-        for(var i=0; i<textProperties.length;i++){
-            var c= textProperties[i];
-            if((c in prevChange) && !(c in change))
-                change[c]=prevChange[c];
+    if (entities[id].type == 'text') {
+        for (var i = 0; i < textProperties.length; i++) {
+            var c = textProperties[i];
+            if ((c in prevChange) && !(c in change))
+                change[c] = prevChange[c];
         }
     }
 }
+
 
 function generateGameStates() {
     for (var i = 0; i < turns.length; i++) {
@@ -179,9 +200,11 @@ function startTurn(tn,tm) {
         playing = false;
         turnTime = Infinity;
         turn = turns.length;
+        showRows(turn);
         return;
     }
     turn = tn;
+    showRows(turn);
     if (tm)
         turnTime = 1;
     else
@@ -225,13 +248,13 @@ function Entity(e) {
             t1 = (f.end - t) * m, t2 = (t - f.start) * m,
             time = t - f.start, scaledTime = time * m;
         if ('x' in f)
-            this.obj.x = (f.initX * t1 + f.x * t2) * tileWidth;
+            this.obj.x = (f.initX * t1 + f.x * t2);
         else
-            this.obj.x = f.initX * tileWidth;
+            this.obj.x = f.initX;
         if ('y' in f)
-            this.obj.y = (f.initY * t1 + f.y * t2) * tileHeight;
+            this.obj.y = (f.initY * t1 + f.y * t2);
         else
-            this.obj.y = f.initY * tileHeight;
+            this.obj.y = f.initY;
 
         if (this.type != 'text') {
             // Sprite properties

@@ -6,8 +6,8 @@
             id: 101,
             type: 'spriteRabbit',
             visible: true,
-            initX: 1,
-            initY: 2,
+            initX: 50,
+            initY: 100,
             width: 50,
             height: 50,
             flipped: false,
@@ -17,8 +17,8 @@
             id: 102,
             type: 'spriteChicken',
             visible: true,
-            initX: 10,
-            initY: 8,
+            initX: 500,
+            initY: 400,
             width: 50,
             height: 50,
             flipped: true,
@@ -28,8 +28,8 @@
             id: 103,
             type: 'object',
             visible: true,
-            initX: 5,
-            initY: 7,
+            initX: 250,
+            initY: 350,
             width: 50,
             height: 50,
             flipped: true,
@@ -40,15 +40,19 @@
             id: 104,
             type: 'text',
             visible: true,
-            initX: 1,
-            initY: 1,
+            initX: 50,
+            initY: 50,
             width: 50,
             height: 50,
             flipped: false,
             rotation: 0,
-            value: 'Turn: 1'
+            value: 'Turn: 1',
+			fill: '#808080'
         }
-    ]
+    ],
+    stdIn: '000',
+    stdOut: '111',
+    stdErr: '222'
 };
 
 var turns = [
@@ -62,22 +66,22 @@ var turns = [
 						action: 'walk',
 						start: 0,
 						end: .2,
-						x: 6,
-						y: 4
+						x: 300,
+						y: 200
 					},
 					{
 						action: 'walk',
 						start: .2,
 						end: .3,
-						x: 7,
-						y: 3
+						x: 350,
+						y: 150
 					},
 					{
 						action: 'walk',
 						start: .3,
 						end: 1,
-						x: 6,
-						y: 1,
+						x: 300,
+						y: 50,
                         rotation: 90
 					}
 				]
@@ -89,8 +93,8 @@ var turns = [
 						action: 'walk',
 						start: .2,
 						end: .8,
-						x: 11,
-						y: 9,
+						x: 550,
+						y: 450,
                         width: 200,
                         height: 200
 					}
@@ -103,8 +107,8 @@ var turns = [
                         action: 'move',
                         start: 0,
                         end: 1,
-                        x: 5,
-                        y: 5,
+                        x: 250,
+                        y: 250,
                         width: 20,
                         height: 20,
                         rotation: 360
@@ -122,7 +126,10 @@ var turns = [
                     }
                 ]
             }
-		]
+		],
+        stdIn: 'aaa',
+        stdOut: 'bbb',
+        stdErr: 'ccc'
 	},
 	{
 		timeScale: 2,
@@ -133,20 +140,20 @@ var turns = [
 					{
 						start: 0,
 						end: .2,
-						x: 6,
-						y: 4
+						x: 300,
+						y: 200
 					},
 					{
 						start: .2,
 						end: .3,
-						x: 7,
-						y: 3
+						x: 350,
+						y: 150
 					},
 					{
 						start: .3,
 						end: 1,
-						x: 1,
-						y: 2,
+						x: 50,
+						y: 100,
                         rotation: 90
 					}
 				]
@@ -169,11 +176,15 @@ var turns = [
                         action: 'setText',
                         start: 1,
                         value: 'Turn: 3',
-                        backgroundColor: 'rgba(255,0,0,0.25)'
+                        backgroundColor: 'rgba(255,0,0,0.25)',
+                        fill: '#808080'
                     }
                 ]
             }
-		]
+		],
+        stdIn: 'ddd',
+        stdOut: 'eee',
+        stdErr: 'fff'
 	},
     {
         timeScale: 1,
@@ -185,22 +196,22 @@ var turns = [
                         action: 'walk',
                         start: 0,
                         end: .2,
-                        x: 6,
-                        y: 4
+                        x: 300,
+                        y: 200
                     },
                     {
                         action: 'walk',
                         start: .2,
                         end: .3,
-                        x: 7,
-                        y: 3
+                        x: 350,
+                        y: 150
                     },
                     {
                         action: 'walk',
                         start: .3,
                         end: 1,
-                        x: 6,
-                        y: 1
+                        x: 300,
+                        y: 50
                     }
                 ]
             },
@@ -212,8 +223,8 @@ var turns = [
                         visible: true,
                         start: .2,
                         end: .8,
-                        x: 8,
-                        y: 6,
+                        x: 400,
+                        y: 300,
                         flipped: false
                     }
                 ]
@@ -228,6 +239,9 @@ var turns = [
                     }
                 ]
             }
-        ]
+        ],
+        stdIn: 'ggg',
+        stdOut: 'hhh',
+        stdErr: 'iii'
     }
 ];
