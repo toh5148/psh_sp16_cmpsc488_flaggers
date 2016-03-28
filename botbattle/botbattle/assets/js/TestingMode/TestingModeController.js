@@ -4,12 +4,12 @@
     //page wth an appropriate error specified in a query string...
     var query = window.location.search.substring(1);
     var vars = query.split("&");
-    var matchID = -1;
+    var cid = -1;
     for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split("=");
         if (pair[0] == "cid")  // Request 'cid' as the query string....TODO: Tom might change
         {
-            matchID = pair[1];
+            cid = pair[1];
             break;
         }
     }
@@ -28,7 +28,7 @@
 
 
 function sendError(qString) {
-    window.location.href = "error.html" + qString;
+    window.location.href = "error.html?" + qString;
 }
 
 function initTestingArena(cid) {

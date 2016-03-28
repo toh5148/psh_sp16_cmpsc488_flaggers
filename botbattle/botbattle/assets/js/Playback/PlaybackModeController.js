@@ -15,7 +15,7 @@
         //No match id was provided in the query string
         /*Redirect them to an error page with links and
           possible causes of error */
-        sendError("?mes=p1");
+        sendError("mes=p1");
     }
     else {
         matchRequest(matchID);
@@ -23,7 +23,7 @@
 }
 
 function sendError(qString) {
-    window.location.href = "error.html" + qString;
+    window.location.href = "error.html?" + qString;
 }
 
 // Function to get an XMLHttpRequest that will be used to send an ajax call
