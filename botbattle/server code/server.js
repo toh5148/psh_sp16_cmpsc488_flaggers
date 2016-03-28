@@ -369,7 +369,8 @@ app.get('/get_match', function(req, res, next){
 	var id = req.query.id;
 	console.log('id=' + id);
 	var msg = getMatch(id, function(data){
-		console.log('server sent: ' + data);
+	    console.log('server sent: ' + data);
+		res.header('Access-Control-Allow-Origin', '*');
 		res.send(data);
 	});
 });

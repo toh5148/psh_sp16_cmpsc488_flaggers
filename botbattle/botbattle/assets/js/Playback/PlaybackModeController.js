@@ -26,50 +26,62 @@ function sendError(qString) {
     window.location.href = "error.html?" + qString;
 }
 
-// Function to get an XMLHttpRequest that will be used to send an ajax call
-function getXMLHttpRequest() {
-	var xhttp;
-	if (window.XMLHttpRequest) {
-		xhttp = new XMLHttpRequest();
-	} else {
-		// Code for IE6, IE5
-		xhttp = new ActiveObject("Microsoft.XMLHTTP");
-	}
-	return xhttp;
+// Create the XHR object.
+function createCORSRequest(method, url) {
+    var xhr = new XMLHttpRequest();
+    if ("withCredentials" in xhr) {
+        // XHR for Chrome/Firefox/Opera/Safari.
+        xhr.open(method, url, true);
+    } else if (typeof XDomainRequest != "undefined") {
+        // XDomainRequest for IE.
+        xhr = new XDomainRequest();
+        xhr.open(method, url);
+    } else {
+        // CORS not supported.
+        xhr = null;
+    }
+    return xhr;
 }
 
 function matchRequest(matchID) {
-    /* TODO: Sawyer, Taha, Jack
+    /* TODO: Sawyer, Taha
     Make an ajax request to your server function to retrieve 
     the match data associated with the matchID provided as an 
     argument. When the match data ('Game Initialization Message' 
     and 'Turns Data') is recieved, pass the JSON object(s) as a 
     parameter to the function 'handleCommands()'. Tom will
     handle the JSON object(s) and setting correct variables. */
-    
-	var xhttp = getXMLHttpRequest();
-	var url = "/get_match?id=" + matchID;
-	xhttp.open("GET", url, function(req, res) {
-		console.log("website got: " + res);
-		if (res == null){ // error with the db
-			console.log("The database encountered an error.")
-		} else if (res == undefined){ // Match does not exist in db
-			console.log("The match with id:" + matchID + " does not exist.")
-		} else {
-			// Turn the string that is returned into a JSON object
-			// could throw an exception if the string is not in the
-			// correct JSON format
-			var json = JSON.parse(res);
-			//var gameInitializationMessage = json[0];
-			//var turnsData = json[1];
-			/*  As of right now the database is only setup to return 1 json object
-				which will contain the initilization message and turns data.
-				I can have the ajax call return 1 JSON object that contains an array of
-				2 JSON objects. 1 object in the array will be the gameInitializationMessage,
-				the 2nd object will be the turns data*/
-			//handleCommands(gameInitializationMessage, turnsData);
-		}
-	});
+    console.log('Match_id: ' + matchID);
+    var url = 'http://localhost:5050/get_match?id=' + matchID;
+
+    var xhr = createCORSRequest('GET', url);
+    if (!xhr) {
+        alert('CORS not supported');
+        return;
+    }
+
+    // Response handlers.
+    xhr.onload = function () {
+        var text = xhr.responseText;
+        if (text == false) {
+            console.log('website got: ' + text)
+        } else if (text == undefined) {
+            console.log('website got: ' + text);
+        }
+        else {
+            console.log('website got: ' + text);
+            /*var json = JSON.parse(text);
+            var init_message = json[0];
+            var turns = json[1];
+            handleCommands(init_message, turns);*/
+        }
+    };
+
+    xhr.onerror = function () {
+        console.log('Woops, there was an error making the request.');
+    };
+
+    xhr.send();
 }
 
 function handleCommands(initMessage, turnData) {
