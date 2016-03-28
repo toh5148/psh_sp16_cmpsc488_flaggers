@@ -5,38 +5,23 @@
     <title>Testing Arena</title>
     <style type="text/css"></style>
     
-    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <script src="//cdn.jsdelivr.net/phaser/2.4.6/phaser.min.js"></script>
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/mode-java.js" type="text/javascript" charset="utf-8"></script>
 
 
     <script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
     <script type="text/javascript" src="assets/js/TestGameCommands.js"></script>
-    <script type="text/javascript" src="assets/js/TestingArenaButtonClicks.js"></script>
-    <script type="text/javascript" src="assets/js/TestingModeController.js"></script>
-    <script type="text/javascript" src="assets/js/BotUploader.js"></script>
+    <script type="text/javascript" src="assets/js/ButtonClicks/TestingArenaButtonClicks.js"></script>
+    <script type="text/javascript" src="assets/js/TestingMode/TestingModeController.js"></script>
+    <script type="text/javascript" src="assets/js/TestingMode/BotUploader.js"></script>
     <script type="text/javascript" src="assets/js/statusbar.js"></script>
 
     <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
     <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
-
-    <script>
-        function addRow1() {
-            addRow("3",
-                "This would be a standard input message. La do de da do de da do la do.",
-                "This would be a standard output message. La do de da do de da do la do.",
-                "This would be a standard error message.");
-        }
-
-        function uploadFile() {
-            var botFile = document.getElementById("file_p1Upload").files;
-        }
-    </script>
-
 </head>
-<body>
+<body onload="beginpageload()">
     <a href="playback.html">Go to playback mode.... (for ease of coding)</a> <!--TODO: REMOVE THIS WHEN DONE-->
-    <button id="btn_GoToStart" onclick="addRow1()">Add Row</button>
     <div id="div_container">
         <div id="div_mainHolder">
 
@@ -83,7 +68,7 @@
 
                     <input id="file_p2Upload" type="file" />
                     <div id="div_p2PublicBot" style="display:none">
-                        <input id="name_p2PublicBot" type="text"/> Enter the name of the public bot.
+                        <input id="name_p2PublicBot" type="text" /> Enter the name of the public bot.
                     </div>
                     <div id="div_uploadBots2">
                         <br />
