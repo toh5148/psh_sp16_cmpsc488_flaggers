@@ -1,0 +1,54 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Bot!Battle!</title>
+
+    <script src="//cdn.jsdelivr.net/phaser/2.4.6/phaser.min.js"></script>
+
+	<script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
+    <script type="text/javascript" src="assets/js/TestGameCommands.js"></script>
+    <script type="text/javascript" src="assets/js/ButtonClicks/PlaybackButtonClicks.js"></script>
+    <script type="text/javascript" src="assets/js/Playback/PlaybackModeController.js"></script>
+    <script type="text/javascript" src="assets/js/statusbar.js"></script>
+
+    <link href="/assets/css/playback.css" type="text/css" rel="stylesheet" />
+    <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
+
+</head>
+<body onload="retrieveMatch()">
+    <div id="div_container">
+        <div id="div_gameHolder">
+            <div id="div_gameCanvas" />
+        </div>
+        <div id="div_controlsHolder">
+            <div id="div_controlsBar">
+                <button id="btn_GoToStart" onclick="btn_goToStart_Click()">Go To Start</button>
+                <button id="btn_StepBack" onclick="btn_stepBack_Click()">Step Back One Turn</button>
+                <button id="btn_Pause" onclick="btn_pause_Click()">Pause</button>
+                <button id="btn_Play" onclick="btn_play_Click()">Play</button>
+                <button id="btn_StepForward" onclick="btn_stepForward_Click()">Step Forward One Turn</button>
+                <button id="btn_GoToEnd" onclick="btn_goToEnd_Click()">Go To End</button>
+
+                <input id="sldr_Speed" type="range" min=".25" max="2" step=".25" value="1" onchange="sldr_speed_change()" />
+            </div>
+            <br />
+            <div id="div_status">Status: Paused</div>
+        </div>
+
+        <hr />
+
+        <div id="div_statusHolder">
+            <table id="tbl_status">
+                <tr id="status_rowHeader">
+                    <td class="turn_column">Turn</td>
+                    <td class="data_column">Standard Input</td>
+                    <td class="data_column">Standard Output</td>
+                    <td class="data_column">Standard Error</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,232 @@
+Hi, all.
+
+I have spoken with Dr. Chang, and he is concerned about both the scope of your
+project and the amount of progress that you have made so far.  I believe that
+there is enough in this project for a group of your size.  Indeed, I think that
+it will be difficult for you to complete this project _unless all of you
+actively work on it from here on out_.
+
+To help you make progress towards successfully completing the project, I have
+assembled the following requirements, and a list of tasks to help you split out
+and plan for the remaining work.  I would like for you to develop a plan of
+attack with this functionality in mind, and schedule a time to meet with me
+each week to review your progress.
+
+Phaser Integration
+------------------
+
+The goal of the design module is to allow for the creation of a new game
+_without requiring the game designer to write any client side code_.  In order
+to achieve this goal, you will need to create a library of sprites and object
+images that can be used in games, and create pre-defined actions that be
+performed on these entities.  
+
+The client should support the following JSON encoded messages that will be
+pulled from the database:
+
+1)  Game Initialization Message:
+{ background: <image_file>,
+  defaultTimestep: <timestep>,
+  entity: [<entity_1>,<entity_2>, ...]
+ }
+
+where 
+
+<image_file> is the url of a file that will be placed in the background of the
+canvas.  We will assume that the canvas will have a fixed size of 800x600, and
+that this image is appropriately sized to fill the canvas
+
+<timestep> is a floating point number representing the default length of a turn
+in seconds.  All of the animations of moves will be done relative to this
+timestep.  As mentioned below, there is the option to make a turn longer or
+shorter.  In addition, there will be controls on the web page that allow the
+user to speed up or slow down the playback of the animation.  This speed up or
+slow down will be done relative to this default turn length
+
+<entity_i> defines the ith game entity.  These game entities should be added to
+the game in the order specified in this array, so that later entities will
+appear on top of earlier entities, should they overlap.
+
+Each of the <entity_i> records will have the following format:
+{ id: <id>,
+  type: <type>
+  visible: true|false,
+  initX: <x_coord>,
+  initY: <y_coord>,
+  width: <width>,
+  height: <height>,
+  flipped: true|false,
+  rotation: <degrees>,
+  <args>
+}
+
+where
+
+<id> is an integer that uniquely identifies the entity
+
+<type> is either "text", "object", "spriteBunny", "spriteChicken",
+"spriteZombie", or "spriteAlien"   (I am flexible on the sprites that you use -
+I suggest these here.  The zombie sprite sheet is available from Phaser.  I can
+provide sprite sheets for the others).
+
+visible specifies the objects initial visibility
+
+<initX> is the initial top left x coordinate of the object
+
+<initY> is the initial top left y coordinate of the object
+
+<width> is the initial width for the object
+
+<height> is the initial height for the object
+flipped indicates if the object is flipped along the vertical axis
+
+<degrees> indicates the rotation of the object
+
+<args> are type-specific arguments
+
+If type = text, then the following additional type-specific arguments should be
+supported:
+value: text to be displayed
+Any of the style attributes for the text box listed
+at http://phaser.io/docs/2.4.6/Phaser.Text.html (e.g. font, background color,
+alignment)
+
+If type = object, then the following type-specific arguments should be
+supported:
+value: url of the image
+
+
+2)  Turns Array (note that each element in this array has all information for
+changes that occur during a particular turn, and this will have the list of all
+turns in the completed game (or in the game so far if we are in the test arena):
+
+[{
+   timeScale: <timeScale>,
+   turnChanges: [<config_1>,<config_2>, ...],
+  <GAME STATE INFO> 
+ }, ...
+]
+
+where
+
+<timeScale> is a scale to be used for the current turn
+
+<config_i> is a change specification
+
+<GAME STATE INFO> should be ignored by you, and instead will be used by the
+Game Evaluation Engine to reconstruct the current game state
+
+The current turn length will be calculated via the formula:
+
+[Turn Length] = [Default Time Step] * [turnTimeScale] * [playbackFactor]
+
+where [playbackFactor] is determined by the playback speed control in the web
+page.
+
+The change specification will have the following format:
+
+{ id: <id>,
+  changes: [{action: <verb>,
+    start: <starttime>,
+    end: <endtime>,
+    <args>}, ...]
+}
+
+where 
+
+<id> is the id of one of the entities defined in the Game Initialization Message
+
+<verb> is a type-specific verb
+
+<starttime> is a number between 0 and 1 that indicates when relative to this
+timestep to initiate the change, e.g. if it is 0, the action should be
+initiated at the start of the timestep, if it is 0.5 it should be initiated
+halfway through
+
+<endtime> is a number between 0 and 1 that indicates when to finish the change
+(this is only applicable for animated changes like moves)
+
+<args> are verb-specific arguments
+
+Note that each entity has an array of changes, which allows for multiple
+changes to occur to an entity during a timestep.
+
+All types should support the following verbs:
+
+show
+
+hide
+
+move, with arguments for some subset of the following: x, y, width, height,
+rotation, flipped 
+
+For the "text" type, you will need to support the following verbs (these ignore
+the endtime and occur at starttime):
+
+setText, change the text displayed to the value field (one of the args)
+
+set..., where ... is one of the style parameters specified for text (e.g. bold,
+background color, etc)
+
+For the "sprite..." types, you should support the following verbs.  Each one of
+these verbs take the same arguments as the "move" verb, which specify the
+ending location.
+
+walk:  animate walking for the sprite
+
+fall:  animate falling for the sprite
+
+attack:  animate an attack 
+
+defend:  animate a defense
+
+Note that you will need to set these animations up for each of the four
+built-in sprites that you create.
+
+
+Other Functionality
+-------------------
+
+Playback controls for both arenas:  play, pause, step back one turn, step
+forward one turn, go to start, go to end, speed up/slowdown (via a slider
+control)
+
+Playback controls for test arena:  change bot
+
+  IDE textarea:  allows for entry of code, and ideally highlighting location of
+compiler errors
+  Or upload a bot from a file
+
+  Display of standard input and output from the bot's last turn
+
+
+Tasks
+-----
+0)  Design layouts for the display page and the test arena page (with all items
+listed above)
+1)  Display background in Phaser
+2)  Set animation loop that calls stub methods to animate each action in the
+change specification object, and respects the current timestep, as well as the
+playback controls
+3)  Implement all of the playback controls - note that the step back turns will
+need to calculate the position and state of each entity by iterating through
+the array in the change specification object.
+4)  Be able to initialize the display of text entities
+5)  Be able to initialize the display of objects
+6)  Be able to initialize the display of sprites
+7)  For each of the sprites, get different animations to work for the 4 verbs  
+8)  Support generic show, hide, and move verbs for all objects
+9)  Support changes for text entities
+10)  Get the IDE textarea to work
+11)  Incorporate compiler errors into IDE display
+12)  Set up server side code to pull a game from the database
+13)  Set up server side code to pull a test-instance 
+14)  Set up server side code to reset a test-instance 
+15)  Set up server side code to upload a new turn request from the test arena
+16)  Set up server side code to allow for polling to check for the completion
+of the turn request
+17)  Create client side code that polls for the completion of the turn request
+
+
+
+Please let me know if you have any questions or concerns.
