@@ -4,16 +4,25 @@
     <meta charset="UTF-8" />
     <title>Bot!Battle! Error</title>
 
+    <script type="text/javascript" src="assets/js/error.js"></script>
+
     <link href="/assets/css/error.css" type="text/css" rel="stylesheet" />
 </head>
-<body>
+<body onload="generatePage()">
     <div id="div_container">
-        You're probaly developing this site and<br />
-        wanted to specify a query string on one of the sites. <br />
-        In that case here's some test links.<br /><br />
-        <a href="playback.html?mid=12345">Playback With match ID</a><br /><br />
-        <a href="testingarena.html?cid=1">Testing arena With challenge ID</a> <br /> <br />
-        This page will probably be one of thes last things completed......
+        <div id="div_genericErrorMessage">
+            OOPS! <br />
+            An error has caused you to reach this pages.<br />
+            Please see the reason(s) below that may indicate why you were sent here.
+                <ul id="ul_errorReasons">
+
+                </ul>
+        </div>
+
+        <div id="div_hardcodedLinks"> <!--TODO: Make links more appropriate-->
+            <a href="playback.html?mid=12345">Playback With match ID</a><br /><br />
+            <a href="testingarena.html?cid=1">Testing arena With challenge ID</a> <br /> <br />
+        </div>
      </div>
 </body>
 

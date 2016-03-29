@@ -66,10 +66,11 @@ function matchRequest(matchID) {
             var init_message = json[0];
             var turns = json[1];
 
-            console.log("\ninit_message:");
-            console.log(JSON.stringify(init_message, null, 2));
-            console.log("\nturns:");
-            console.log(JSON.stringify(turns, null, 2));
+            console.log("Received Data from Server");
+            //console.log("\ninit_message:");
+            //console.log(JSON.stringify(init_message, null, 2));
+            //console.log("\nturns:");
+            //console.log(JSON.stringify(turns, null, 2));
 
             handleCommands(init_message, turns);
         }
@@ -83,5 +84,9 @@ function matchRequest(matchID) {
 }
 
 function handleCommands(initMessage, turnData) {
-    //TODO: Tom
+    gameInitializer = initMessage;
+    turns = turnData;
+    console.log("Set database commands to GDM vars.");
+    ready = true;
+    create();
 }

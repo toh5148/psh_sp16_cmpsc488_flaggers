@@ -7,7 +7,11 @@ var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div
     defaultReplace = ['visible', 'x', 'y', 'width', 'height', 'flipped', 'value'],
     textProperties = ['font', 'fontStyle', 'fontVariant', 'fontWeight', 'fontSize', 'backgroundColor', 'fill', 'align',
         'boundsAlignH','boundsAlignV', 'stroke', 'strokeThickness', 'wordWrap', 'wordWrapWidth', 'tabs'];
-    spriteActions = ['walk', 'fall', 'attack', 'defend'];
+spriteActions = ['walk', 'fall', 'attack', 'defend'];
+
+var gameInitializer, turns;
+
+var ready = false;
 
 function preload() {
     // Load graphical assets
@@ -20,25 +24,32 @@ function preload() {
 }
 
 function create() {
-    // Set background
-    var bkg=gameDisplayWindow.add.image(0, 0, 'background');
-    bkg.width=gameWidth;
-    bkg.height=gameHeight;
-    // Set default timestep
-    defaultTimestep = gameInitializer.defaultTimestep;
-    // Set initial variables
-    entities = [];
-    entityList = [];
-    playbackSpeed = 1;
-    gameStates = [];
-    turn = 0;
-    // Generate game
-    createEnts();
-    generateTurnChanges();
-    generateGameStates();
-    generateRows(gameInitializer,turns);
-    // Set first turn
-    restoreGameState(0);
+    if (ready) {
+
+        // Set background
+        var bkg = gameDisplayWindow.add.image(0, 0, 'background');
+        bkg.width = gameWidth;
+        bkg.height = gameHeight;
+        // Set default timestep
+        defaultTimestep = gameInitializer.defaultTimestep;
+        // Set initial variables
+        entities = [];
+        entityList = [];
+        playbackSpeed = 1;
+        gameStates = [];
+        turn = 0;
+        // Generate game
+        createEnts();
+        generateTurnChanges();
+        generateGameStates();
+        generateRows(gameInitializer, turns);
+        // Set first turn
+        restoreGameState(0);
+        ready = false;
+        console.log("The GDM create method has now run");
+        console.log(JSON.stringify(gameInitializer, null, 2));
+        console.log(JSON.stringify(turns, null, 2));
+    }
 }
 
 function drawTurn() {
@@ -217,10 +228,6 @@ function startTurn(tn,tm) {
     turnLength = defaultTimestep * turns[turn].timeScale;
     turnFrame = 0;
     entityChangeNums = {};
-}
-
-function ChangePlaybackSpeed(newSpeed) {
-    playbackSpeed = newSpeed;
 }
 
 function Entity(e) {
