@@ -32,10 +32,10 @@
             <div id="div_Player1Tab" class="main_tab">
                 <div class="main_left">
                     <div class="headerText">Bot Type</div>
-                    <input type="radio" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="UploadFile" checked="checked" />Upload File<br />
-                    <input type="radio" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="EditCode" />Edit Code<br />
-                    <input type="radio" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
-                    <input type="radio" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PreloadedBot" />Preloaded Bot<br /><br />
+                    <input type="radio" id="rb_p1Upload" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="UploadFile" checked="checked" />Upload File<br />
+                    <input type="radio" id="rb_p1Edit" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="EditCode" />Edit Code<br />
+                    <input type="radio" id="rb_p1Pulic" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
+                    <input type="radio" id="rb_p1Default"name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
 
                     <input id="file_p1Upload" type="file" />
                     <div id="div_p1PublicBot" style="display:none">
@@ -64,7 +64,7 @@
                     <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="UploadFile" checked="checked" />Upload File<br />
                     <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="EditCode" />Edit Code<br />
                     <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
-                    <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PreloadedBot" />Preloaded Bot<br /><br />
+                    <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
 
                     <input id="file_p2Upload" type="file" />
                     <div id="div_p2PublicBot" style="display:none">

@@ -93,9 +93,11 @@ function UploadBot_click(ele) {
     switch (ID) {
         case "btn_P1Upload":
             P1_Change = false;
+            upload(1);
             break;
         case "btn_P2Upload":
             P2_Change = false;
+            upload(2);
             break;
     }
 
