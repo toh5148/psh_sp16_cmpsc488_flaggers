@@ -26,7 +26,7 @@ function sendError(qString) {
     window.location.href = "error.html?" + qString;
 }
 
-// Create the XHR object.
+// Create the XHR object used to send CORS calls to the server
 function createCORSRequest(method, url) {
     var xhr = new XMLHttpRequest();
     if ("withCredentials" in xhr) {
@@ -44,36 +44,34 @@ function createCORSRequest(method, url) {
 }
 
 function matchRequest(matchID) {
-    /* TODO: Sawyer, Taha
-    Make an ajax request to your server function to retrieve 
-    the match data associated with the matchID provided as an 
-    argument. When the match data ('Game Initialization Message' 
-    and 'Turns Data') is recieved, pass the JSON object(s) as a 
-    parameter to the function 'handleCommands()'. Tom will
-    handle the JSON object(s) and setting correct variables. */
-    console.log('Match_id: ' + matchID);
     var url = 'http://localhost:5050/get_match?id=' + matchID;
 
+    // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
         alert('CORS not supported');
         return;
     }
 
-    // Response handlers.
+    // Successfully got a response
     xhr.onload = function () {
-        var text = xhr.responseText;
-        if (text == false) {
-            console.log('website got: ' + text)
-        } else if (text == undefined) {
-            console.log('website got: ' + text);
+        var response = xhr.responseText;
+        if (response == false) { // database encountered an error
+            console.log('The database encountered an error.');
+        } else if (response == undefined) { // match does not exist
+            console.log('The specified match with id:' + matchID + ' does not exist.');
         }
         else {
-            console.log('website got: ' + text);
-            /*var json = JSON.parse(text);
+            var json = JSON.parse(response);
             var init_message = json[0];
             var turns = json[1];
-            handleCommands(init_message, turns);*/
+
+            console.log("\ninit_message:");
+            console.log(JSON.stringify(init_message, null, 2));
+            console.log("\nturns:");
+            console.log(JSON.stringify(turns, null, 2));
+
+            handleCommands(init_message, turns);
         }
     };
 
