@@ -4,18 +4,27 @@ import java.util.Scanner;
 public class Flagger {
 
 	public static void main(String args[]){
+	
+		
 	int flagsCaptured = 0;
 	int flagsNeeded = 10;
 	int Seniors = 3;
-	int totalStudents = 150;
 	int turn = 1;
 	int EnemySeniors = 3;
-	int EnemyStudents = 150;
 	int EnemyFlagsCaptured = 0;
+	
+	//Deciding to make it easier to change
+	//the total number of students
+	int totalPossible = 150;
+	int EnemyStudents = totalPossible;
+	int totalStudents = totalPossible;
 	Scanner sc = new Scanner(System.in);
-	System.out.println("Students left: " + totalStudents);
+	System.out.println("Total Students: " + totalStudents);
+	System.out.println("Total Seniors: " + Seniors);
 	System.out.println("Flags Captured: " + flagsCaptured);
 	System.out.println("Enemy Flags Captured: " + EnemyFlagsCaptured);
+
+	System.out.print("Enter a command: ");
 	
 	while (sc.hasNext()){
 		String inputstring = sc.next();
@@ -40,11 +49,12 @@ public class Flagger {
 			}
 		}
 		if (parts[0].equals("free")){
-			if (totalStudents >= 150){
-				totalStudents = 150;
+			//This is here in case we change the freedom rules
+			if (totalStudents >= totalPossible){
+				totalStudents = totalPossible;
 			}
 			else {
-				totalStudents += (150 - totalStudents)/2 ;
+				totalStudents += (totalPossible - totalStudents)/2 ;
 			}
 		}
 		
@@ -71,11 +81,12 @@ public class Flagger {
 			}
 		}
 		if (botmove[0].equals("free")){
-			if (EnemyStudents >= 150){
-				EnemyStudents = 150;
+			//This is also here in case we wish to change "free"
+			if (EnemyStudents >= totalPossible){
+				EnemyStudents = totalPossible;
 			}
 			else {
-				EnemyStudents += (150 - EnemyStudents)/2 ;
+				EnemyStudents += (totalPossible - EnemyStudents)/2 ;
 			}
 		}
 		System.out.println();
@@ -110,10 +121,13 @@ public class Flagger {
 		else {
 			
 		}
-		System.out.println("Students left: " + totalStudents);
+		System.out.println("Students Remaining " + totalStudents);
+		System.out.println("Seniors Remaining: " + Seniors);
+		System.out.println("Ally Students Captured: " + (totalPossible - totalStudents));
+		System.out.println("Enemy Students Captured: " + (totalPossible - EnemyStudents));
 		System.out.println("Flags Captured: " + flagsCaptured);
 		System.out.println("Enemy Flags Captured: " + EnemyFlagsCaptured);
-		
+	
 		if (flagsCaptured == flagsNeeded){
 			System.out.println("You win!");
 			break;
@@ -122,9 +136,8 @@ public class Flagger {
 			System.out.println("You lose.");
 		}
 		turn++;
+		System.out.print("Enter a command:    ");
 		}
-	
-	
 	
 	}
 	public static String easybot(int Studentsleft, int turnnum, int Seniorsleft) {
