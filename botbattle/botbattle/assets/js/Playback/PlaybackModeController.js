@@ -56,10 +56,12 @@ function matchRequest(matchID) {
     // Successfully got a response
     xhr.onload = function () {
         var response = xhr.responseText;
-        if (response == false) { // database encountered an error
+        if (response == 'false') { // database encountered an error
             console.log('The database encountered an error.');
-        } else if (response == undefined) { // match does not exist
+            alert('The database encountered an error.');
+        } else if (response == 'null') { // match does not exist
             console.log('The specified match with id:' + matchID + ' does not exist.');
+            alert('The specified match with id:' + matchID + ' does not exist.');
         }
         else {
             var json = JSON.parse(response);
