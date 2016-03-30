@@ -5,7 +5,7 @@ function upload(playerNum) {
 }
 
 function getUploadType(playerNum) {
-    document.getElementsByName("p1_BotType")
+
 }
 
 
