@@ -1,4 +1,5 @@
-﻿var P1_Change = -1, P2_Change = -1;
+﻿/// <reference path="BotUploader.js" />
+var P1_Change = -1, P2_Change = -1;
 
 function tab_click(ele) {
     var ID = ele.id;
