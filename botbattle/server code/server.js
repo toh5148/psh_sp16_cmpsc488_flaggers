@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 
 // Location of file: C:\Users\kaido_000\Documents\GitHub\psh_sp16_cmpsc488_flaggers\botbattle\server code
 // Insert a row into the table
-var i = {
+/*var i = {
     background: 'background.png',
     defaultTimestep: 1,
     entity: [
@@ -262,12 +262,16 @@ var t = [
     }
 ];
 
+var x = '[ ' + JSON.stringify(i) + ' , ' + JSON.stringify(t) + ' ]';
+x = JSON.stringify(x);*/
+
 /*openConnection();
-var game_instance = { match_id: 10, game_initialization_message: i, turns: t, ready_for_playback: true };
-con.query('INSERT INTO matches SET ?', game_instance, function(err,res){
+var game_instance = { id: 12345, command: x, winner_id: 1};
+con.query('INSERT INTO match_turns SET ?', game_instance, function(err,res){
   if(err) throw err;
 
   console.log('row inserted');
+  closeConnection();
 });*/
 
 // Opens the connection to the database, throws an error if connection failed.
@@ -313,21 +317,21 @@ function closeConnection() {
 */
 function getMatch(id, callback){
 	var retval;
-	openConnection(); // surround in try catch??
+	openConnection();
 	// column names: match_id, game_initialization_message, turns, ready_for_playback
 	//con.query('SELECT game_initialization_message, turns FROM matches WHERE match_id = ?', id, function(err, rows){
-	con.query('SELECT * FROM matches', function(err, rows){
-		console.log(rows);
-		if(err) {
+	con.query('SELECT command FROM match_turns WHERE id = ?', id, function(err, rows){
+		if(err) { // error with the database
 			retval = false;
 		} else if (rows[0] == undefined){ // Match does not exists
 			console.log('ERROR: Match with id:' + id + ' not found.');
 			retval = null;					
 		} else{ // Match exist
-			console.log(rows[0]);
+			//console.log(rows[0].command);
 			
 			// Will there be more than 1 command for each id?
-			//retval = rows[0].command;
+		    retval = rows[0].command;
+		    retval = JSON.parse(retval);
 		}
 		callback(retval); // send the result
 	});
@@ -358,18 +362,42 @@ function getTestInstance(uid, cid, callback){
 			retval = rows[0].command;
 		}
 		callback(retval); // send the result
-	});
+	}); 
 }
+
+/*
+
+function storeBot(botText, callback){
+	
+	
+	var retval;
+	// column names: 
+	openConnection();
+	var bot = { id: 12345, command: x, winner_id: 1};
+	con.query('INSERT INTO Bot SET ?', bot, function(err,res){
+  	if(err) throw err;
+
+  	console.log('row inserted');
+  	closeConnection();
+}
+
+
+
+*/
+
+
+
 
 // THE FOLLOWING URLS WILL PROBABLY CHANGE ALONG
 // WITH THE PARAMETERS
 
-// localhost:5050/get_match?id=105
+// localhost:5050/get_match?id=12345
 app.get('/get_match', function(req, res, next){
 	var id = req.query.id;
 	console.log('id=' + id);
 	var msg = getMatch(id, function(data){
-		console.log('server sent: ' + data);
+	    console.log('server sent: ' + data);
+		res.header('Access-Control-Allow-Origin', '*');
 		res.send(data);
 	});
 });
@@ -380,13 +408,26 @@ app.get('/get_test_instance', function(req, res, next){
 	var challenge_id = req.query.cid;
 	var msg = getTestInstance(user_id, function(data){
 		console.log('server sent: ' + data);
-		res.send(data);
+		res.header('Access-Control-Allow-Origin', '*');
+		res.send(data); 
 	});
 });
 
+
+/*
+
+// localhost:5050/storeBot
+app.get('/storeBot', function(req, res, next){
+	
+
+}
+
+*/
+
+
 // localhost:5050/openDB
 app.get('/openDB', function(req, res, next){
-	try {
+	try { 
 		openConnection();
 		res.send(true);
 	} catch (err) {
@@ -398,7 +439,7 @@ app.get('/openDB', function(req, res, next){
 // localhost:5050/closeDB
 app.get('/closeDB', function(req, res, next){
 	try {
-		closeConnection();
+		closeConnection(); 
 		res.send(true);
 	} catch (err) {
 		console.log('Error terminating the connection.');
@@ -406,19 +447,7 @@ app.get('/closeDB', function(req, res, next){
 	}
 });
 
-// Redirect to the testingarena webpage
-app.get('/testarena', function(req, res, next) {
-	res.redirect('..\botbattle\testingarena.html');
-});
-
-// Redirect to the playback webpage
-app.get('/playback', function(req, res, next) {
-	res.redirect('..\botbattle\playback.html');
-});
-
 // Start the server
 http.createServer(app).listen(port, function() {
 	console.log('Server listening on port ' + port);
 });
-
-//getMatch(105, function(){});

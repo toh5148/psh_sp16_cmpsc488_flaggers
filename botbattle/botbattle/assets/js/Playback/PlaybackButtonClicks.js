@@ -8,17 +8,18 @@ const CONST_START = "Start of Match";
 const CONST_END = "End of Match";
 
 function btn_goToStart_Click() {
-    setStatus(CONST_START);
+    setPlaybackStatus(CONST_START);
     restoreGameState(0);
 }
 
 function btn_stepBack_Click() {
-    setStatus(CONST_PAUSED);
+    setPlaybackStatus(CONST_PAUSED);
     restoreGameState(turn - 1);
 }
 
 function btn_pause_Click() {
-    setStatus(CONST_PAUSED);
+    setPlaybackStatus(CONST_PAUSED);
+    console.log("Pause clicked");
     playing = false;
 }
 
@@ -28,26 +29,23 @@ function btn_play_Click() {
 }
 
 function btn_stepForward_Click() {
-    setStatus(CONST_PAUSED);
+    setPlaybackStatus(CONST_PAUSED);
     restoreGameState(turn + 1); /// Turn stored in 
 }
 
 function btn_goToEnd_Click() {
-    setStatus(CONST_END);
+    setPlaybackStatus(CONST_END);
     restoreGameState(turns.length);
 }
 
 function sldr_speed_change() {
     var newSpeed = document.getElementById("sldr_Speed").value;
     playbackSpeed = newSpeed;
-    ChangePlaybackSpeed(newSpeed);
 }
 
 function setPlaybackStatus(statusMessage) {
     if (curStatus == null) {
-        switch (statusMessage) {
-
-        }
+        curStatus = statusMessage;
     }
     document.getElementById("div_status").innerHTML = "Status: " + statusMessage;
 }

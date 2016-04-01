@@ -1,4 +1,5 @@
-﻿var P1_Change = -1, P2_Change = -1;
+﻿/// <reference path="BotUploader.js" />
+var P1_Change = -1, P2_Change = -1;
 
 function tab_click(ele) {
     var ID = ele.id;
@@ -93,9 +94,11 @@ function UploadBot_click(ele) {
     switch (ID) {
         case "btn_P1Upload":
             P1_Change = false;
+            upload(1);
             break;
         case "btn_P2Upload":
             P2_Change = false;
+            upload(2);
             break;
     }
 
