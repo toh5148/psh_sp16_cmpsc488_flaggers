@@ -367,20 +367,37 @@ function getTestInstance(uid, cid, callback){
 
 /*
 
-function storeBot(botText, callback){
-	
+function uploadCode(botText, callback){
 	
 	var retval;
-	// column names: 
+	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
 	openConnection();
-	var bot = { id: 12345, command: x, winner_id: 1};
-	con.query('INSERT INTO Bot SET ?', bot, function(err,res){
-  	if(err) throw err;
+	// create data to store in db
+	var bot = { uid: 12345, challenge_id: 1, language_id: 1, source_code: botText };
+	con.query('INSERT INTO test_arena_bots SET ?', bot, function(err,res){
+		if(err) throw err;
 
-  	console.log('row inserted');
-  	closeConnection();
+		console.log('row inserted');
+		closeConnection();
+	});
 }
 
+function uploadFile(botFile, callback){
+	
+	var retval;
+	// convert file to string for storage in db
+	var botText = new String(botFile);
+	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
+	openConnection();
+	// create data to store in db
+	var bot = { uid: 12345, challenge_id: 1, language_id: 1, source_code: botText };
+	con.query('INSERT INTO test_arena_bots SET ?', bot, function(err,res){
+		if(err) throw err;
+
+		console.log('row inserted');
+		closeConnection();
+	});
+}
 
 
 */
@@ -416,8 +433,14 @@ app.get('/get_test_instance', function(req, res, next){
 
 /*
 
-// localhost:5050/storeBot
-app.get('/storeBot', function(req, res, next){
+// localhost:5050/uploadCode
+app.get('/uploadCode', function(req, res, next){
+	
+
+}
+
+// localhost:5050/uploadFile
+app.get('/uploadFile', function(req, res, next){
 	
 
 }
