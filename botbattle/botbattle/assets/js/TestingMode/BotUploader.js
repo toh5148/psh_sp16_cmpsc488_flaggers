@@ -73,18 +73,89 @@ function getUploadType(playerNum) {
 }
 
 function uploadFileChoice(playerNum) {
+    //  Current Test Arena Bots Scheme - as of 4/3/16 9:58pm
+
+    //  CREATE TABLE IF NOT EXISTS `test_arena_bots` (
+    //  `uid` int(11) NOT NULL,
+    //  `challenge_id` int(11) NOT NULL,
+    //  `language_id` int(11) NOT NULL DEFAULT 1,
+    //  `needs_compiled` bit(1) NOT NULL DEFAULT 1,
+    //  `errors`   int(11), 
+    //  `warnings` int(11),
+    //  `error_messages` text,
+    //  `warning_messages` text,
+    //  `source_code` mediumtext NOT NULL,
+    //  PRIMARY KEY (`uid`, `challenge_id`, `language_id`),
+    //  KEY (`uid`),
+    //  KEY (`challenge_id`),
+    //  KEY (`language_id`))
+
+    var uid = 123;
+    var challenge_id = 1;
+    var language_id = 1;
+    var needs_compiled = 1;
+    var errors = 0;
+    var warnings = 0;
+    var error_messages = "errors...";
+    var warning_messages = "warnings...";
+
+    //File will fulfill 'source_code' - TODO: Server code to handle extracting text from file
     var selectedFile = document.getElementById("file_p" + playerNum + "Upload").files[0];
-    alert(selectedFile.name);
-    //Can send this file up to server now
+
+    uploadFile();
+}
+
+function uploadFile() {
+    //TODO: Write all code to interact with the server in this function
+    //Tom will provide all needed parameters for the database as arguments
+    //in a call to this function, still deciding where it will go to but
+    //most likey just call a function with the BOT_ID and/or error messages
+    //as arguments.
+
+    //This should be similar to uploadCode except you're sending a file up
+    //instead of the code and handle it differently within the server function
 }
 
 function uploadCodeChoice(playerNum) {
-    var editor = ace.edit("div_editorP1");
-    var selectedCode = editor.getValue();
-    alert(selectedCode);
-    // has text to send to server now
-     var url = 'http://localhost:5050/UploadBot;
-     
+    //  Current Test Arena Bots Scheme - as of 4/3/16 9:58pm
+
+    //  CREATE TABLE IF NOT EXISTS `test_arena_bots` (
+    //  `uid` int(11) NOT NULL,
+    //  `challenge_id` int(11) NOT NULL,
+    //  `language_id` int(11) NOT NULL DEFAULT 1,
+    //  `needs_compiled` bit(1) NOT NULL DEFAULT 1,
+    //  `errors`   int(11), 
+    //  `warnings` int(11),
+    //  `error_messages` text,
+    //  `warning_messages` text,
+    //  `source_code` mediumtext NOT NULL,
+    //  PRIMARY KEY (`uid`, `challenge_id`, `language_id`),
+    //  KEY (`uid`),
+    //  KEY (`challenge_id`),
+    //  KEY (`language_id`))
+
+    var uid = 123;
+    var challenge_id = 1;
+    var language_id = 1;
+    var needs_compiled = 1;
+    var errors = 0;
+    var warnings = 0;
+    var error_messages = "errors...";
+    var warning_messages = "warnings...";
+
+    var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
+
+    uploadCode();
+}
+
+function uploadCode() {
+    //TODO: Write all code to interact with the server in this function
+    //Tom will provide all needed parameters for the database as arguments
+    //in a call to this function, still deciding where it will go to but
+    //most likey just call a function with the BOT_ID and/or error messages
+    //as arguments.
+    var url = "http://localhost:5050/UploadBot";
+
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
     if (!xhr) {
@@ -94,9 +165,11 @@ function uploadCodeChoice(playerNum) {
 }
 
 function publicBotChoice(playerNum) {
-    
+    //Should grab name of bot and attempt to find it in one of the databases...
+    //Return an error code if it isn't found or isn't public
 }
 
 function defaultBotChoice(playerNum) {
-
+    //Should have some default bot selection for each challenge...
+    //I'm still figuring out where this is stored
 }
