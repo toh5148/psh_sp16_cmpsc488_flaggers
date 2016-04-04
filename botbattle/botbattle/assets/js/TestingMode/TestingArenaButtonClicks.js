@@ -1,4 +1,5 @@
-﻿var P1_Change = -1, P2_Change = -1;
+﻿/// <reference path="BotUploader.js" />
+var P1_Change = -1, P2_Change = -1;
 
 function tab_click(ele) {
     var ID = ele.id;
@@ -36,21 +37,26 @@ function resetAllTabs() {
 function Player1_BotTypeClick(ele) {
     var value = ele.value;
 
-    document.getElementById("div_editorHolder1").style.display = "none";
-    document.getElementById("file_p1Upload").style.display = "none";
-    document.getElementById("div_p1PublicBot").style.display = "none";
-
     switch (value) {
         case "UploadFile":
+            document.getElementById("div_editorP1").style.display = "none";
             document.getElementById("file_p1Upload").style.display = "block";
+            document.getElementById("div_p1PublicBot").style.display = "none";
             break;
         case "EditCode":
-            document.getElementById("div_editorHolder1").style.display = "inline-block";
+            document.getElementById("div_editorP1").style.display = "inline-block";
+            document.getElementById("file_p1Upload").style.display = "none";
+            document.getElementById("div_p1PublicBot").style.display = "none";
             break;
         case "PublicBot":
+            document.getElementById("div_editorP1").style.display = "none";
+            document.getElementById("file_p1Upload").style.display = "none";
             document.getElementById("div_p1PublicBot").style.display = "block";
             break;
         case "PreloadedBot":
+            document.getElementById("div_editorP1").style.display = "none";
+            document.getElementById("file_p1Upload").style.display = "none";
+            document.getElementById("div_p1PublicBot").style.display = "none";
             break;
     }
 }
@@ -58,27 +64,33 @@ function Player1_BotTypeClick(ele) {
 function Player2_BotTypeClick(ele) {
     var value = ele.value;
 
-    document.getElementById("div_editorHolder2").style.display = "none";
-    document.getElementById("file_p2Upload").style.display = "none";
-    document.getElementById("div_p2PublicBot").style.display = "none";
-
     switch (value) {
         case "UploadFile":
+            document.getElementById("div_editorP2").style.display = "none";
             document.getElementById("file_p2Upload").style.display = "block";
+            document.getElementById("div_p2PublicBot").style.display = "none";
             break;
         case "EditCode":
-            document.getElementById("div_editorHolder2").style.display = "inline-block";
+            document.getElementById("div_editorP2").style.display = "inline-block";
+            document.getElementById("file_p2Upload").style.display = "none";
+            document.getElementById("div_p2PublicBot").style.display = "none";
             break;
         case "PublicBot":
+            document.getElementById("div_editorP2").style.display = "none";
+            document.getElementById("file_p2Upload").style.display = "none";
             document.getElementById("div_p2PublicBot").style.display = "block";
             break;
         case "PreloadedBot":
+            document.getElementById("div_editorP2").style.display = "none";
+            document.getElementById("file_p2Upload").style.display = "none";
+            document.getElementById("div_p2PublicBot").style.display = "none";
             break;
     }
 }
 
 function UploadBot_click(ele) {
     var ID = ele.id;
+
     switch (ID) {
         case "btn_P1Upload":
             P1_Change = false;

@@ -32,6 +32,20 @@ function generatePage() {
     }
 }
 
+function getMessageID() {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == "mes") {
+            return pair[1];
+            break;
+        }
+    }
+
+    return null;
+}
+
 function addError(message) {
     var list_item = "<li>" + message + "</li>";
     document.getElementById("ul_errorReasons").innerHTML += list_item;

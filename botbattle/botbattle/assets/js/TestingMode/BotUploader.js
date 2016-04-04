@@ -102,10 +102,10 @@ function uploadFileChoice(playerNum) {
     //File will fulfill 'source_code' - TODO: Server code to handle extracting text from file
     var selectedFile = document.getElementById("file_p" + playerNum + "Upload").files[0];
 
-    uploadFile(uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, selectedFile);
+    uploadFile();
 }
 
-function uploadFile(uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, selectedFile) {
+function uploadFile() {
     //TODO: Write all code to interact with the server in this function
     //Tom will provide all needed parameters for the database as arguments
     //in a call to this function, still deciding where it will go to but
@@ -145,16 +145,16 @@ function uploadCodeChoice(playerNum) {
 
     var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
 
-    uploadCode(uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, selectedCode);
+    uploadCode();
 }
 
-function uploadCode(uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, selectedCode) {
+function uploadCode() {
     //TODO: Write all code to interact with the server in this function
     //Tom will provide all needed parameters for the database as arguments
     //in a call to this function, still deciding where it will go to but
     //most likey just call a function with the BOT_ID and/or error messages
     //as arguments.
-    var url = "http://localhost:5050/uploadCode";
+    var url = "http://localhost:5050/UploadBot";
 
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
