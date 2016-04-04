@@ -376,7 +376,6 @@ function getTestMatchTurn(uid, cid, init, callback){
     }); 
 }
 
-/*
 
 function uploadCode(botText, callback){
 	
@@ -411,7 +410,6 @@ function uploadFile(botFile, callback){
 }
 
 
-*/
 
 
 
@@ -452,21 +450,30 @@ app.get('/get_test_turn_and_init', function (req, res, next) {
 });
 
 
-/*
+
 
 // localhost:5050/uploadCode
-app.get('/uploadCode', function(req, res, next){
-	
-
+app.post('/uploadCode', function(req, res){
+	var text = req.query.selectedCode;
+	var msg = uploadCode(text, function (data) {
+        console.log('server sent: ' + data);
+        res.header('Access-Control-Allow-Origin', '*');
+        res.send(data);
+    });
 }
 
 // localhost:5050/uploadFile
-app.get('/uploadFile', function(req, res, next){
-	
+app.post('/uploadFile', function(req, res){
+	var botFile = req.query.botFile;
+	var msg = uploadFile(botFile, function (data) {
+        console.log('server sent: ' + data);
+        res.header('Access-Control-Allow-Origin', '*');
+        res.send(data);
+    });
 
 }
 
-*/
+
 
 
 // localhost:5050/openDB
