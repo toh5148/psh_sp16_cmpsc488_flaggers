@@ -460,7 +460,7 @@ app.post('/uploadCode', function(req, res){
         res.header('Access-Control-Allow-Origin', '*');
         res.send(data);
     });
-}
+});
 
 // localhost:5050/uploadFile
 app.post('/uploadFile', function(req, res){
@@ -470,8 +470,7 @@ app.post('/uploadFile', function(req, res){
         res.header('Access-Control-Allow-Origin', '*');
         res.send(data);
     });
-
-}
+});
 
 
 
