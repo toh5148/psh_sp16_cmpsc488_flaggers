@@ -1,17 +1,8 @@
 ﻿var base_url = 'http://localhost:5050';
 
 function retrieveMatch() {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    var matchID = -1;
-    for (var i=0;i<vars.length;i++) {
-        var pair = vars[i].split("=");
-        if(pair[0] == "mid") {
-            matchID = pair[1];
-            break;
-        }
-    }
-    
+    var matchID = getMatchID();
+
     //Handle query string errors
     if (matchID == -1) {
         //No match id was provided in the query string
