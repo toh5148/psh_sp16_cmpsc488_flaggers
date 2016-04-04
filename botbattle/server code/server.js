@@ -454,7 +454,7 @@ app.get('/get_test_turn_and_init', function (req, res, next) {
 
 // localhost:5050/uploadCode
 app.post('/uploadCode', function(req, res){
-	var text = req.query.selectedCode;
+	var text = req.body.selectedCode;
 	var msg = uploadCode(text, function (data) {
         console.log('server sent: ' + data);
         res.header('Access-Control-Allow-Origin', '*');
@@ -464,7 +464,7 @@ app.post('/uploadCode', function(req, res){
 
 // localhost:5050/uploadFile
 app.post('/uploadFile', function(req, res){
-	var botFile = req.query.botFile;
+	var botFile = req.body.botFile;
 	var msg = uploadFile(botFile, function (data) {
         console.log('server sent: ' + data);
         res.header('Access-Control-Allow-Origin', '*');
