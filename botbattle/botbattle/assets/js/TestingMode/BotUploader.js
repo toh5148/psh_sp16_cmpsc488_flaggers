@@ -1,4 +1,20 @@
 ﻿
+// Create the XHR object used to send CORS calls to the server
+function createCORSRequest(method, url) {
+    var xhr = new XMLHttpRequest();
+    if ("withCredentials" in xhr) {
+        // XHR for Chrome/Firefox/Opera/Safari.
+        xhr.open(method, url, true);
+    } else if (typeof XDomainRequest != "undefined") {
+        // XDomainRequest for IE.
+        xhr = new XDomainRequest();
+        xhr.open(method, url);
+    } else {
+        // CORS not supported.
+        xhr = null;
+    }
+    return xhr;
+}
 
 function upload(playerNum) {
     var uploadType = getUploadType(playerNum);
@@ -66,10 +82,19 @@ function uploadCodeChoice(playerNum) {
     var editor = ace.edit("div_editorP1");
     var selectedCode = editor.getValue();
     alert(selectedCode);
+    // has text to send to server now
+     var url = 'http://localhost:5050/UploadBot;
+     
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('POST', url);
+    if (!xhr) {
+        alert('CORS not supported');
+        return;
+    }
 }
 
 function publicBotChoice(playerNum) {
-
+    
 }
 
 function defaultBotChoice(playerNum) {
