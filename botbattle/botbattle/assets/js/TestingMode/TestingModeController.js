@@ -1,20 +1,8 @@
 ﻿function beginPageLoad() {
-    //This function will retrieve a "cid" from the query string
-    //If it cannot retrieve a cid, it will redirect to the "error.html"
-    //page wth an appropriate error specified in a query string...
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    var cid = -1;
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == "cid")  // Request 'cid' as the query string....TODO: Tom might change
-        {
-            cid = pair[1];
-            break;
-        }
-    }
+    var cid = getChallengeID(); //from QueryStringFunctions.js
 
-    if(cid==-1) { // No challenge specified...send them to error page;
+    if (cid == -1) {
+        // No challenge specified...send them to error page;
         window.location.href = "error.html";
         sendError("mes=t1");
     }

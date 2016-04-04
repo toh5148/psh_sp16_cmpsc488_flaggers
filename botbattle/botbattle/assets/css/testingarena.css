@@ -101,3 +101,9 @@
 #div_GameDisplayButtons {
     text-align: center;
 }
+
+.compilerErrors {
+    width:100%;
+    border:2px red;
+    color: red;
+}
