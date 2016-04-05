@@ -1,6 +1,4 @@
 ﻿
-
-
 function upload(playerNum) {
     var uploadType = getUploadType(playerNum);
     //Verified - upload type will hold number 1-4, or -1 in case of 'alien pig sighting'?
@@ -87,34 +85,7 @@ function uploadFileChoice(playerNum) {
     //File will fulfill 'source_code' - TODO: Server code to handle extracting text from file
     var selectedFile = document.getElementById("file_p" + playerNum + "Upload").files[0];
 
-    uploadFile(selectedFile);
-}
-
-function uploadFile(selectedFile) {
-    //TODO: Write all code to interact with the server in this function
-    //Tom will provide all needed parameters for the database as arguments
-    //in a call to this function, still deciding where it will go to but
-    //most likey just call a function with the BOT_ID and/or error messages
-    //as arguments.
-    var url = "http://localhost:5050/uploadFile";
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.send(selectedFile);
-
-    xhr.onreadystatechange = function () {
-    var DONE = 4; // readyState 4 means the request is done.
-    var OK = 200; // status 200 is a successful return.
-    if (xhr.readyState === DONE) {
-     if (xhr.status === OK) 
-      console.log(xhr.responseText); // 'This is the returned text.'
-    } 
-    else {
-      console.log('Error: ' + xhr.status); // An error occurred during the request.
-    }
-  }
-    //This should be similar to uploadCode except you're sending a file up
-    //instead of the code and handle it differently within the server function
+    uploadFile(selectedFile, uid, challenge_id, language_id, needs_compiled);
 }
 
 function uploadCodeChoice(playerNum) {
@@ -146,32 +117,7 @@ function uploadCodeChoice(playerNum) {
 
     var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
 
-    uploadCode(selectedCode);
-}
-
-function uploadCode(selectedCode) {
-    //TODO: Write all code to interact with the server in this function
-    //Tom will provide all needed parameters for the database as arguments
-    //in a call to this function, still deciding where it will go to but
-    //most likey just call a function with the BOT_ID and/or error messages
-    //as arguments.
-    var url = "http://localhost:5050/uploadCode";
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.send(selectedCode);
-
-    xhr.onreadystatechange = function () {
-    var DONE = 4; // readyState 4 means the request is done.
-    var OK = 200; // status 200 is a successful return.
-    if (xhr.readyState === DONE) {
-     if (xhr.status === OK) 
-      console.log(xhr.responseText); // 'This is the returned text.'
-    } 
-    else {
-      console.log('Error: ' + xhr.status); // An error occurred during the request.
-    }
-  }
+    uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled);
 }
 
 function publicBotChoice(playerNum) {

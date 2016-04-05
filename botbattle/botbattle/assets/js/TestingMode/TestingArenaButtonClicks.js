@@ -89,15 +89,10 @@ function UploadBot_click(ele) {
             upload(2);
             break;
     }
-
-    if(!P2_Change && !P1_Change)
-    {
-        document.getElementById("div_uploadWarnings").style.display = "none";
-    }
 }
 
 function next_click() {
-
+    //
 }
 
 function undo_click() {
