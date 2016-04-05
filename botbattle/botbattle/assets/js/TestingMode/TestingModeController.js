@@ -1,30 +1,32 @@
 ﻿var base_url = 'http://localhost:5050';
 
 function beginPageLoad() {
+    alert("started");
     var cid = getChallengeID(); //from QueryStringFunctions.js
+    //var languages = getLanguages();
+    //var templates = getTemplates(cid);
+
 
     if (cid == -1) {
-        // No challenge specified...send them to error page;
-        window.location.href = "error.html";
-        sendError("mes=t1");
+        // No challenge specified
+        sendError(20, "");
     }
     else {
         //Passed all error checks
-        //Begin Testing Mode initilization
+        //Begin Testing Mode Initilization
+        
         initTestingArena(cid);
     }
 
-}
-
-
-function sendError(qString) {
-    window.location.href = "error.html?" + qString;
+    document.getElementById("ddl_languages1").innerHTML = "<option>Java</option>"; // TODO: TOM - set the list options to languages sent by db
 }
 
 function initTestingArena(cid) {
-
+    setInput(); //TODO: TOM
 }
 
+
+//TODO: REMOVE
 // Create the XHR object used to send CORS calls to the server
 function createCORSRequest(method, url) {
     var xhr = new XMLHttpRequest();
@@ -42,6 +44,8 @@ function createCORSRequest(method, url) {
     return xhr;
 }
 
+
+//TODO: REMOVE
 // init should be true if the game_initialization_message should be returned or false if it should not
 function turnRequest(userID, challengeID, init) {
     if (init)
@@ -57,7 +61,7 @@ function turnRequest(userID, challengeID, init) {
     }
 
     // Successfully got a response
-    xhr.onload = function () {
+    /*xhr.onload = function () {
         var response = xhr.responseText;
         if (response == 'false') {       // database encountered an error
             console.log('The database encountered an error.');
@@ -87,7 +91,7 @@ function turnRequest(userID, challengeID, init) {
             
             handleCommands(init_message, turns);
         }
-    };
+    };*/
 
     xhr.onerror = function () {
         console.log('Woops, there was an error making the request.');

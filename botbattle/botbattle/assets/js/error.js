@@ -1,38 +1,38 @@
-﻿/*****************************************************************
- 
- assets/js/error.js
+﻿/********************
 
- This file holds all functions relating to the error.html page only
+ assets/js/errors.js
 
-*******************************************************************/
+ *******************/
 
-const GENERIC = "You have reached this page for an unknown reason";
-const PLAYBACK_NOID = "You have reached this page while attempting to navigate to the 'Playback' page with no match id specified";
-const TESTING_NOID = "You have reached this page while attempting to navigate to the 'Testing Arena' page with no challenge id specified";
+const GENERIC = "There was an unknown error.";
+const PLAYBACK_NOID = "There was an error due to attempting to navigate to the 'Playback' page with no match id specified";
+const TESTING_NOID = "There was an error due to attempting to navigate to the 'Testing Arena' page with no challenge id specified";
 
 
-function generatePage() {
-    var mesID = getMessageID();
-    
-    switch (mesID) {
-        case null:
-            // No mes id specified, display default error page
-            addError(GENERIC);
+function sendError(errorNumber, message) {
+    switch (errorNumber) {
+        case 0:
+            //default error with specified message
+            addError(message);
             break;
-        case "p1":
-            //Playback error 1: no match id specified
+
+
+        //If prefixed by a '1' - playback mode error
+        //If prefixed by a '2' - testing arena error
+        case 10:
+            //Playback error 0: no match id specified
             addError(PLAYBACK_NOID);
             break;
-        case "t1":
-            //Testing arena error 1: no challange id specified
+        case 20:
+            //Testing arena error 0: no challange id specified
             addError(TESTING_NOID);
             break;
         default:
-            //Didn't fit (should never be reached - null handles not specified
+            addError(GENERIC);
     }
 }
 
 function addError(message) {
-    var list_item = "<li>" + message + "</li>";
-    document.getElementById("ul_errorReasons").innerHTML += list_item;
+    console.error("ERROR: " + message);
+    alert(message);
 }

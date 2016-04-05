@@ -5,18 +5,14 @@ function retrieveMatch() {
 
     //Handle query string errors
     if (matchID == -1) {
-        //No match id was provided in the query string
-        /*Redirect them to an error page with links and
+        /*No match id was provided in the query string
+          Redirect them to an error page with links and
           possible causes of error */
-        sendError("mes=p1");
+        sendError(10, "");
     }
     else {
         matchRequest(matchID);
     }
-}
-
-function sendError(qString) {
-    window.location.href = "error.html?" + qString;
 }
 
 // Create the XHR object used to send CORS calls to the server

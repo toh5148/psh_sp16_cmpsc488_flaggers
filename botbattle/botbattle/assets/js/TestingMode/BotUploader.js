@@ -1,4 +1,6 @@
 ﻿
+
+//TODO: REMOVE
 // Create the XHR object used to send CORS calls to the server
 function createCORSRequest(method, url) {
     var xhr = new XMLHttpRequest();
@@ -105,6 +107,8 @@ function uploadFileChoice(playerNum) {
     uploadFile();
 }
 
+
+//TODO: REMOVE
 function uploadFile() {
     //TODO: Write all code to interact with the server in this function
     //Tom will provide all needed parameters for the database as arguments
@@ -149,6 +153,8 @@ function uploadCodeChoice(playerNum) {
     uploadCode(selectedCode);
 }
 
+
+//TODO: REMOVE
 function uploadCode(selectedCode) {
     //TODO: Write all code to interact with the server in this function
     //Tom will provide all needed parameters for the database as arguments
@@ -166,7 +172,7 @@ function uploadCode(selectedCode) {
     var OK = 200; // status 200 is a successful return.
     if (xhr.readyState === DONE) {
      if (xhr.status === OK) 
-      console.log(xhr.responseText); // 'This is the returned text.'
+      console.log(xhr.responseText); // This is the returned text.
     } 
     else {
       console.log('Error: ' + xhr.status); // An error occurred during the request.
