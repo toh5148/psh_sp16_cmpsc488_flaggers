@@ -1,5 +1,5 @@
 ﻿
-
+var base_url = 'http://localhost:5050';
 
 function upload(playerNum) {
     var uploadType = getUploadType(playerNum);
@@ -87,16 +87,16 @@ function uploadFileChoice(playerNum) {
     //File will fulfill 'source_code' - TODO: Server code to handle extracting text from file
     var selectedFile = document.getElementById("file_p" + playerNum + "Upload").files[0];
 
-    uploadFile(selectedFile);
+    uploadFile(selectedFile, uid, challenge_id, language_id, needs_compiled);
 }
 
-function uploadFile(selectedFile) {
+function uploadFile(electedFile, uid, challenge_id, language_id, needs_compiled) {
     //TODO: Write all code to interact with the server in this function
     //Tom will provide all needed parameters for the database as arguments
     //in a call to this function, still deciding where it will go to but
     //most likey just call a function with the BOT_ID and/or error messages
     //as arguments.
-    var url = "http://localhost:5050/uploadFile";
+    var url = base_url + "/uploadFile$uid=" + uid + "&cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url);
@@ -146,16 +146,16 @@ function uploadCodeChoice(playerNum) {
 
     var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
 
-    uploadCode(selectedCode);
+    uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled);
 }
 
-function uploadCode(selectedCode) {
+function uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled) {
     //TODO: Write all code to interact with the server in this function
     //Tom will provide all needed parameters for the database as arguments
     //in a call to this function, still deciding where it will go to but
     //most likey just call a function with the BOT_ID and/or error messages
     //as arguments.
-    var url = "http://localhost:5050/uploadCode";
+    var url = base_url + "/uploadCode$uid=" + uid + "&cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
     
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url);
