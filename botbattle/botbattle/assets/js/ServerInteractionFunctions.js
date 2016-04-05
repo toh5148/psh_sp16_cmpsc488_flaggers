@@ -1,4 +1,6 @@
 ﻿
+var base_url = 'http://localhost:5050';
+
 // Create the XHR object used to send CORS calls to the server
 function createCORSRequest(method, url) {
     var xhr = new XMLHttpRequest();
@@ -15,7 +17,6 @@ function createCORSRequest(method, url) {
     }
     return xhr;
 }
-
 
 /********************************************************************
 

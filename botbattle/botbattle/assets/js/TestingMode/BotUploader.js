@@ -1,27 +1,4 @@
 ﻿
-<<<<<<< HEAD
-
-//TODO: REMOVE
-// Create the XHR object used to send CORS calls to the server
-function createCORSRequest(method, url) {
-    var xhr = new XMLHttpRequest();
-    if ("withCredentials" in xhr) {
-        // XHR for Chrome/Firefox/Opera/Safari.
-        xhr.open(method, url, true);
-    } else if (typeof XDomainRequest != "undefined") {
-        // XDomainRequest for IE.
-        xhr = new XDomainRequest();
-        xhr.open(method, url);
-    } else {
-        // CORS not supported.
-        xhr = null;
-    }
-    return xhr;
-}
-=======
-var base_url = 'http://localhost:5050';
->>>>>>> origin/master
-
 function upload(playerNum) {
     var uploadType = getUploadType(playerNum);
     //Verified - upload type will hold number 1-4, or -1 in case of 'alien pig sighting'?
@@ -111,39 +88,6 @@ function uploadFileChoice(playerNum) {
     uploadFile(selectedFile, uid, challenge_id, language_id, needs_compiled);
 }
 
-<<<<<<< HEAD
-
-//TODO: REMOVE
-function uploadFile() {
-=======
-function uploadFile(electedFile, uid, challenge_id, language_id, needs_compiled) {
->>>>>>> origin/master
-    //TODO: Write all code to interact with the server in this function
-    //Tom will provide all needed parameters for the database as arguments
-    //in a call to this function, still deciding where it will go to but
-    //most likey just call a function with the BOT_ID and/or error messages
-    //as arguments.
-    var url = base_url + "/uploadFile$uid=" + uid + "&cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.send(selectedFile);
-
-    xhr.onreadystatechange = function () {
-    var DONE = 4; // readyState 4 means the request is done.
-    var OK = 200; // status 200 is a successful return.
-    if (xhr.readyState === DONE) {
-     if (xhr.status === OK) 
-      console.log(xhr.responseText); // 'This is the returned text.'
-    } 
-    else {
-      console.log('Error: ' + xhr.status); // An error occurred during the request.
-    }
-  }
-    //This should be similar to uploadCode except you're sending a file up
-    //instead of the code and handle it differently within the server function
-}
-
 function uploadCodeChoice(playerNum) {
     //  Current Test Arena Bots Scheme - as of 4/3/16 9:58pm
 
@@ -174,37 +118,6 @@ function uploadCodeChoice(playerNum) {
     var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
 
     uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled);
-}
-
-<<<<<<< HEAD
-
-//TODO: REMOVE
-function uploadCode(selectedCode) {
-=======
-function uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled) {
->>>>>>> origin/master
-    //TODO: Write all code to interact with the server in this function
-    //Tom will provide all needed parameters for the database as arguments
-    //in a call to this function, still deciding where it will go to but
-    //most likey just call a function with the BOT_ID and/or error messages
-    //as arguments.
-    var url = base_url + "/uploadCode$uid=" + uid + "&cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.send(selectedCode);
-
-    xhr.onreadystatechange = function () {
-    var DONE = 4; // readyState 4 means the request is done.
-    var OK = 200; // status 200 is a successful return.
-    if (xhr.readyState === DONE) {
-     if (xhr.status === OK) 
-      console.log(xhr.responseText); // This is the returned text.
-    } 
-    else {
-      console.log('Error: ' + xhr.status); // An error occurred during the request.
-    }
-  }
 }
 
 function publicBotChoice(playerNum) {
