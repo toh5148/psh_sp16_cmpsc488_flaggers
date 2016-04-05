@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8" />
     <title>Testing Arena</title>
-    <style type="text/css"></style>
     
+    <!--EXTERNAL IMPORTS-->
     <script src="//cdn.jsdelivr.net/phaser/2.4.6/phaser.min.js"></script>
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/mode-java.js" type="text/javascript" charset="utf-8"></script>
 
+    <!--GENERIC SCRIPTS-->
     <script type="text/javascript" src="assets/js/QueryStringFunctions.js"></script>
     <script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
     <script type="text/javascript" src="assets/js/TestGameCommands.js"></script>
+    <script type="text/javascript" src="assets/js/Error.js"></script>
+    <script type="text/javascript" src="assets/js/StatusBar.js"></script>
+    <!--<script type="text/javascript" src="assets/js/ServerInteractionFunctions.js"></script>-->
+
+    <!--TESTING ARENA SPECIFIC-->
     <script type="text/javascript" src="assets/js/TestingMode/TestingArenaButtonClicks.js"></script>
     <script type="text/javascript" src="assets/js/TestingMode/TestingModeController.js"></script>
     <script type="text/javascript" src="assets/js/TestingMode/BotUploader.js"></script>
-    <script type="text/javascript" src="assets/js/statusbar.js"></script>
 
+    <!--CSS IMPORTS-->
     <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
     <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
 </head>
@@ -48,6 +54,7 @@
 
                 <div id="div_editorHolder1" style="display:none;">
                     <div id="div_editorP1" class="IDE">/*Write or paste your code here*/</div>
+
                         <script>
                             var editor = ace.edit("div_editorP1");
                             editor.setTheme("ace/theme/monokai");
@@ -55,6 +62,12 @@
                             editor.session.setMode(new JavaScriptMode());
                             editor.setShowPrintMargin(false);
                         </script>
+
+                    <div id="div_languagesDropDown1">
+                        <select id="ddl_languages1">
+                        </select>
+                    </div>
+
                     <div id="div_compilerErrors1" class="compilerErrors">Compilers Errors will be here.</div> 
                 </div>
             </div>
@@ -92,7 +105,7 @@
             </div>
 
             <div id="div_GameDisplayTab" class="main_tab_hidden">
-                <div id="div_uploadWarnings">Warning: You must click 'Upload' for Player 1 and Player 2 to ensure the correct bot is selected!</div>
+                <div id="div_uploadWarnings"></div>
                 <div id="div_gameCanvas"></div>
 
                 <div id="div_GameDisplayButtons">
