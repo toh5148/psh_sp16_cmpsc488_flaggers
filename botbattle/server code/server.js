@@ -376,15 +376,14 @@ function getTestMatchTurn(uid, cid, init, callback){
     }); 
 }
 
-/*
 
-function uploadCode(botText, callback){
+function uploadCode(botText, uid, cid, lid, needs_compiled, callback){
 	
 	var retval;
 	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
 	openConnection();
 	// create data to store in db
-	var bot = { uid: 12345, challenge_id: 1, language_id: 1, source_code: botText };
+	var bot = { uid: uid, challenge_id: cid, language_id: lid, source_code: botText };
 	db.query('INSERT INTO test_arena_bots SET ?', bot, function(err,res){
 		if(err) throw err;
 
@@ -393,7 +392,7 @@ function uploadCode(botText, callback){
 	});
 }
 
-function uploadFile(botFile, callback){
+function uploadFile(botFile, uid, cid, lid, needs_compiled, callback){
 	
 	var retval;
 	// convert file to string for storage in db
@@ -401,7 +400,7 @@ function uploadFile(botFile, callback){
 	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
 	openConnection();
 	// create data to store in db
-	var bot = { uid: 12345, challenge_id: 1, language_id: 1, source_code: botText };
+	var bot = { uid: uid, challenge_id: cid, language_id: lid, source_code: botText };
 	db.query('INSERT INTO test_arena_bots SET ?', bot, function(err,res){
 		if(err) throw err;
 
@@ -411,7 +410,6 @@ function uploadFile(botFile, callback){
 }
 
 
-*/
 
 
 
@@ -452,21 +450,37 @@ app.get('/get_test_turn_and_init', function (req, res, next) {
 });
 
 
-/*
 
-// localhost:5050/uploadCode
-app.get('/uploadCode', function(req, res, next){
-	
 
-}
+// localhost:5050/uploadCode?uid=101&cid=1&lid=121&needs_compiled=1
+app.post('/uploadCode', function(req, res){
+	var text = req.body.selectedCode;
+	var uid = req.query.uid;
+	var cid = req.query.cid;
+	var lid = req.query.lid;
+	var needs_compiled = req.query.needs_compiled;
+	var msg = uploadCode(text, uid, cid, lid, needs_compiled, function (data) {
+        console.log('server sent: ' + data);
+        res.header('Access-Control-Allow-Origin', '*');
+        res.send(data);
+    });
+});
 
-// localhost:5050/uploadFile
-app.get('/uploadFile', function(req, res, next){
-	
+// localhost:5050/uploadFile?uid=101&cid=1&lid=121&needs_compiled=1
+app.post('/uploadFile', function(req, res){
+	var botFile = req.body.botFile;
+	var uid = req.query.uid;
+	var cid = req.query.cid;
+	var lid = req.query.lid;
+	var needs_compiled = req.query.needs_compiled;
+	var msg = uploadFile(botFile, uid, cid, lid, needs_compiled, function (data) {
+        console.log('server sent: ' + data);
+        res.header('Access-Control-Allow-Origin', '*');
+        res.send(data);
+    });
+});
 
-}
 
-*/
 
 
 // localhost:5050/openDB

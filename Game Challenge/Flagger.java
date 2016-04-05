@@ -14,11 +14,11 @@ public class Flagger {
 	int EnemyFlagsCaptured = 0;
 	
 	//Easy variables used to change the total number of students.
-	//Might add a growth rate variable later, which could add to complexity.
-	//I'm still debating on that fact.  It has both pros and cons.
+	//Growth Rate has been added.
 	int totalPossible = 150;
+	int botPossible = 150;
 	int EnemyStudents = totalPossible;
-	int totalStudents = totalPossible;
+	int totalStudents = botPossible;
 	
 	Scanner sc = new Scanner(System.in);
 	
@@ -70,7 +70,10 @@ public class Flagger {
 				totalStudents += (totalPossible - totalStudents)/2 ;
 			}
 		}
-		
+		if (parts[0].equals("reinforce")){
+			totalStudents += 25;
+			totalPossible += 25;
+		}
 		//Bot determining function call.  Changes depending on bot.
 		String botTurn = easybot(EnemyStudents, turn, EnemySeniors);
 		
@@ -99,12 +102,16 @@ public class Flagger {
 		}
 		if (botmove[0].equals("free")){
 			//This is also here in case we wish to change "free"
-			if (EnemyStudents >= totalPossible){
-				EnemyStudents = totalPossible;
+			if (EnemyStudents >= botPossible){
+				EnemyStudents = botPossible;
 			}
 			else {
-				EnemyStudents += (totalPossible - EnemyStudents)/2 ;
+				EnemyStudents += (botPossible - EnemyStudents)/2 ;
 			}
+		}
+		if (botmove[0].equals("reinforce")){
+			EnemyStudents += 25;
+			botPossible += 25;
 		}
 		
 		//Conditions used to print out if a bot or a user sent 
@@ -155,7 +162,7 @@ public class Flagger {
 		System.out.println("Students Remaining " + totalStudents);
 		System.out.println("Seniors Remaining: " + Seniors);
 		System.out.println("Ally Students Captured: " + (totalPossible - totalStudents));
-		System.out.println("Enemy Students Captured: " + (totalPossible - EnemyStudents));
+		System.out.println("Enemy Students Captured: " + (botPossible - EnemyStudents));
 		System.out.println("Flags Captured: " + flagsCaptured);
 		System.out.println("Enemy Flags Captured: " + EnemyFlagsCaptured);
 	
@@ -170,7 +177,7 @@ public class Flagger {
 		}
 		turn++;
 		//Added this to better keep track of what commands the user entered.
-		System.out.print("Enter a command:    ");
+		System.out.print("Enter a command: ");
 		}
 	
 	}
@@ -182,6 +189,9 @@ public class Flagger {
 		if (turnnum % 3 == 0) {
 			if (Seniorsleft != 0) {
 				return 	"senior";			
+			}
+			else if (Studentsleft >= 50){
+				return "send;50";
 			}
 		}
 		//It will send exactly 50 students each round otherwise,
