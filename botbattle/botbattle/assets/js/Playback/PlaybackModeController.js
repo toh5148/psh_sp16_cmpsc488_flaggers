@@ -9,7 +9,7 @@
         sendError(10, "");
     }
     else {
-        matchRequest(matchID);
+        getMatch(matchID);
     }
 }
 

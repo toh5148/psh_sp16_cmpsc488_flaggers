@@ -482,7 +482,6 @@ app.post('/uploadCode', function(req, res){
 	});
 	var msg = uploadCode(text, uid, cid, lid, needs_compiled, function (data) {
         console.log('server sent: ' + data);
-		origin/master
         res.header('Access-Control-Allow-Origin', '*');
         res.send(data);
     });
@@ -499,7 +498,6 @@ app.post('/uploadFile', function(req, res){
 	});
 	var msg = uploadFile(botFile, uid, cid, lid, needs_compiled, function (data) {
         console.log('server sent: ' + data);
-		origin/master
         res.header('Access-Control-Allow-Origin', '*');
         res.send(data);
     });
