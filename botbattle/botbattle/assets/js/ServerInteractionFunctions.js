@@ -33,7 +33,7 @@ function uploadFile() {
     //in a call to this function, still deciding where it will go to but
     //most likey just call a function with the BOT_ID and/or error messages
     //as arguments.
-    var url = "http://localhost:5050/uploadFile";
+    var url = base_url + '/uploadFile';
 
     //This should be similar to uploadCode except you're sending a file up
     //instead of the code and handle it differently within the server function
@@ -45,7 +45,7 @@ function uploadCode(selectedCode) {
     //in a call to this function, still deciding where it will go to but
     //most likey just call a function with the BOT_ID and/or error messages
     //as arguments.
-    var url = "http://localhost:5050/uploadCode";
+    var url = base_url + '/uploadCode';
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url);
@@ -96,7 +96,7 @@ function getMatch(matchID) {
     // Successfully got a response
     xhr.onload = function () {
         var response = xhr.responseText;
-        console.log(response);
+        //console.log(response);
         if (response == 'false') {       // database encountered an error
             console.log('The database encountered an error.');
             alert('The database encountered an error.');
@@ -113,6 +113,8 @@ function getMatch(matchID) {
             var init_message = json[1];
             var turns = json[2];
 
+			console.log('winner: ' + winner);
+			
             handleCommands(winner, init_message, turns);
         }
     };
