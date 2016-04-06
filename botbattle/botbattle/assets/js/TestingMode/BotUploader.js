@@ -97,16 +97,16 @@ function uploadCodeChoice(playerNum) {
     //  KEY (`language_id`))
 
     var uid = 123;
-    var challenge_id = 1;
+    var challenge_id = getChallengeID();
     var language_id = 1;
     var needs_compiled = 1;
     var errors = 0;
     var warnings = 0;
-    var error_messages = "errors...";
-    var warning_messages = "warnings...";
+    var error_messages = 'none';
+    var warning_messages = 'none';
 
     var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
-
+    //alert("a");
     uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled);
 }
 

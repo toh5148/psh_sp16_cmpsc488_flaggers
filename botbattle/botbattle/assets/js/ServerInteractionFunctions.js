@@ -28,29 +28,31 @@ function createCORSRequest(method, url) {
 
 
 
-function uploadCode(selectedCode) {
-    //TODO: Write all code to interact with the server in this function
-    //Tom will provide all needed parameters for the database as arguments
-    //in a call to this function, still deciding where it will go to but
-    //most likey just call a function with the BOT_ID and/or error messages
-    //as arguments.
-    var url = base_url + "/uploadCode$cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
+function uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled) {
+    var url = base_url + "/uploadCode?cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
     
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.send(selectedCode);
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('POST', url);
+    console.log('sent request');
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
 
-    xhr.onreadystatechange = function () {
-	    var DONE = 4; // readyState 4 means the request is done.
-	    var OK = 200; // status 200 is a successful return.
-	    if (xhr.readyState === DONE) {
-	     if (xhr.status === OK) 
-	      console.log(xhr.responseText); // 'This is the returned text.'
-	    } 
-	    else {
-	      console.log('Error: ' + xhr.status); // An error occurred during the request.
-	    }
-  }
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+        if (xhr.responseText == 'true')
+            alert('Code uploaded successfully.');
+        else
+            alert('Code did not uploaded successfully.');
+    }
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    console.log(selectedCode);
+    xhr.send(selectedCode);
 }
 
 
@@ -107,7 +109,7 @@ function getMatch(matchID) {
     };
 
     xhr.onerror = function () {
-        console.log('Woops, there was an error making the request.');
+        console.error('Woops, there was an error making the request.');
     };
 
     xhr.send();
@@ -146,13 +148,9 @@ function getTestTurn(challengeID) {
     xhr.onload = function () {
         var response = xhr.responseText;
         if (response == 'false') {       // database encountered an error
-            console.log('The database encountered an error.');
             alert('The database encountered an error.');
         } else if (response == 'null') { // match does not exist
-            console.log('The specified match with user_id:' + userID + ' and challenge_id:' + challengeID
-                + 'does not exist.');
-            alert('The specified match with user_id:' + userID + ' and challenge_id:' + challengeID
-                + 'does not exist.');
+            alert('The specified match with challenge_id:' + challengeID + ' does not exist.');
         } else if (response == '-1') {    // match is not ready for playback
             // poll db again
             console.log('The specified match with cid:' + challengeID + ' is not ready for playback.');
