@@ -34,7 +34,7 @@ function uploadCode(selectedCode) {
     //in a call to this function, still deciding where it will go to but
     //most likey just call a function with the BOT_ID and/or error messages
     //as arguments.
-    var url = base_url + "/uploadCode$uid=" + uid + "&cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
+    var url = base_url + "/uploadCode$cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
     
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url);
