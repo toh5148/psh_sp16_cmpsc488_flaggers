@@ -4,6 +4,7 @@ var base_url = 'http://localhost:5050';
 // Create the XHR object used to send CORS calls to the server
 function createCORSRequest(method, url) {
     var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
     if ("withCredentials" in xhr) {
         // XHR for Chrome/Firefox/Opera/Safari.
         xhr.open(method, url, true);
@@ -82,8 +83,7 @@ function uploadCode(selectedCode) {
 ********************************************************************/
 
 
-//TODO: I'd like to rename this getMatch(matchID)
-function matchRequest(matchID) {
+function getMatch(matchID) {
     var url = base_url + '/get_match?id=' + matchID;
 
     // Create the CORS request to the server
@@ -96,6 +96,7 @@ function matchRequest(matchID) {
     // Successfully got a response
     xhr.onload = function () {
         var response = xhr.responseText;
+        console.log(response);
         if (response == 'false') {       // database encountered an error
             console.log('The database encountered an error.');
             alert('The database encountered an error.');
@@ -104,19 +105,13 @@ function matchRequest(matchID) {
             alert('The specified match with id:' + matchID + ' does not exist.');
         } else if (response == '-1') {    // match is not ready for playback
             // poll db again
+            console.log('The specified match with id:' + matchID + ' is not ready for playback.');
+            alert('The specified match with id:' + matchID + ' is not ready for playback.');
         } else {
             var json = JSON.parse(response);
-            var winner = json[0];
+            var winner = json[0].winner;
             var init_message = json[1];
             var turns = json[2];
-
-            //console.log("Received Data from Server");
-            //console.log("winner:");
-            //console.log(winner);
-            //console.log("init_message:");
-            //console.log(JSON.stringify(init_message, null, 2));
-            //console.log("turns:");
-            //console.log(JSON.stringify(turns, null, 2));
 
             handleCommands(winner, init_message, turns);
         }
@@ -148,11 +143,11 @@ function matchRequest(matchID) {
 ********************************************************************/
 
 // init should be true if the game_initialization_message should be returned or false if it should not
-function turnRequest(userID, challengeID, init) {
+function turnRequest(challengeID, init) {
     if (init)
-        var url = base_url + '/get_test_turn_and_init?uid=' + userID + '&cid=' + challengeID;
+        var url = base_url + '/get_test_turn_and_init?cid=' + challengeID;
     else
-        var url = base_url + '/get_test_turn?uid=' + userID + '&cid=' + challengeID;
+        var url = base_url + '/get_test_turn?cid=' + challengeID;
 
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
@@ -174,6 +169,8 @@ function turnRequest(userID, challengeID, init) {
                 + 'does not exist.');
         } else if (response == '-1') {    // match is not ready for playback
             // poll db again
+            console.log('The specified match with cid:' + challengeID + ' is not ready for playback.');
+            alert('The specified match with cid:' + challengeID + ' is not ready for playback.');
         } else {
             var json = JSON.parse(response);
             if (init) { // did we recieve a game_initialization_message
@@ -182,14 +179,8 @@ function turnRequest(userID, challengeID, init) {
             } else {
                 var init_message = null;
                 var turns = json;
-            }            
+            }
 
-            //console.log("Received Data from Server");
-            //console.log("init_message:");
-            //console.log(JSON.stringify(init_message, null, 2));
-            //console.log("turns:");
-            //console.log(JSON.stringify(turns, null, 2));
-            
             handleCommands(init_message, turns);
         }
     };
