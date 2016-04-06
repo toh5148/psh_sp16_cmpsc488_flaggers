@@ -19,7 +19,7 @@ function upload(playerNum) {
             break;
         case 4:
             defaultBotChoice(playerNum);
-            break
+            break;
         default:
             //setError("mes=t2");
             break;
@@ -82,10 +82,21 @@ function uploadFileChoice(playerNum) {
     var error_messages = "errors...";
     var warning_messages = "warnings...";
 
-    //File will fulfill 'source_code' - TODO: Server code to handle extracting text from file
-    var selectedFile = document.getElementById("file_p" + playerNum + "Upload").files[0];
+    var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
 
-    uploadFile(selectedFile, uid, challenge_id, language_id, needs_compiled);
+    //uploadFile(selectedFile, uid, challenge_id, language_id, needs_compiled);
+}
+
+function readText(f, playerNum) {
+    var editor = ace.edit("div_editorP" + playerNum);
+    if (f.files && f.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var output = e.target.result;
+            editor.setValue(output.toString(), 1);
+        };
+        reader.readAsText(f.files[0]);
+    }
 }
 
 function uploadCodeChoice(playerNum) {

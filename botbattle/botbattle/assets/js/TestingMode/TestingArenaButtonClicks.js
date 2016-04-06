@@ -39,13 +39,18 @@ function Player1_BotTypeClick(ele) {
     document.getElementById("div_editorHolder1").style.display = "none";
     document.getElementById("file_p1Upload").style.display = "none";
     document.getElementById("div_p1PublicBot").style.display = "none";
+    document.getElementById("btn_P1Save").style.display = "none";
 
     switch (value) {
         case "UploadFile":
             document.getElementById("file_p1Upload").style.display = "block";
+            document.getElementById("btn_P1Save").style.display = "block";
             break;
         case "EditCode":
             document.getElementById("div_editorHolder1").style.display = "inline-block";
+            var editor = ace.edit("div_editorP1");
+            editor.resize();
+            document.getElementById("btn_P1Save").style.display = "block";
             break;
         case "PublicBot":
             document.getElementById("div_p1PublicBot").style.display = "block";
@@ -61,13 +66,18 @@ function Player2_BotTypeClick(ele) {
     document.getElementById("div_editorHolder2").style.display = "none";
     document.getElementById("file_p2Upload").style.display = "none";
     document.getElementById("div_p2PublicBot").style.display = "none";
+    document.getElementById("btn_P2Save").style.display = "none";
 
     switch (value) {
         case "UploadFile":
             document.getElementById("file_p2Upload").style.display = "block";
+            document.getElementById("btn_P2Save").style.display = "block";
             break;
         case "EditCode":
             document.getElementById("div_editorHolder2").style.display = "inline-block";
+            var editor = ace.edit("div_editorP2");
+            editor.resize();
+            document.getElementById("btn_P2Save").style.display = "none";
             break;
         case "PublicBot":
             document.getElementById("div_p2PublicBot").style.display = "block";
@@ -87,6 +97,16 @@ function UploadBot_click(ele) {
         case "btn_P2Upload":
             P2_Change = false;
             upload(2);
+            break;
+    }
+}
+
+function SaveBot_click(ele) {
+    var ID = ele.id;
+    switch (ID) {
+        case "btn_P1Save":
+            break;
+        case "btn_P2Save":
             break;
     }
 }

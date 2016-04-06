@@ -1,6 +1,6 @@
 ﻿
 function beginPageLoad() {
-    alert("started");
+
     var cid = getChallengeID(); //from QueryStringFunctions.js
     //var languages = getLanguages();
     //var templates = getTemplates(cid);

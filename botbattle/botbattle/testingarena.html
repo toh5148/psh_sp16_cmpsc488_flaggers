@@ -42,13 +42,14 @@
                     <input type="radio" id="rb_p1Public" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
                     <input type="radio" id="rb_p1Default" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
 
-                    <input id="file_p1Upload" type="file" />
+                    <input id="file_p1Upload" type="file" onchange="readText(this, 1)"/>
                     <div id="div_p1PublicBot" style="display:none">
                         <input id="name_p1PublicBot" type="text" /> Enter the name of the public bot.
                     </div>
                     <div id="div_uploadBots1">
                         <br />
-                        <button id="btn_P1Upload" onclick="UploadBot_click(this)">Upload Bot</button>
+                        <button id="btn_P1Upload" onclick="UploadBot_click(this)">Upload Bot</button><br /><br />
+                        <button id="btn_P1Save" onclick="SaveBot_click(this)">Save Bot</button>
                     </div>
                 </div>
 
@@ -80,13 +81,14 @@
                     <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
                     <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
 
-                    <input id="file_p2Upload" type="file" />
+                    <input id="file_p2Upload" type="file" onchange="readText(this, 2)" />
                     <div id="div_p2PublicBot" style="display:none">
                         <input id="name_p2PublicBot" type="text" /> Enter the name of the public bot.
                     </div>
                     <div id="div_uploadBots2">
                         <br />
-                        <button id="btn_P2Upload" onclick="UploadBot_click(this)">Upload Bot</button>
+                        <button id="btn_P2Upload" onclick="UploadBot_click(this)">Upload Bot</button><br /><br />
+                        <button id="btn_P2Save" onclick="SaveBot_click(this)">Save Bot</button>
                     </div>
                 </div>
 
@@ -128,6 +130,8 @@
                 </tr>
             </table>
         </div>
+
+        <div id="main"></div>
     </div>
 </body>
 </html>
