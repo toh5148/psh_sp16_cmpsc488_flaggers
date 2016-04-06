@@ -397,27 +397,6 @@ function uploadCode(botText, uid, cid, lid, needs_compiled, callback){
 	});
 }
 
-function uploadFile(botFile, uid, cid, lid, needs_compiled, callback){
-	
-	var retval;
-	// convert file to string for storage in db
-	var botText = new String(botFile);
-	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
-	openConnection();
-	// create data to store in db
-	var bot = { uid: uid, challenge_id: cid, language_id: lid, source_code: botFile };
-	db.query('INSERT INTO test_arena_bots SET ?', bot, function(err,res){
-		if(err) throw err;
-
-		console.log('       row inserted');
-		closeConnection();
-	});
-}
-
-
-
-
-
 
 // THE FOLLOWING URLS WILL PROBABLY CHANGE ALONG
 // WITH THE PARAMETERS
