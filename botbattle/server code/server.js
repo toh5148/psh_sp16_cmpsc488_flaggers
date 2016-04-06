@@ -128,7 +128,7 @@ function getTestMatchTurn(uid, cid, callback){
 }
 
 
-function uploadCode(botText, uid, cid, lid, needs_compiled, callback){
+function uploadCode(botText, cid, lid, needs_compiled, callback){
 	
 	var retval;
 	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
