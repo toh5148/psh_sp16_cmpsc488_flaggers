@@ -112,7 +112,10 @@ function SaveBot_click(ele) {
 }
 
 function next_click() {
-    //
+    updateCompilerErrors(currentTurn);
+    if (currentTurn == 1) currentTurn = 2;
+    else currentTurn = 1;
+    tempCounter++;
 }
 
 function undo_click() {

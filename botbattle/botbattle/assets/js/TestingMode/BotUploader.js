@@ -1,4 +1,19 @@
 ﻿
+function readText(f, playerNum) {
+    //This function is called by onchange of the input file type
+    //in the testing arena html page. It will change the code in the
+    //code editor to the text contents of the file selected.
+    var editor = ace.edit("div_editorP" + playerNum);
+    if (f.files && f.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var output = e.target.result;
+            editor.setValue(output.toString(), 1);
+        };
+        reader.readAsText(f.files[0]);
+    }
+}
+
 function upload(playerNum) {
     var uploadType = getUploadType(playerNum);
     //Verified - upload type will hold number 1-4, or -1 in case of 'alien pig sighting'?
@@ -56,47 +71,11 @@ function getUploadType(playerNum) {
 }
 
 function uploadFileChoice(playerNum) {
-    //  Current Test Arena Bots Scheme - as of 4/3/16 9:58pm
+    //Since we're just placing the code from the file in the code editor,
+    //for the sake of writing duplicate code, just call uploadCodeChoice(playerNum)
+    //from within here..
 
-    //  CREATE TABLE IF NOT EXISTS `test_arena_bots` (
-    //  `uid` int(11) NOT NULL,
-    //  `challenge_id` int(11) NOT NULL,
-    //  `language_id` int(11) NOT NULL DEFAULT 1,
-    //  `needs_compiled` bit(1) NOT NULL DEFAULT 1,
-    //  `errors`   int(11), 
-    //  `warnings` int(11),
-    //  `error_messages` text,
-    //  `warning_messages` text,
-    //  `source_code` mediumtext NOT NULL,
-    //  PRIMARY KEY (`uid`, `challenge_id`, `language_id`),
-    //  KEY (`uid`),
-    //  KEY (`challenge_id`),
-    //  KEY (`language_id`))
-
-    var uid = 123;
-    var challenge_id = 1;
-    var language_id = 1;
-    var needs_compiled = 1;
-    var errors = 0;
-    var warnings = 0;
-    var error_messages = "errors...";
-    var warning_messages = "warnings...";
-
-    var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
-
-    //uploadFile(selectedFile, uid, challenge_id, language_id, needs_compiled);
-}
-
-function readText(f, playerNum) {
-    var editor = ace.edit("div_editorP" + playerNum);
-    if (f.files && f.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            var output = e.target.result;
-            editor.setValue(output.toString(), 1);
-        };
-        reader.readAsText(f.files[0]);
-    }
+    uploadCodeChoice(playerNum);
 }
 
 function uploadCodeChoice(playerNum) {

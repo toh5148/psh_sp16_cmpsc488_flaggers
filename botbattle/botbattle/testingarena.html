@@ -83,7 +83,8 @@
 
                     <input id="file_p2Upload" type="file" onchange="readText(this, 2)" />
                     <div id="div_p2PublicBot" style="display:none">
-                        <input id="name_p2PublicBot" type="text" /> Enter the name of the public bot.
+                        Enter the name of the public bot.<br/>
+                        <input id="name_p2PublicBot" type="text" /> 
                     </div>
                     <div id="div_uploadBots2">
                         <br />
@@ -101,7 +102,12 @@
                         editor.session.setMode(new JavaScriptMode());
                         editor.setShowPrintMargin(false);
                     </script>
-                    <div id="div_compilerErrors2" class="compilerErrors"></div>
+
+                    <div id="div_languagesDropDown2">
+                        <select id="ddl_languages2"></select>
+                    </div>
+
+                    <div id="div_compilerErrors2" class="compilerErrors">Compilers Errors will be here.</div>
                 </div>
 
             </div>
