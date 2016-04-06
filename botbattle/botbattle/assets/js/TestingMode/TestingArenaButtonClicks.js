@@ -116,8 +116,9 @@ function next_click() {
     if (currentTurn == 1) currentTurn = 2;
     else currentTurn = 1;
     tempCounter++;
+    restoreGameState(turn + 1);
 }
 
 function undo_click() {
-
+    restoreGameState(turn - 1);
 }
