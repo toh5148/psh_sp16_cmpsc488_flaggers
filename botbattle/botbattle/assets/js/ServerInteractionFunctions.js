@@ -1,10 +1,9 @@
-﻿
-var base_url = 'http://localhost:5050';
+﻿var base_url = 'http://localhost:5050';
 
 // Create the XHR object used to send CORS calls to the server
 function createCORSRequest(method, url) {
     var xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
+    //xhr.withCredentials = true;
     if ("withCredentials" in xhr) {
         // XHR for Chrome/Firefox/Opera/Safari.
         xhr.open(method, url, true);
@@ -127,8 +126,6 @@ function getMatch(matchID) {
             var winner = json[0].winner;
             var init_message = json[1];
             var turns = json[2];
-
-			console.log('winner: ' + winner);
 			
             handleCommands(winner, init_message, turns);
         }
@@ -160,11 +157,8 @@ function getMatch(matchID) {
 ********************************************************************/
 
 // init should be true if the game_initialization_message should be returned or false if it should not
-function turnRequest(challengeID, init) {
-    if (init)
-        var url = base_url + '/get_test_turn_and_init?cid=' + challengeID;
-    else
-        var url = base_url + '/get_test_turn?cid=' + challengeID;
+function getTestTurn(challengeID) {
+    var url = base_url + '/get_test_turn?cid=' + challengeID;
 
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
@@ -189,15 +183,10 @@ function turnRequest(challengeID, init) {
             console.log('The specified match with cid:' + challengeID + ' is not ready for playback.');
             alert('The specified match with cid:' + challengeID + ' is not ready for playback.');
         } else {
-            var json = JSON.parse(response);
-            if (init) { // did we recieve a game_initialization_message
-                var init_message = json[0];
-                var turns = json[1];
-            } else {
-                var init_message = null;
-                var turns = json;
-            }
-
+            var json = JSON.parse(response);           
+            var init_message = json[0];
+            var turns = json[1];
+           
             handleCommands(init_message, turns);
         }
     };

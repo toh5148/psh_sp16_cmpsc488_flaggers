@@ -9,13 +9,14 @@ var app = express();
 var port = 5050;
 var numAttempts = 0; // number of ties we tried to connect to the db and failed
 var db; // connection variable
+var base = 'http://localhost:13558';
 
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 
 // Location of file: C:\Users\kaido_000\Documents\GitHub\psh_sp16_cmpsc488_flaggers\botbattle\server code
-// Insert a row into the table
+
 var i = {
     background: 'background.png',
     defaultTimestep: 1,
@@ -65,7 +66,7 @@ var i = {
             flipped: false,
             rotation: 0,
             value: 'Turn: 1',
-			fill: '#808080'
+            fill: '#808080'
         }
     ],
     stdIn: '000',
@@ -73,198 +74,213 @@ var i = {
     stdErr: '222'
 };
 
-var t = [
-	{
-		timeScale: 1,
-		turnChanges: [
-			{
-				id: 101,
-				changes: [
-					{
-						action: 'walk',
-						start: 0,
-						end: .2,
-						x: 300,
-						y: 200
-					},
-					{
-						action: 'walk',
-						start: .2,
-						end: .3,
-						x: 350,
-						y: 150
-					},
-					{
-						action: 'walk',
-						start: .3,
-						end: 1,
-						x: 300,
-						y: 50,
-                        rotation: 90
-					}
-				]
-			},
-			{
-				id: 102,
-				changes: [
-					{
-						action: 'walk',
-						start: .2,
-						end: .8,
-						x: 550,
-						y: 450,
-                        width: 200,
-                        height: 200
-					}
-				]
-			},
-            {
-                id: 103,
-                changes: [
-                    {
-                        action: 'move',
-                        start: 0,
-                        end: 1,
-                        x: 250,
-                        y: 250,
-                        width: 20,
-                        height: 20,
-                        rotation: 360
-                    }
-                ]
-            },
-            {
-                id: 104,
-                changes: [
-                    {
-                        action: 'setText',
-                        start: 1,
-                        value: 'Turn: 2',
-                        fill: '#000000'
-                    }
-                ]
-            }
-		],
-        stdIn: 'aaa',
-        stdOut: 'bbb',
-        stdErr: 'ccc'
-	},
-	{
-		timeScale: 2,
-		turnChanges: [
-			{
-				id: 101,
-				changes: [
-					{
-						start: 0,
-						end: .2,
-						x: 300,
-						y: 200
-					},
-					{
-						start: .2,
-						end: .3,
-						x: 350,
-						y: 150
-					},
-					{
-						start: .3,
-						end: 1,
-						x: 50,
-						y: 100,
-                        rotation: 90
-					}
-				]
-			},
-            {
-                id: 102,
-                changes: [
-                    {
-                        action: 'walk',
-                        visible: false,
-                        start: .2,
-                        end: .8
-                    }
-                ]
-            },
-            {
-                id: 104,
-                changes: [
-                    {
-                        action: 'setText',
-                        start: 1,
-                        value: 'Turn: 3',
-                        backgroundColor: 'rgba(255,0,0,0.25)',
-                        fill: '#808080'
-                    }
-                ]
-            }
-		],
-        stdIn: 'ddd',
-        stdOut: 'eee',
-        stdErr: 'fff'
-	},
-    {
-        timeScale: 1,
-        turnChanges: [
-            {
-                id: 101,
-                changes: [
-                    {
-                        action: 'walk',
-                        start: 0,
-                        end: .2,
-                        x: 300,
-                        y: 200
-                    },
-                    {
-                        action: 'walk',
-                        start: .2,
-                        end: .3,
-                        x: 350,
-                        y: 150
-                    },
-                    {
-                        action: 'walk',
-                        start: .3,
-                        end: 1,
-                        x: 300,
-                        y: 50
-                    }
-                ]
-            },
-            {
-                id: 102,
-                changes: [
-                    {
-                        action: 'walk',
-                        visible: true,
-                        start: .2,
-                        end: .8,
-                        x: 400,
-                        y: 300,
-                        flipped: false
-                    }
-                ]
-            },
-            {
-                id: 104,
-                changes: [
-                    {
-                        action: 'setText',
-                        start: 1,
-                        value: 'Turn: 4'
-                    }
-                ]
-            }
-        ],
-        stdIn: 'ggg',
-        stdOut: 'hhh',
-        stdErr: 'iii'
-    }
-];
+var t1 = {
+    timeScale: 1,
+    turnChanges: [
+        {
+            id: 101,
+            changes: [
+                {
+                    action: 'walk',
+                    start: 0,
+                    end: .2,
+                    x: 300,
+                    y: 200
+                },
+                {
+                    action: 'walk',
+                    start: .2,
+                    end: .3,
+                    x: 350,
+                    y: 150
+                },
+                {
+                    action: 'walk',
+                    start: .3,
+                    end: 1,
+                    x: 300,
+                    y: 50,
+                    rotation: 90
+                }
+            ]
+        },
+        {
+            id: 102,
+            changes: [
+                {
+                    action: 'walk',
+                    start: .2,
+                    end: .8,
+                    x: 550,
+                    y: 450,
+                    width: 200,
+                    height: 200
+                }
+            ]
+        },
+        {
+            id: 103,
+            changes: [
+                {
+                    action: 'move',
+                    start: 0,
+                    end: 1,
+                    x: 250,
+                    y: 250,
+                    width: 20,
+                    height: 20,
+                    rotation: 360
+                }
+            ]
+        },
+        {
+            id: 104,
+            changes: [
+                {
+                    action: 'setText',
+                    start: 1,
+                    value: 'Turn: 2',
+                    fill: '#000000'
+                }
+            ]
+        }
+    ],
+    stdIn: 'aaa',
+    stdOut: 'bbb',
+    stdErr: 'ccc'
+};
 
+var t2 = {
+    timeScale: 2,
+    turnChanges: [
+        {
+            id: 101,
+            changes: [
+                {
+                    start: 0,
+                    end: .2,
+                    x: 300,
+                    y: 200
+                },
+                {
+                    start: .2,
+                    end: .3,
+                    x: 350,
+                    y: 150
+                },
+                {
+                    start: .3,
+                    end: 1,
+                    x: 50,
+                    y: 100,
+                    rotation: 90
+                }
+            ]
+        },
+        {
+            id: 102,
+            changes: [
+                {
+                    action: 'walk',
+                    visible: false,
+                    start: .2,
+                    end: .8
+                }
+            ]
+        },
+        {
+            id: 104,
+            changes: [
+                {
+                    action: 'setText',
+                    start: 1,
+                    value: 'Turn: 3',
+                    backgroundColor: 'rgba(255,0,0,0.25)',
+                    fill: '#808080'
+                }
+            ]
+        }
+    ],
+    stdIn: 'ddd',
+    stdOut: 'eee',
+    stdErr: 'fff'
+};
 
+var t3 = {
+    timeScale: 1,
+    turnChanges: [
+        {
+            id: 101,
+            changes: [
+                {
+                    action: 'walk',
+                    start: 0,
+                    end: .2,
+                    x: 300,
+                    y: 200
+                },
+                {
+                    action: 'walk',
+                    start: .2,
+                    end: .3,
+                    x: 350,
+                    y: 150
+                },
+                {
+                    action: 'walk',
+                    start: .3,
+                    end: 1,
+                    x: 300,
+                    y: 50
+                }
+            ]
+        },
+        {
+            id: 102,
+            changes: [
+                {
+                    action: 'walk',
+                    visible: true,
+                    start: .2,
+                    end: .8,
+                    x: 400,
+                    y: 300,
+                    flipped: false
+                }
+            ]
+        },
+        {
+            id: 104,
+            changes: [
+                {
+                    action: 'setText',
+                    start: 1,
+                    value: 'Turn: 4'
+                }
+            ]
+        }
+    ],
+    stdIn: 'ggg',
+    stdOut: 'hhh',
+    stdErr: 'iii'
+};
+
+/*i = JSON.stringify(i);
+//t = JSON.stringify(t);
+t1 = JSON.stringify(t1);
+t2 = JSON.stringify(t2);
+t3 = JSON.stringify(t3);
+//var win = 'player 1';
+openConnection();
+var game_instance1 = { uid: 101, challenge_id: 101, game_initialization_message: i, turns: t1, last_turn_status: 'READY' };
+var game_instance2 = { uid: 101, challenge_id: 101, game_initialization_message: i, turns: t2, last_turn_status: 'READY' };
+var game_instance3 = { uid: 101, challenge_id: 101, game_initialization_message: i, turns: t3, last_turn_status: 'READY' };
+db.query('INSERT INTO test_arena_matches SET ?', game_instance1, function(err,res){
+  if(err) throw err;
+
+  console.log('row inserted');
+  closeConnection();
+});*/
 
 // Opens the connection to the database, throws an error if connection failed.
 function openConnection() {
@@ -284,18 +300,6 @@ function openConnection() {
 	  }
 	});	
 }
-/*i = JSON.stringify(i);
-t = JSON.stringify(t);
-var win = 'player 1';
-openConnection();
-var game_instance = { match_id: 1234, winner: win, game_initialization_message: i, turns: t, ready_for_playback: 0 };
-db.query('INSERT INTO matches SET ?', game_instance, function(err,res){
-	//db.query('DELETE FROM matches WHERE match_id = 12345', game_instance, function(err,res){
-  if(err) throw err;
-
-  console.log('row inserted');
-  closeConnection();
-});*/
 
 // Closes the connection to the database, throws error if closing the connection failed
 function closeConnection() {
@@ -340,7 +344,7 @@ function getMatch(id, callback) {
     });
 }
 
-function getTestMatchTurn(uid, cid, init, callback){
+function getTestMatchTurn(uid, cid, callback){
     var retval;
 	// column names: uid, challenge_id, game_initialization_message, turns, last_turn_status
 	db.query('SELECT game_initialization_message, turns, last_turn_status FROM test_arena_matches ' + 
@@ -358,12 +362,8 @@ function getTestMatchTurn(uid, cid, init, callback){
             var ready = match.last_turn_status;
             if (ready == 'READY'){
                 var turns = match.turns;
-                if (init) {
-                    var init_message = match.game_initialization_message;
-                    retval = JSON.parse('[' + init_message + ',' + turns + ']');
-                } else {
-                    retval = JSON.parse(turns);
-                }
+                var init_message = match.game_initialization_message;
+                retval = JSON.parse('[' + init_message + ',' + turns + ']');
 
                 // Change the last_turn_status to DISPLAYED
                 db.query('UPDATE test_arena_matches SET last_turn_status = ? WHERE uid = ? AND challenge_id = ?',
@@ -405,7 +405,7 @@ function uploadFile(botFile, uid, cid, lid, needs_compiled, callback){
 	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
 	openConnection();
 	// create data to store in db
-	var bot = { uid: uid, challenge_id: cid, language_id: lid, source_code: botText };
+	var bot = { uid: uid, challenge_id: cid, language_id: lid, source_code: botFile };
 	db.query('INSERT INTO test_arena_bots SET ?', bot, function(err,res){
 		if(err) throw err;
 
@@ -430,8 +430,8 @@ app.get('/get_match', function(req, res, next){
 			console.log('ERROR: Playback match with match_id: ' + id + ' is not ready for playback.');
 		else
 			console.log('       Playback match sent for match_id: ' + id);
-		res.header('Access-Control-Allow-Origin', '*');
-		res.header('Access-Control-Allow-Credentials', true);
+		res.header('Access-Control-Allow-Origin', base);
+		//res.header('Access-Control-Allow-Credentials', true);
 		res.send(data);
 	});
 });
@@ -439,35 +439,20 @@ app.get('/get_match', function(req, res, next){
 // localhost:5050/get_test_turn?cid=101
 app.get('/get_test_turn', function(req, res, next){
 	// TODO: get uid
-	var cid = req.query.cid;
-	var msg = getTestMatchTurn(uid, cid, false, function (data) {
+    var cid = req.query.cid;
+    //var uid = req.session.user;
+    var uid = 101;
+    //console.log(uid);
+	var msg = getTestMatchTurn(uid, cid, function (data) {
 		if (data == '-1')
 			console.log('ERROR: Test arena turn sent for uid: ' + uid + '    cid: ' + cid);
 		else
 			console.log('       Test arena turn sent for uid: ' + uid + '    cid: ' + cid);
-		res.header('Access-Control-Allow-Origin', '*');
-		res.header('Access-Control-Allow-Credentials', true);
+		res.header('Access-Control-Allow-Origin', base);
+		//res.header('Access-Control-Allow-Credentials', true);
 		res.send(data); 
 	});
 });
-
-// localhost:5050/get_test_turn_and_init?cid=101
-app.get('/get_test_turn_and_init', function (req, res, next) {
-	// TODO: get uid
-    var cid = req.query.cid;
-    var msg = getTestMatchTurn(uid, cid, true, function (data) {
-		if (data == '-1')
-			console.log('ERROR: Test arena turn and init message sent for uid: ' + uid + '    cid: ' + cid);
-		else
-			console.log('       Test arena turn and init message sent for uid: ' + uid + '    cid: ' + cid);
-        res.header('Access-Control-Allow-Origin', '*');
-		res.header('Access-Control-Allow-Credentials', true);
-        res.send(data);
-    });
-});
-
-
-
 
 // localhost:5050/uploadCode?uid=101&cid=1&lid=121&needs_compiled=1
 app.post('/uploadCode', function(req, res){
@@ -478,7 +463,7 @@ app.post('/uploadCode', function(req, res){
 	var needs_compiled = req.query.needs_compiled;
 	var msg = uploadCode(text, uid, cid, lid, needs_compiled, function (data) {
 	        console.log('server sent: ' + data);
-	        res.header('Access-Control-Allow-Origin', '*');
+	        res.header('Access-Control-Allow-Origin', base);
 	        res.send(data);
     });
 });
@@ -492,7 +477,7 @@ app.post('/uploadFile', function(req, res){
 	var needs_compiled = req.query.needs_compiled;
 	var msg = uploadFile(botFile, uid, cid, lid, needs_compiled, function (data) {
 	        console.log('server sent: ' + data);
-	        res.header('Access-Control-Allow-Origin', '*');
+	        res.header('Access-Control-Allow-Origin', base);
 	        res.send(data);
     });
 });
