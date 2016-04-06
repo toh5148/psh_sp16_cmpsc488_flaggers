@@ -8,9 +8,9 @@ public class Flagger {
 	//Variables used to keep track of game data
 	int flagsCaptured = 0;
 	int flagsNeeded = 10;
-	int Seniors = 3;
+	int Seniors = 5;
 	int turn = 1;
-	int EnemySeniors = 3;
+	int EnemySeniors = 5;
 	int EnemyFlagsCaptured = 0;
 	
 	//Easy variables used to change the total number of students.
@@ -19,6 +19,7 @@ public class Flagger {
 	int botPossible = 150;
 	int EnemyStudents = totalPossible;
 	int totalStudents = botPossible;
+	int reinforceAmount = 10;
 	
 	Scanner sc = new Scanner(System.in);
 	
@@ -33,34 +34,18 @@ public class Flagger {
 	System.out.print("Enter a command: ");
 	
 	while (sc.hasNext()){
+		boolean attackSenior = false;
+		boolean defendSenior = false;
+		boolean botAttackSenior = false;
+		boolean botDefendSenior = false;
 		String inputstring = sc.next();
 		
 		//Split the input string into parts to separate "action" from "amount"
 		String[] parts = inputstring.split(";");
 		
 		//Condition makes sure that a user has enough seniors, and then sends one.
-		if (parts[0].equals("senior")){
-			if (Seniors == 0){
-				System.out.println("Illegal move: Not enough Seniors.");
-			}
-			else {
-				Seniors--;
-			}
-		}
-		//Condition makes sure a user has enough students, and then sends them.
-		int sentStudents = 0;
-		if (parts[0].equals("send")){
-			int students = Integer.parseInt(parts[1]);
-			if (students > totalStudents){
-				System.out.println("Illegal move: Not enough Students.");
-			}
-			else
-			{
-				sentStudents = students;
-			}
-		}
-		
-		//This condition determines the number of students freed by the "free" action.
+		int attackingStudents = 0;
+		int defendingStudents = 0;
 		if (parts[0].equals("free")){
 			//This is here in case we change the freedom rules
 			if (totalStudents >= totalPossible){
@@ -69,10 +54,61 @@ public class Flagger {
 			else {
 				totalStudents += (totalPossible - totalStudents)/2 ;
 			}
-		}
-		if (parts[0].equals("reinforce")){
-			totalStudents += 25;
-			totalPossible += 25;
+		}	
+		if (parts.length >= 4){
+			if (parts[0].equals("attack")){
+				if (parts[1].equals("senior")){
+					if (Seniors == 0){
+						System.out.println("Illegal move: Not enough Seniors.");
+					}
+					else {
+						Seniors--;
+						attackSenior = true;
+					}
+				}
+				else if (parts[1].equals("reinforce")){
+					totalStudents += reinforceAmount;
+					totalPossible += reinforceAmount;
+				}
+				else {
+					int students = Integer.parseInt(parts[1]);
+					if (students > totalStudents){
+						System.out.println("Illegal move: Not enough Students.");
+					}
+					else
+					{
+						attackingStudents = students;
+					}
+				}
+			}
+			if (parts[2].equals("defend")){
+				if (parts[3].equals("senior")){
+					if (Seniors == 0){
+						System.out.println("Illegal move: Not enough Seniors.");
+					}
+					else {
+						Seniors--;
+						defendSenior = true;
+					}
+				}
+				else if (parts[3].equals("reinforce")){
+					totalStudents += reinforceAmount;
+					totalPossible += reinforceAmount;
+				}
+				else {
+					int students = Integer.parseInt(parts[3]);
+					if (students > totalStudents){
+						System.out.println("Illegal move: Not enough Students.");
+					}
+					if ((students + attackingStudents) > totalStudents){
+						System.out.println("Illegal move: Attacking and defending students exceeds max limit.");
+					}
+					else
+					{
+						defendingStudents = students;
+					}
+				}
+			}
 		}
 		//Bot determining function call.  Changes depending on bot.
 		String botTurn = easybot(EnemyStudents, turn, EnemySeniors);
@@ -81,82 +117,132 @@ public class Flagger {
 		//Not entirely needed for the easy bot written, but still useful for
 		//creating new bots to test around with.
 		String[] botmove = botTurn.split(";");
-		if (botmove[0].equals("senior")){
-			if (EnemySeniors == 0){
-				System.out.println("Bot Illegal move: Not enough Seniors.");
-			}
-			else {
-				EnemySeniors--;
-			}
-		}
-		int botStudents = 0;
-		if (botmove[0].equals("send")){
-			int students = Integer.parseInt(botmove[1]);
-			if (students > EnemyStudents){
-				System.out.println("Bot Illegal move: Not enough Students.");
-			}
-			else
-			{
-				botStudents = students;
-			}
-		}
+		int botAttackingStudents = 0;
+		int botDefendingStudents = 0;
 		if (botmove[0].equals("free")){
-			//This is also here in case we wish to change "free"
+			//This is here in case we change the freedom rules
 			if (EnemyStudents >= botPossible){
 				EnemyStudents = botPossible;
 			}
 			else {
 				EnemyStudents += (botPossible - EnemyStudents)/2 ;
 			}
-		}
-		if (botmove[0].equals("reinforce")){
-			EnemyStudents += 25;
-			botPossible += 25;
+		}	
+		if (botmove.length >= 4){
+			if (botmove[0].equals("attack")){
+				if (botmove[1].equals("senior")){
+					if (EnemySeniors == 0){
+						System.out.println("Illegal move: Not enough Seniors.");
+					}
+					else {
+						EnemySeniors--;
+						botAttackSenior = true;
+					}
+				}
+				else if (botmove[1].equals("reinforce")){
+					EnemyStudents += reinforceAmount;
+					botPossible += reinforceAmount;
+				}
+				else {
+					int students = Integer.parseInt(botmove[1]);
+					if (students > EnemyStudents){
+						System.out.println("Illegal move: Not enough Students.");
+					}
+					else
+					{
+						botAttackingStudents = students;
+					}
+				}
+			}
+			if (botmove[2].equals("defend")){
+				if (botmove[3].equals("senior")){
+					if (EnemySeniors == 0){
+						System.out.println("Illegal move: Not enough Seniors.");
+					}
+					else {
+						EnemySeniors--;
+						botDefendSenior = true;
+					}
+				}
+				else if (botmove[3].equals("reinforce")){
+					EnemyStudents += reinforceAmount;
+					botPossible += reinforceAmount;
+				}
+				else {
+					int students = Integer.parseInt(botmove[3]);
+					if (students > EnemyStudents){
+						System.out.println("Illegal move: Not enough Students.");
+					}
+					if ((students + botAttackingStudents) > totalStudents){
+						System.out.println("Illegal move: Attacking and defending students exceeds max limit.");
+					}
+					else
+					{
+						botDefendingStudents = students;
+					}
+				}
+			}
 		}
 		
 		//Conditions used to print out if a bot or a user sent 
 		//a Senior for the round.
 		System.out.println();
-		if (parts[0].equals("senior")){
-			System.out.println("User Senior Sent");
+		if (attackSenior){
+			System.out.println("User Attack Senior Sent");
 		}
-		if (botmove[0].equals("senior")){
-			System.out.println("Bot Senior Sent");
+		if (defendSenior){
+			System.out.println("User Defense Senior Sent");
 		}
-		System.out.println("Students sent: " + sentStudents);
-		System.out.println("Enemies sent: " + botStudents);
+		if (botAttackSenior){
+			System.out.println("Bot Attack Senior Sent");
+		}
+		if (botDefendSenior){
+			System.out.println("Bot Defense Senior Sent");
+		}
+		System.out.println("Attack Students sent: " + attackingStudents);
+		System.out.println("Enemy Attack Students sent: " + botAttackingStudents);
+		System.out.println("Defending Students sent: " + defendingStudents);
+		System.out.println("Enemy Defending Students sent: " + botDefendingStudents);
 		System.out.println();
 		
-		//Empty condition for senior ties.  Might make some special case happen.
-		//Left here as a precaution, and a reminder.
-		if (botmove[0].equals("senior") && parts[0].equals("senior")){
-			
-		}
 		//If one side sends a senior while the other does not, that side
 		//will claim the round and capture all opposing students.
-		else if (botmove[0].equals("senior")){
-			totalStudents -= sentStudents;
+		if (botAttackSenior && !defendSenior){
+			totalStudents -= defendingStudents;
 			EnemyFlagsCaptured += 1;
 		}
-		else if (parts[0].equals("senior")){
-			EnemyStudents -= botStudents;
+		if (attackSenior && !botDefendSenior){
+			EnemyStudents -= botDefendingStudents;
 			flagsCaptured += 1;
+		}
+		if (botDefendSenior && !attackSenior){
+			totalStudents -= attackingStudents;
+		}
+		if (defendSenior && !botAttackSenior){
+			EnemyStudents -= botAttackingStudents;
 		}
 		//Otherwise, the player that sent the higher number of students will
 		//claim victory for the round.
-		else if (sentStudents > botStudents){
-			EnemyStudents -= botStudents;
-			flagsCaptured += 1;
+		if (!botDefendSenior && !attackSenior){
+			if (attackingStudents > botDefendingStudents){
+				EnemyStudents -= botDefendingStudents;
+				flagsCaptured += 1;
+			}
+			if (attackingStudents < botDefendingStudents){
+			totalStudents -= attackingStudents;
+			}
 		}
-		else if (sentStudents < botStudents){
-			totalStudents -= sentStudents;
-			EnemyFlagsCaptured += 1;
+		if (!botAttackSenior && !defendSenior){
+			if (botAttackingStudents < defendingStudents){
+				EnemyStudents -= botAttackingStudents;
+			}
+			if (botAttackingStudents > defendingStudents){
+				totalStudents -= defendingStudents;
+				EnemyFlagsCaptured += 1;
+			}
 		}
-		//Empty else loop which can only be reached on "send" ties.
-		//Also here as a bridge case, if I want something special to occur.
-		else {
-			
-		}
+
+		
 		//These are the console messages that get printed out each round.
 		//I'm using these to keep track of all important variables.
 		System.out.println("Students Remaining " + totalStudents);
@@ -167,6 +253,9 @@ public class Flagger {
 		System.out.println("Enemy Flags Captured: " + EnemyFlagsCaptured);
 	
 		//Victory condition check
+		if (flagsCaptured == flagsNeeded && EnemyFlagsCaptured == flagsNeeded){
+			System.out.println("It's a tie!");
+		}
 		if (flagsCaptured == flagsNeeded){
 			System.out.println("You win!");
 			break;
@@ -186,21 +275,22 @@ public class Flagger {
 	public static String easybot(int Studentsleft, int turnnum, int Seniorsleft) {
 		//This bot will attempt to send a senior student every 3rd turn
 		//so long as one is available.
+		String returnString = "";
 		if (turnnum % 3 == 0) {
 			if (Seniorsleft != 0) {
-				return 	"senior";			
+				returnString += "attack;senior;defend;" + Studentsleft;			
 			}
 			else if (Studentsleft >= 50){
-				return "send;50";
+				returnString += "attack;50;defend;" + (Studentsleft - 50);
 			}
 		}
 		//It will send exactly 50 students each round otherwise,
 		else if (Studentsleft >= 50){
-				return "send;50";
+			returnString += "attack;50;defend;" + (Studentsleft - 50);
 		}
 		//and will attempt to free any students it can to reach a comfortable
 		//50 students to send.
-		else return "free";
-		return "free";
+		else returnString = "free";
+		return returnString;
 	}
 }
