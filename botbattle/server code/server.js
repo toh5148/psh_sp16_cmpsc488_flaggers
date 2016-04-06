@@ -472,34 +472,28 @@ app.get('/get_test_turn_and_init', function (req, res, next) {
 // localhost:5050/uploadCode?uid=101&cid=1&lid=121&needs_compiled=1
 app.post('/uploadCode', function(req, res){
 	var text = req.body.selectedCode;
-
-	var msg = uploadCode(text, function (data) {
-
-	    var uid = req.query.uid;
-	    var cid = req.query.cid;
-	    var lid = req.query.lid;
-	    var needs_compiled = req.query.needs_compiled;
-	});
+	var uid = req.query.uid;
+	var cid = req.query.cid;
+	var lid = req.query.lid;
+	var needs_compiled = req.query.needs_compiled;
 	var msg = uploadCode(text, uid, cid, lid, needs_compiled, function (data) {
-        console.log('server sent: ' + data);
-        res.header('Access-Control-Allow-Origin', '*');
-        res.send(data);
+	        console.log('server sent: ' + data);
+	        res.header('Access-Control-Allow-Origin', '*');
+	        res.send(data);
     });
 });
 
 // localhost:5050/uploadFile?uid=101&cid=1&lid=121&needs_compiled=1
 app.post('/uploadFile', function(req, res){
 	var botFile = req.body.botFile;
-	var msg = uploadFile(botFile, function (data) {
-	    var uid = req.query.uid;
-	    var cid = req.query.cid;
-	    var lid = req.query.lid;
-	    var needs_compiled = req.query.needs_compiled;
-	});
+	var uid = req.query.uid;
+	var cid = req.query.cid;
+	var lid = req.query.lid;
+	var needs_compiled = req.query.needs_compiled;
 	var msg = uploadFile(botFile, uid, cid, lid, needs_compiled, function (data) {
-        console.log('server sent: ' + data);
-        res.header('Access-Control-Allow-Origin', '*');
-        res.send(data);
+	        console.log('server sent: ' + data);
+	        res.header('Access-Control-Allow-Origin', '*');
+	        res.send(data);
     });
 });
 
