@@ -162,7 +162,7 @@ function getTestTurn(challengeID) {
             var init_message = json[0];
             var turns = json[1];
            
-            handleTestTurn(init_message, turns);
+            handleTestTurns(init_message, turns);
         }
     };
 

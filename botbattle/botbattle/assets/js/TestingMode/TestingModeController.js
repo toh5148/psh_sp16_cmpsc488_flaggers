@@ -54,8 +54,8 @@ function addCompilerError(playerNum, error) {
     document.getElementById("div_compilerErrors" + playerNum).innerHTML += error + tempCounter + "<br/>";
 }
 
-function handleTestTurns(init, turns) {
-    gameInitializer = initMessage;
+function handleTestTurns(init, turnData) {
+    gameInitializer = init;
     turns = turnData;
     console.log("Set turn data commands to GDM vars.");
     ready = true;

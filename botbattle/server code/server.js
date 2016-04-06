@@ -95,31 +95,30 @@ function getTestMatchTurn(uid, cid, callback){
     var retval;
 	// column names: uid, challenge_id, game_initialization_message, turns, last_turn_status
 	db.query('SELECT game_initialization_message, turns, last_turn_status FROM test_arena_matches ' + 
-	'WHERE uid = ? AND challenge_id = ? AND last_turn_status = ?',
-        uid, cid, 'READY', function (err, rows) {
+	'WHERE uid = ' + uid + ' AND challenge_id = ' + cid + ' AND last_turn_status = "READY"', function (err, rows) {
         if (err) {			
             retval = 'false';
 			console.log('ERROR: Error with the DB.');
         } else if (rows[0] == undefined) { // Match does not exists           
             retval = 'null';	
 			console.log('ERROR: Test instance with id:' + id + ' not found.');			
-        } else { // Match exist
-            console.log('rows: ' + rows);	
+        } else { // Match exist       	
             var match = rows[0];		      
             var ready = match.last_turn_status;
+            
             if (ready == 'READY'){
                 var turns = match.turns;
                 var init_message = match.game_initialization_message;
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
 
                 // Change the last_turn_status to DISPLAYED
-                db.query('UPDATE test_arena_matches SET last_turn_status = ? WHERE uid = ? AND challenge_id = ?',
-                    'DISPLAYED', uid, cid, function (err, result) {
+                /*db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + uid + '
+                    + 'AND challenge_id = ' + cid, function (err, result) {
                         if (err) {
                             throw err;
                         }
                         console.log('       Set match with uid:' + uid + '  cid:' + cid + '  to DISPLAYED.');
-                    });
+                    });*/
             } else  {   // turn is not ready to be displayed
                 retval = '-1';		            
             }		
@@ -209,6 +208,7 @@ app.post('/uploadFile', function(req, res){
 });
 
 openConnection();
+//getTestMatchTurn(12345, 101, function (x) { });
 // Start the server
 http.createServer(app).listen(port, function() {
 	console.log('Server listening on port ' + port);
