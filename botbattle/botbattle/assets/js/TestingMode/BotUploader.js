@@ -104,9 +104,8 @@ function uploadCodeChoice(playerNum) {
     var warnings = 0;
     var error_messages = 'none';
     var warning_messages = 'none';
-
     var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
-    //alert("a");
+
     uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled);
 }
 

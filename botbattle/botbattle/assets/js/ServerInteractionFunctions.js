@@ -26,21 +26,17 @@ function createCORSRequest(method, url) {
 
 ********************************************************************/
 
-
-
 function uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled) {
     var url = base_url + "/uploadCode?cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
     
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
-    console.log('sent request');
     if (!xhr) {
         alert('CORS not supported on the current browser');
         return;
     }
 
     xhr.onload = function () {
-        console.log(xhr.responseText);
         if (xhr.responseText == 'true')
             alert('Code uploaded successfully.');
         else
@@ -51,7 +47,6 @@ function uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled
         console.error('Woops, there was an error making the request.');
     };
 
-    console.log(selectedCode);
     xhr.send(selectedCode);
 }
 
@@ -133,7 +128,6 @@ function getMatch(matchID) {
 
 ********************************************************************/
 
-// init should be true if the game_initialization_message should be returned or false if it should not
 function getTestTurn(challengeID) {
     var url = base_url + '/get_test_turn?cid=' + challengeID;
 
