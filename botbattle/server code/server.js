@@ -5,6 +5,7 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var credentials = require('credentials');
 var cookieParser = require('cookie-parser');
+var colors = require('colors'); // for colors in the console
 var app = express();
 var port = 5050;
 var numAttempts = 0; // number of ties we tried to connect to the db and failed
@@ -12,24 +13,10 @@ var db; // connection variable
 var base = 'http://localhost:13558';
 
 app.use(cookieParser());
-app.use(bodyParser.json());
+app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true}));
 
 // Location of file: C:\Users\kaido_000\Documents\GitHub\psh_sp16_cmpsc488_flaggers\botbattle\server code
-
-/*i = JSON.stringify(i);
-t = JSON.stringify(t);
-//var win = 'player 1';
-openConnection();
-var game_instance1 = { uid: 12345, challenge_id: 101, game_initialization_message: i, turns: t, last_turn_status: 'READY' };
-db.query('INSERT INTO test_arena_matches SET ?', game_instance1, function(err,res){
-    if(err) {
-        console.error(err);
-    } else {
-        console.log('row inserted');
-    }
-    closeConnection();
-});*/
 
 // Opens the connection to the database
 function openConnection() {
@@ -42,46 +29,57 @@ function openConnection() {
 	});
 	db.connect(function(err){
 	    if(err){
-	        console.error(err);
+	        console.log(colors.red(err));
 	    } else {
-	        console.log('Connection established');
-	    }
-	});	
-}
-
-// Closes the connection to the database, throws error if closing the connection failed
-function closeConnection() {
-	db.end(function(err) {
-	    if (err){
-	        console.error(err);
-	    } else {
-	        console.log('Connection terminated.');
+	        console.log(colors.green('Connection established'));
 	    }
 	});
 }
 
+// Closes the connection to the database
+function closeConnection() {
+	db.end(function(err) {
+	    if (err){
+	        console.log(colors.red(err));
+	    } else {
+	        console.log(colors.green('Connection terminated.'));
+	    }
+	});
+}
+
+// ****************************************************
+
+
+//          QUERY FUNCTIONS
+
+
+// ****************************************************
+
 function getMatch(id, callback) {
     var retval;
+
     // column names: match_id, winner, game_initialization_message, turns, ready_for_playback
-	db.query('SELECT * FROM matches WHERE match_id = ?', id, function (err, rows) {
+    db.query('SELECT * FROM matches WHERE match_id = ?', id, function (err, rows) {
         if (err) { // error with the database
             retval = 'false';
-            console.error(err);
+            console.log(colors.red(err));
         } else if (rows[0] == undefined) { // Match does not exists
 			retval = 'null';
-            console.error('ERROR: Match with id:' + id + ' not found.');
+			console.log(colors.red('ERROR: Match with id:' + id + ' not found.'));
         } else { // Match exist
             var match = rows[0];           
             var ready = match.ready_for_playback.toString('hex');  
 			
             if (ready == false) { // match is not ready for playback
-				retval = '-1';    
+                retval = '-1';
+                console.log(colors.yellow('ERROR: Match with id:' + id + ' is not ready for playback.'));
             } else {
                 var winnerSTR = match.winner;
-				var winnerOBJ = '{"winner": "' + winnerSTR + '"}';
+				var winnerOBJ = '{"winner": "' + winnerSTR + '"}'; // convert the string to a JSON object
                 var init_message = match.game_initialization_message;
                 var turns = match.turns;
                 retval = JSON.parse('[' + winnerOBJ + ',' + init_message + ',' + turns + ']');
+                console.log('Data for match with id:' + id + ' returned.');
             }
         }
         callback(retval); // send the result
@@ -90,15 +88,16 @@ function getMatch(id, callback) {
 
 function getTestMatchTurn(uid, cid, callback){
     var retval;
+
 	// column names: uid, challenge_id, game_initialization_message, turns, last_turn_status
 	db.query('SELECT game_initialization_message, turns, last_turn_status FROM test_arena_matches ' + 
 	'WHERE uid = ' + uid + ' AND challenge_id = ' + cid + ' AND last_turn_status = "READY"', function (err, rows) {
         if (err) {			
             retval = 'false';
-			console.error(err);
+            console.log(colors.red(err));
         } else if (rows[0] == undefined) { // Match does not exists           
             retval = 'null';	
-			console.error('ERROR: Test instance with user_id:' + uid + ' and challenge_id: ' + cid + ' not found.');			
+            console.log(colors.red('ERROR: Test instance with user_id:' + uid + ' and challenge_id: ' + cid + ' not found.'));
         } else { // Match exist       	
             var match = rows[0];		      
             var ready = match.last_turn_status;
@@ -109,16 +108,18 @@ function getTestMatchTurn(uid, cid, callback){
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
 
                 // Change the last_turn_status to DISPLAYED
-                /*db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + uid + '
-                    + 'AND challenge_id = ' + cid, function (err, result) {
+                db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + uid
+                    + ' AND challenge_id = ' + cid, function (err, rows) {
                         if (err) {
-                            console.error(err);
+                            console.log(colors.red(err));
                         } else {
-                            console.log('Set match with uid:' + uid + '  cid:' + cid + '  to DISPLAYED.');
+                            console.log('Set match with uid:' + uid + '  cid:' + cid + '  to DISPLAYED in test_arena_matches.');
                         }
-                    });*/
+                    });
             } else  {   // turn is not ready to be displayed
-                retval = '-1';		            
+                retval = '-1';
+                console.log(colors.yellow('ERROR: Test instance with user_id: ' + uid + ' and challenge_id: ' + cid +
+                    ' is not ready to be displayed.'));
             }		
         }         
         callback(retval); // send the result        
@@ -127,21 +128,53 @@ function getTestMatchTurn(uid, cid, callback){
 
 
 function uploadCode(botText, userID, challengeID, languageID, needs_compiled, callback){	
-	var retval;
-	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
-	var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+    var retval;
 
-	db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, res) {
-	    if (err) {
-	        retval = false;
-	        console.error(err);
-	    } else {
-	        retval = true;
-	        console.log('Row inserted into test_arena_bots');
-	    }
-	});
-	callback(retval);
+	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
+    db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
+        if (err) {
+            retval = false;
+            console.log(colors.red(err));
+        } else {
+            if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
+                var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+
+                db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
+                    if (err) {
+                        retval = false;
+                        console.log(colors.red(err));
+                    } else {
+                        retval = true;
+                        console.log('Row inserted into test_arena_bots');
+                    }
+                    callback(retval); // send the result
+                });
+            }
+            else {  // Code for this challenge exists in the db, update the row
+                var codeToUpdate = { language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+
+                db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
+                    if (err) {
+                        retval = false;
+                        console.log(colors.red(err));
+                    } else {
+                        retval = true;
+                        console.log('Row updated in test_arena_bots');
+                    }
+                    callback(retval); // send the result
+                });
+            }
+        }
+    });
 }
+
+// ****************************************************
+
+
+//          END QUERY FUNCTIONS
+
+
+// ****************************************************
 
 // ****************************************************
 
@@ -153,10 +186,10 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
 
 // localhost:5050/get_match?id=12345
 app.get('/get_match', function(req, res, next){
-    var id = req.query.id;  
-    var msg = getMatch(id, function(data){       
+    var id = req.query.id;
+
+    getMatch(id, function(data){       
         res.header('Access-Control-Allow-Origin', base);
-        //res.header('Access-Control-Allow-Credentials', true);
         res.send(data);
     });
 });
@@ -166,31 +199,38 @@ app.get('/get_test_turn', function(req, res, next){
     var cid = req.query.cid;
     //var uid = req.session.user;
     var uid = 12345;
-	var msg = getTestMatchTurn(uid, cid, function (data) {		
+
+	getTestMatchTurn(uid, cid, function (data) {		
 		res.header('Access-Control-Allow-Origin', base);
-		//res.header('Access-Control-Allow-Credentials', true);
 		res.send(data); 
 	});
 });
 
-// localhost:5050/uploadCode?cid=1&lid=121&needs_compiled=1
+// localhost:5050/uploadCode?cid=101&lid=1&needs_compiled=1
 app.post('/uploadCode', function(req, res, next){
     var text = req.body;
-    console.log(text);
-	var uid = 12345;
+    //var uid = req.session.user;
+    var uid = 12345;
 	var cid = req.query.cid;
 	var lid = req.query.lid;
-    var needs_compiled = req.query.needs_compiled;
-    var msg = uploadCode(text, uid, cid, lid, needs_compiled, function (data) {
-        console.log(data);
+	var needs_compiled = req.query.needs_compiled;
+
+    uploadCode(text, uid, cid, lid, needs_compiled, function (data) {
 	    res.header('Access-Control-Allow-Origin', base);
-	    //res.header('Access-Control-Allow-Credentials', true);
 	    res.send(data);
     });
 });
 
+// ****************************************************
+
+
+//          END CORS REQUESTS
+
+
+// ****************************************************
+
 openConnection();
 // Start the server
 http.createServer(app).listen(port, function() {
-	console.log('Server listening on port ' + port);
+	console.log(colors.cyan('Server listening on port ' + port + '.'));
 });
