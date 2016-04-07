@@ -1,19 +1,17 @@
 ﻿
-// Create the XHR object used to send CORS calls to the server
-function createCORSRequest(method, url) {
-    var xhr = new XMLHttpRequest();
-    if ("withCredentials" in xhr) {
-        // XHR for Chrome/Firefox/Opera/Safari.
-        xhr.open(method, url, true);
-    } else if (typeof XDomainRequest != "undefined") {
-        // XDomainRequest for IE.
-        xhr = new XDomainRequest();
-        xhr.open(method, url);
-    } else {
-        // CORS not supported.
-        xhr = null;
+function readText(f, playerNum) {
+    //This function is called by onchange of the input file type
+    //in the testing arena html page. It will change the code in the
+    //code editor to the text contents of the file selected.
+    var editor = ace.edit("div_editorP" + playerNum);
+    if (f.files && f.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var output = e.target.result;
+            editor.setValue(output.toString(), 1);
+        };
+        reader.readAsText(f.files[0]);
     }
-    return xhr;
 }
 
 function upload(playerNum) {
@@ -36,7 +34,7 @@ function upload(playerNum) {
             break;
         case 4:
             defaultBotChoice(playerNum);
-            break
+            break;
         default:
             //setError("mes=t2");
             break;
@@ -73,30 +71,49 @@ function getUploadType(playerNum) {
 }
 
 function uploadFileChoice(playerNum) {
-    var selectedFile = document.getElementById("file_p" + playerNum + "Upload").files[0];
-    alert(selectedFile.name);
-    //Can send this file up to server now
+    //Since we're just placing the code from the file in the code editor,
+    //for the sake of writing duplicate code, just call uploadCodeChoice(playerNum)
+    //from within here..
+
+    uploadCodeChoice(playerNum);
 }
 
 function uploadCodeChoice(playerNum) {
-    var editor = ace.edit("div_editorP1");
-    var selectedCode = editor.getValue();
-    alert(selectedCode);
-    // has text to send to server now
-     var url = 'http://localhost:5050/UploadBot;
-     
-    // Create the CORS request to the server
-    var xhr = createCORSRequest('POST', url);
-    if (!xhr) {
-        alert('CORS not supported');
-        return;
-    }
+    //  Current Test Arena Bots Scheme - as of 4/3/16 9:58pm
+
+    //  CREATE TABLE IF NOT EXISTS `test_arena_bots` (
+    //  `uid` int(11) NOT NULL,
+    //  `challenge_id` int(11) NOT NULL,
+    //  `language_id` int(11) NOT NULL DEFAULT 1,
+    //  `needs_compiled` bit(1) NOT NULL DEFAULT 1,
+    //  `errors`   int(11), 
+    //  `warnings` int(11),
+    //  `error_messages` text,
+    //  `warning_messages` text,
+    //  `source_code` mediumtext NOT NULL,
+    //  PRIMARY KEY (`uid`, `challenge_id`, `language_id`),
+    //  KEY (`uid`),
+    //  KEY (`challenge_id`),
+    //  KEY (`language_id`))
+
+    var challenge_id = getChallengeID();
+    var language_id = 1;
+    var needs_compiled = 1;
+    var errors = 0;
+    var warnings = 0;
+    var error_messages = 'none';
+    var warning_messages = 'none';
+    var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
+
+    uploadCode(selectedCode, challenge_id, language_id, needs_compiled);
 }
 
 function publicBotChoice(playerNum) {
-    
+    //Should grab name of bot and attempt to find it in one of the databases...
+    //Return an error code if it isn't found or isn't public
 }
 
 function defaultBotChoice(playerNum) {
-
+    //Should have some default bot selection for each challenge...
+    //I'm still figuring out where this is stored
 }

@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8" />
     <title>Testing Arena</title>
-    <style type="text/css"></style>
     
+    <!--EXTERNAL IMPORTS-->
     <script src="//cdn.jsdelivr.net/phaser/2.4.6/phaser.min.js"></script>
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/mode-java.js" type="text/javascript" charset="utf-8"></script>
 
-
+    <!--GENERIC SCRIPTS-->
+    <script type="text/javascript" src="assets/js/QueryStringFunctions.js"></script>
     <script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
     <script type="text/javascript" src="assets/js/TestGameCommands.js"></script>
+    <script type="text/javascript" src="assets/js/Error.js"></script>
+    <script type="text/javascript" src="assets/js/StatusBar.js"></script>
+    <script type="text/javascript" src="assets/js/ServerInteractionFunctions.js"></script>
+
+    <!--TESTING ARENA SPECIFIC-->
     <script type="text/javascript" src="assets/js/TestingMode/TestingArenaButtonClicks.js"></script>
     <script type="text/javascript" src="assets/js/TestingMode/TestingModeController.js"></script>
     <script type="text/javascript" src="assets/js/TestingMode/BotUploader.js"></script>
-    <script type="text/javascript" src="assets/js/statusbar.js"></script>
 
+    <!--CSS IMPORTS-->
     <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
     <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
 </head>
@@ -36,180 +42,35 @@
                     <input type="radio" id="rb_p1Public" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
                     <input type="radio" id="rb_p1Default" name="p1BotType" onclick="Player1_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
 
-                    <input id="file_p1Upload" type="file" />
+                    <input id="file_p1Upload" type="file" onchange="readText(this, 1)"/>
                     <div id="div_p1PublicBot" style="display:none">
                         <input id="name_p1PublicBot" type="text" /> Enter the name of the public bot.
                     </div>
                     <div id="div_uploadBots1">
                         <br />
-                        <button id="btn_P1Upload" onclick="UploadBot_click(this)">Upload Bot</button>
+                        <button id="btn_P1Upload" onclick="UploadBot_click(this)">Upload Bot</button><br /><br />
+                        <button id="btn_P1Save" onclick="SaveBot_click(this)">Save Bot</button>
                     </div>
                 </div>
 
-                <div id="div_editorP1" class="IDE" style="display:none;">
-import java.util.Scanner;
+                <div id="div_editorHolder1" style="display:none;">
+                    <div id="div_editorP1" class="IDE">/*Write or paste your code here*/</div>
 
+                        <script>
+                            var editor = ace.edit("div_editorP1");
+                            editor.setTheme("ace/theme/monokai");
+                            var JavaScriptMode = ace.require("ace/mode/java").Mode;
+                            editor.session.setMode(new JavaScriptMode());
+                            editor.setShowPrintMargin(false);
+                        </script>
 
-public class Flagger {
+                    <div id="div_languagesDropDown1">
+                        <select id="ddl_languages1">
+                        </select>
+                    </div>
 
-public static void main(String args[]){
-
-
-int flagsCaptured = 0;
-int flagsNeeded = 10;
-int Seniors = 3;
-int turn = 1;
-int EnemySeniors = 3;
-int EnemyFlagsCaptured = 0;
-
-//Deciding to make it easier to change
-//the total number of students
-int totalPossible = 150;
-int EnemyStudents = totalPossible;
-int totalStudents = totalPossible;
-Scanner sc = new Scanner(System.in);
-System.out.println("Total Students: " + totalStudents);
-System.out.println("Total Seniors: " + Seniors);
-System.out.println("Flags Captured: " + flagsCaptured);
-System.out.println("Enemy Flags Captured: " + EnemyFlagsCaptured);
-
-System.out.print("Enter a command: ");
-
-while (sc.hasNext()){
-String inputstring = sc.next();
-String[] parts = inputstring.split(";");
-if (parts[0].equals("senior")){
-if (Seniors == 0){
-System.out.println("Illegal move: Not enough Seniors.");
-}
-else {
-Seniors--;
-}
-}
-int sentStudents = 0;
-if (parts[0].equals("send")){
-int students = Integer.parseInt(parts[1]);
-if (students > totalStudents){
-System.out.println("Illegal move: Not enough Students.");
-}
-else
-{
-sentStudents = students;
-}
-}
-if (parts[0].equals("free")){
-//This is here in case we change the freedom rules
-if (totalStudents >= totalPossible){
-totalStudents = totalPossible;
-}
-else {
-totalStudents += (totalPossible - totalStudents)/2 ;
-}
-}
-
-String botTurn = easybot(EnemyStudents, turn, EnemySeniors);
-
-String[] botmove = botTurn.split(";");
-if (botmove[0].equals("senior")){
-if (EnemySeniors == 0){
-System.out.println("Bot Illegal move: Not enough Seniors.");
-}
-else {
-EnemySeniors--;
-}
-}
-int botStudents = 0;
-if (botmove[0].equals("send")){
-int students = Integer.parseInt(botmove[1]);
-if (students > EnemyStudents){
-System.out.println("Bot Illegal move: Not enough Students.");
-}
-else
-{
-botStudents = students;
-}
-}
-if (botmove[0].equals("free")){
-//This is also here in case we wish to change "free"
-if (EnemyStudents >= totalPossible){
-EnemyStudents = totalPossible;
-}
-else {
-EnemyStudents += (totalPossible - EnemyStudents)/2 ;
-}
-}
-System.out.println();
-if (parts[0].equals("senior")){
-System.out.println("User Senior Sent");
-}
-if (botmove[0].equals("senior")){
-System.out.println("Bot Senior Sent");
-}
-System.out.println("Students sent: " + sentStudents);
-System.out.println("Enemies sent: " + botStudents);
-System.out.println();
-if (botmove[0].equals("senior") && parts[0].equals("senior")){
-
-}
-else if (botmove[0].equals("senior")){
-totalStudents -= sentStudents;
-EnemyFlagsCaptured += 1;
-}
-else if (parts[0].equals("senior")){
-EnemyStudents -= botStudents;
-flagsCaptured += 1;
-}
-else if (sentStudents > botStudents){
-EnemyStudents -= botStudents;
-flagsCaptured += 1;
-}
-else if (sentStudents < botStudents){
-totalStudents -= sentStudents;
-EnemyFlagsCaptured += 1;
-}
-else {
-
-}
-System.out.println("Students Remaining " + totalStudents);
-System.out.println("Seniors Remaining: " + Seniors);
-System.out.println("Ally Students Captured: " + (totalPossible - totalStudents));
-System.out.println("Enemy Students Captured: " + (totalPossible - EnemyStudents));
-System.out.println("Flags Captured: " + flagsCaptured);
-System.out.println("Enemy Flags Captured: " + EnemyFlagsCaptured);
-
-if (flagsCaptured == flagsNeeded){
-System.out.println("You win!");
-break;
-}
-if (EnemyFlagsCaptured == flagsNeeded){
-System.out.println("You lose.");
-}
-turn++;
-System.out.print("Enter a command:    ");
-}
-
-}
-public static String easybot(int Studentsleft, int turnnum, int Seniorsleft) {
-if (turnnum % 3 == 0) {
-if (Seniorsleft != 0) {
-return 	"senior";
-}
-}
-else if (Studentsleft >= 50){
-return "send;50";
-}
-else return "free";
-return "free";
-}
-}</div>
-
-                <script>
-                    var editor = ace.edit("div_editorP1");
-                    editor.setTheme("ace/theme/monokai");
-                    var JavaScriptMode = ace.require("ace/mode/java").Mode;
-                    editor.session.setMode(new JavaScriptMode());
-                    editor.setShowPrintMargin(false);
-                </script>
+                    <div id="div_compilerErrors1" class="compilerErrors">Compilers Errors will be here.</div> 
+                </div>
             </div>
 
             <div id="div_Player2Tab" class="main_tab_hidden">
@@ -220,29 +81,39 @@ return "free";
                     <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
                     <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
 
-                    <input id="file_p2Upload" type="file" />
+                    <input id="file_p2Upload" type="file" onchange="readText(this, 2)" />
                     <div id="div_p2PublicBot" style="display:none">
-                        <input id="name_p2PublicBot" type="text" /> Enter the name of the public bot.
+                        Enter the name of the public bot.<br/>
+                        <input id="name_p2PublicBot" type="text" /> 
                     </div>
                     <div id="div_uploadBots2">
                         <br />
-                        <button id="btn_P2Upload" onclick="UploadBot_click(this)">Upload Bot</button>
+                        <button id="btn_P2Upload" onclick="UploadBot_click(this)">Upload Bot</button><br /><br />
+                        <button id="btn_P2Save" onclick="SaveBot_click(this)">Save Bot</button>
                     </div>
                 </div>
 
-                <div id="div_editorP2" class="IDE" style="display:none;"></div>
+                <div id="div_editorHolder2" style="display:none;">
+                    <div id="div_editorP2" class="IDE">/*Write or paste your code here*/</div>
+                    <script>
+                        var editor = ace.edit("div_editorP2");
+                        editor.setTheme("ace/theme/monokai");
+                        var JavaScriptMode = ace.require("ace/mode/java").Mode;
+                        editor.session.setMode(new JavaScriptMode());
+                        editor.setShowPrintMargin(false);
+                    </script>
 
-                <script>
-                    var editor = ace.edit("div_editorP2");
-                    editor.setTheme("ace/theme/monokai");
-                    var JavaScriptMode = ace.require("ace/mode/java").Mode;
-                    editor.session.setMode(new JavaScriptMode());
-                    editor.setShowPrintMargin(false);
-                </script>
+                    <div id="div_languagesDropDown2">
+                        <select id="ddl_languages2"></select>
+                    </div>
+
+                    <div id="div_compilerErrors2" class="compilerErrors">Compilers Errors will be here.</div>
+                </div>
+
             </div>
 
             <div id="div_GameDisplayTab" class="main_tab_hidden">
-                <div id="div_uploadWarnings">Warning: You must click 'Upload' for Player 1 and Player 2 to ensure the correct bot is selected!</div>
+                <div id="div_uploadWarnings"></div>
                 <div id="div_gameCanvas"></div>
 
                 <div id="div_GameDisplayButtons">
@@ -265,6 +136,8 @@ return "free";
                 </tr>
             </table>
         </div>
+
+        <div id="main"></div>
     </div>
 </body>
 </html>
