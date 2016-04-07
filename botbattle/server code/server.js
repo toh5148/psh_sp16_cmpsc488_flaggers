@@ -31,7 +31,7 @@ function openConnection() {
 	    if(err){
 	        console.log(colors.red(err));
 	    } else {
-	        console.log(colors.green('Connection established'));
+	        console.log(colors.green('Connection established.'));
 	    }
 	});
 }
@@ -55,71 +55,76 @@ function closeConnection() {
 
 // ****************************************************
 
-function getMatch(id, callback) {
+function getMatch(matchID, callback) {
     var retval;
 
     // column names: match_id, winner, game_initialization_message, turns, ready_for_playback
-    db.query('SELECT * FROM matches WHERE match_id = ?', id, function (err, rows) {
+    db.query('SELECT * FROM matches WHERE match_id = ?', matchID, function (err, rows) {
         if (err) { // error with the database
             retval = 'false';
             console.log(colors.red(err));
-        } else if (rows[0] == undefined) { // Match does not exists
+        } else if (rows[0] == undefined) {  // Match does not exists
 			retval = 'null';
-			console.log(colors.red('ERROR: Match with id:' + id + ' not found.'));
-        } else { // Match exist
+			console.log(colors.red('ERROR: Match with id:' + matchID + ' not found.'));
+        } else {                            // Match exist
             var match = rows[0];           
             var ready = match.ready_for_playback.toString('hex');  
 			
-            if (ready == false) { // match is not ready for playback
+            if (ready == false) {           // match is not ready for playback
                 retval = '-1';
-                console.log(colors.yellow('ERROR: Match with id:' + id + ' is not ready for playback.'));
+                console.log(colors.yellow('ERROR: Match with id:' + matchID + ' is not ready for playback.'));
             } else {
                 var winnerSTR = match.winner;
 				var winnerOBJ = '{"winner": "' + winnerSTR + '"}'; // convert the string to a JSON object
                 var init_message = match.game_initialization_message;
                 var turns = match.turns;
+
                 retval = JSON.parse('[' + winnerOBJ + ',' + init_message + ',' + turns + ']');
-                console.log('Data for match with id:' + id + ' returned.');
+                console.log('Data for match with id:' + matchID + ' sent to the client.');
             }
         }
         callback(retval); // send the result
     });
 }
 
-function getTestMatchTurn(uid, cid, callback){
+function getTestMatchTurn(userID, challengeID, callback){
     var retval;
 
 	// column names: uid, challenge_id, game_initialization_message, turns, last_turn_status
 	db.query('SELECT game_initialization_message, turns, last_turn_status FROM test_arena_matches ' + 
-	'WHERE uid = ' + uid + ' AND challenge_id = ' + cid + ' AND last_turn_status = "READY"', function (err, rows) {
+	'WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {			
             retval = 'false';
             console.log(colors.red(err));
-        } else if (rows[0] == undefined) { // Match does not exists           
+        } else if (rows[0] == undefined) {  // Match does not exists           
             retval = 'null';	
-            console.log(colors.red('ERROR: Test instance with user_id:' + uid + ' and challenge_id: ' + cid + ' not found.'));
-        } else { // Match exist       	
+            console.log(colors.red('ERROR: Test instance with user_id:' + userID + ' and challenge_id:' + challengeID + ' not found.'));
+        } else {                            // Match exist       	
             var match = rows[0];		      
-            var ready = match.last_turn_status;
+            var status = match.last_turn_status;
             
-            if (ready == 'READY'){
+            if (status == 'PENDING') {       // turn is not ready to be displayed
+                retval = '-1';
+                console.log(colors.yellow('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                    ' is not ready to be displayed.'));               
+            } else {
                 var turns = match.turns;
                 var init_message = match.game_initialization_message;
+
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
+                console.log('Data for match with user_id:' + userID + ' and challange_id:' + challengeID + ' sent to the client.');
 
                 // Change the last_turn_status to DISPLAYED
-                db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + uid
-                    + ' AND challenge_id = ' + cid, function (err, rows) {
-                        if (err) {
-                            console.log(colors.red(err));
-                        } else {
-                            console.log('Set match with uid:' + uid + '  cid:' + cid + '  to DISPLAYED in test_arena_matches.');
-                        }
-                    });
-            } else  {   // turn is not ready to be displayed
-                retval = '-1';
-                console.log(colors.yellow('ERROR: Test instance with user_id: ' + uid + ' and challenge_id: ' + cid +
-                    ' is not ready to be displayed.'));
+                if (status == 'READY') {
+                    db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + userID
+                        + ' AND challenge_id = ' + challengeID, function (err, rows) {
+                            if (err) {
+                                console.log(colors.red(err));
+                            } else {
+                                console.log('Set match with user_id:' + userID + ' and challenge_id:' + challengeID + ' to DISPLAYED in test_arena_matches.');
+                            }
+                        });
+                }
             }		
         }         
         callback(retval); // send the result        
@@ -145,12 +150,12 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
                         console.log(colors.red(err));
                     } else {
                         retval = true;
-                        console.log('Row inserted into test_arena_bots');
+                        console.log('Row inserted into test_arena_bots.');
                     }
                     callback(retval); // send the result
                 });
             }
-            else {  // Code for this challenge exists in the db, update the row
+            else {                      // Code for this challenge exists in the db, update the row
                 var codeToUpdate = { language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
 
                 db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
@@ -159,7 +164,7 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
                         console.log(colors.red(err));
                     } else {
                         retval = true;
-                        console.log('Row updated in test_arena_bots');
+                        console.log('Row updated in test_arena_bots.');
                     }
                     callback(retval); // send the result
                 });
@@ -186,9 +191,9 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
 
 // localhost:5050/get_match?id=12345
 app.get('/get_match', function(req, res, next){
-    var id = req.query.id;
+    var match_id = req.query.id;
 
-    getMatch(id, function(data){       
+    getMatch(match_id, function (data) {
         res.header('Access-Control-Allow-Origin', base);
         res.send(data);
     });
@@ -196,11 +201,11 @@ app.get('/get_match', function(req, res, next){
 
 // localhost:5050/get_test_turn?cid=101
 app.get('/get_test_turn', function(req, res, next){
-    var cid = req.query.cid;
-    //var uid = req.session.user;
-    var uid = 12345;
+    var challenge_id = req.query.cid;
+    //var user_id = req.session.user;
+    var user_id = 12345;
 
-	getTestMatchTurn(uid, cid, function (data) {		
+    getTestMatchTurn(user_id, challenge_id, function (data) {
 		res.header('Access-Control-Allow-Origin', base);
 		res.send(data); 
 	});
@@ -208,14 +213,14 @@ app.get('/get_test_turn', function(req, res, next){
 
 // localhost:5050/uploadCode?cid=101&lid=1&needs_compiled=1
 app.post('/uploadCode', function(req, res, next){
-    var text = req.body;
-    //var uid = req.session.user;
-    var uid = 12345;
-	var cid = req.query.cid;
-	var lid = req.query.lid;
+    var source_code = req.body;
+    //var user_id = req.session.user;
+    var user_id = 12345;
+	var challenge_id = req.query.cid;
+	var language_id = req.query.lid;
 	var needs_compiled = req.query.needs_compiled;
 
-    uploadCode(text, uid, cid, lid, needs_compiled, function (data) {
+	uploadCode(source_code, user_id, challenge_id, language_id, needs_compiled, function (data) {
 	    res.header('Access-Control-Allow-Origin', base);
 	    res.send(data);
     });

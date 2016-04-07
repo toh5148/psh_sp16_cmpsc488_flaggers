@@ -26,7 +26,7 @@ function createCORSRequest(method, url) {
 
 ********************************************************************/
 
-function uploadCode(selectedCode, uid, challenge_id, language_id, needs_compiled) {
+function uploadCode(selectedCode, challenge_id, language_id, needs_compiled) {
     var url = base_url + "/uploadCode?cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
     
     // Create the CORS request to the server
@@ -83,15 +83,12 @@ function getMatch(matchID) {
     xhr.onload = function () {
         var response = xhr.responseText;
         //console.log(response);
-        if (response == 'false') {       // database encountered an error
-            console.log('The database encountered an error.');
+        if (response == 'false') {          // database encountered an error
             alert('The database encountered an error.');
-        } else if (response == 'null') { // match does not exist
-            console.log('The specified match with id:' + matchID + ' does not exist.');
+        } else if (response == 'null') {    // match does not exist
             alert('The specified match with id:' + matchID + ' does not exist.');
-        } else if (response == '-1') {    // match is not ready for playback
+        } else if (response == '-1') {      // match is not ready for playback
             // poll db again
-            console.log('The specified match with id:' + matchID + ' is not ready for playback.');
             alert('The specified match with id:' + matchID + ' is not ready for playback.');
         } else {
             var json = JSON.parse(response);
@@ -141,14 +138,13 @@ function getTestTurn(challengeID) {
     // Successfully got a response
     xhr.onload = function () {
         var response = xhr.responseText;
-        if (response == 'false') {       // database encountered an error
+        if (response == 'false') {           // database encountered an error
             alert('The database encountered an error.');
-        } else if (response == 'null') { // match does not exist
+        } else if (response == 'null') {    // match does not exist
             alert('The specified match with challenge_id:' + challengeID + ' does not exist.');
-        } else if (response == '-1') {    // match is not ready for playback
+        } else if (response == '-1') {       // match is not ready for playback
             // poll db again
-            console.log('The specified match with cid:' + challengeID + ' is not ready for playback.');
-            alert('The specified match with cid:' + challengeID + ' is not ready for playback.');
+            alert('The specified match with challenge_id:' + challengeID + ' is not ready for playback.');
         } else {
             var json = JSON.parse(response);           
             var init_message = json[0];
