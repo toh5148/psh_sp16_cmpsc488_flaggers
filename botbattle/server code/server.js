@@ -10,7 +10,7 @@ var app = express();
 var port = 5050;
 var numAttempts = 0; // number of ties we tried to connect to the db and failed
 var db; // connection variable
-var base = 'http://localhost:13558';
+var base = 'http://localhost:50363';
 
 app.use(cookieParser());
 app.use(bodyParser.text());
@@ -112,7 +112,7 @@ function getTestMatchTurn(userID, challengeID, callback){
                 var init_message = match.game_initialization_message;
 
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
-                console.log('Data for match with user_id:' + userID + ' and challange_id:' + challengeID + ' sent to the client.');
+                console.log('Data for match with user_id:' + userID + ' and challenge_id:' + challengeID + ' sent to the client.');
 
                 // Change the last_turn_status to DISPLAYED
                 if (status == 'READY') {
@@ -129,6 +129,74 @@ function getTestMatchTurn(userID, challengeID, callback){
         }         
         callback(retval); // send the result        
     }); 
+}
+
+function getLanguages(callback) {
+    var retVal;
+    // column names: language_id, name
+    db.query('SELECT * FROM languages', function (err, rows) {
+        if (err) { // error with the database
+            retVal = 'false';
+            console.log(colors.red(err));
+        } else if (rows[0] == undefined) {  // No languages in table
+			retVal = 'null';
+			console.log(colors.red('ERROR: No languages found'));
+        } else {                            // Language(s) exist
+			var rowsLeft = true;
+			var i = 0;
+			retVal = '[';
+			while(rowsLeft)
+			{
+				retVal += '\"' + rows[i].name + '\",' + rows[i].language_id;
+				i++;
+				
+				if(rows[i] == undefined) {
+					rowsLeft = false;
+				}
+				else {
+					retVal += ',';
+				}
+			}
+			retVal += ']';
+			retVal = JSON.parse(retVal);
+			console.log(colors.green('Returned language list'));
+        }
+        callback(retVal); // send the result
+    });
+}
+
+function getTemplates(cid, callback) {
+    var retVal;
+    // column names: challenge_id, language_id, source_code
+    db.query('SELECT language_id, source_code FROM test_arena_template_bots WHERE challenge_id = ' + cid, function (err, rows) {
+        if (err) { // error with the database
+            retVal = 'false';
+            console.log(colors.red(err));
+        } else if (rows[0] == undefined) {  // No templates with cid
+			retVal = 'null';
+			console.log(colors.red('WARNING: No templates found'));
+        } else {                            // Template(s) exist
+			var rowsLeft = true;
+			var i = 0;
+			retVal = '[';
+			while(rowsLeft)
+			{
+				retVal += '\"' + rows[i].source_code + '\",' + rows[i].language_id;
+				i++;
+				
+				if(rows[i] == undefined) {
+					rowsLeft = false;
+				}
+				else {
+					retVal += ',';
+				}
+			}
+			retVal += ']';
+			retVal = JSON.parse(retVal);
+			console.log(colors.green('Returned test arena bot templates list'));
+        }
+        callback(retVal); // send the result
+    });
 }
 
 
@@ -223,6 +291,25 @@ app.post('/uploadCode', function(req, res, next){
 	uploadCode(source_code, user_id, challenge_id, language_id, needs_compiled, function (data) {
 	    res.header('Access-Control-Allow-Origin', base);
 	    res.send(data);
+    });
+});
+
+// localhost:5050/get_languages
+app.get('/get_languages', function(req, res, next){
+	
+    getLanguages(function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
+// localhost:5050/get_templates?cid=101
+app.get('/get_templates', function(req, res, next){
+	var challenge_id = req.query.cid;
+	
+    getTemplates(challenge_id, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
     });
 });
 

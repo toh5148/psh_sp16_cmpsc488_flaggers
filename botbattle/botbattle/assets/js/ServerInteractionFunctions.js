@@ -162,15 +162,61 @@ function getTestTurn(challengeID) {
 }
 
 function getLanguages() {
-    //TODO: Query the 'languages' table for all languages and return them as the json object
-    //This functionality is as per Dr. Blum - 4/5/16
-    //return languages;
+    var url = base_url + '/get_languages';
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('GET', url);
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
+
+    // Successfully got a response
+    xhr.onload = function () {
+        var response = xhr.responseText;
+        //console.log(response);
+        if (response == 'false') {          // database encountered an error
+            alert('The database encountered an error.');
+        } else {
+            var json = JSON.parse(response);
+            setLanguages(json);
+        }
+    };
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    xhr.send();
 }
 
 function getTemplates(cid) {
-    //TODO: Query the 'bot templates' table for all templates relating to the 'cid' and return the json object
-    //This functionality is as per Dr. Blum - 4/5/16
-    //return templates;
+    var url = base_url + '/get_templates?cid=' + cid;
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('GET', url);
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
+
+    // Successfully got a response
+    xhr.onload = function () {
+        var response = xhr.responseText;
+        //console.log(response);
+        if (response == 'false') {          // database encountered an error
+            alert('The database encountered an error.');
+        } else {
+            var json = JSON.parse(response);
+            setTemplates(json);
+        }
+    };
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    xhr.send();
 }
 
 /********************************************************************

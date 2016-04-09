@@ -1,12 +1,15 @@
 ﻿var currentTurn = 1;
 var tempCounter = 1; //TODO REMOVE
 
+var languageNames = [];
+var languageIDs = [];
+var templatesCode = [];
+
 function beginPageLoad() {
 
     var cid = getChallengeID(); //from QueryStringFunctions.js
-    //var languages = getLanguages();
-    //var templates = getTemplates(cid);
-
+    getLanguages();
+    getTemplates(cid);
 
     if (cid == -1) {
         // No challenge specified
@@ -18,25 +21,32 @@ function beginPageLoad() {
         
         initTestingArena(cid);
     }
-
-    //setLanguages();
-    document.getElementById("ddl_languages1").innerHTML = "<option>Java</option>"; // TODO: TOM - set the list options to languages sent by db
-    document.getElementById("ddl_languages1").innerHTML += "<option>Python</option>";
-    document.getElementById("ddl_languages1").innerHTML += "<option>C++</option>";
-
-    document.getElementById("ddl_languages2").innerHTML = "<option>Java</option>"; // TODO: TOM - set the list options to languages sent by db
-    document.getElementById("ddl_languages2").innerHTML += "<option>Python</option>";
-    document.getElementById("ddl_languages2").innerHTML += "<option>C++</option>";
 }
 
 function initTestingArena(cid) {
-    //setInput(); //TODO: TOM
-    getTestTurn(cid);
     //Write first pending turn request
-    
-    //When retrieved, get the game initilization message and set that
-    
-    //Start testing arena functions (allow users to upload/write) and hit next turn
+    writeInitialTurnRequest(cid);
+    //Write a function here that polls until completion??
+    //getInitialTurn(cid);
+    //When this function is finished, it will call handleTestTurns with the true flag set
+}
+
+function writeInitialTurnRequest(cid) {
+
+}
+
+function handleTestTurns(init, turnData, first) {
+    if (first) {
+        //If it's the first turn, just set the initMessage
+        //turnData will be null in this condition
+        gameInitializer = init;
+        ready = true;
+        create();
+    }
+    else {
+        //It's not the first turn, just set the turns to be turnData
+        turns = turnData;
+    }
 }
 
 function updateCompilerErrors(playerNum) {
@@ -54,10 +64,51 @@ function addCompilerError(playerNum, error) {
     document.getElementById("div_compilerErrors" + playerNum).innerHTML += error + tempCounter + "<br/>";
 }
 
-function handleTestTurns(init, turnData) {
-    gameInitializer = init;
-    turns = turnData;
-    console.log("Set turn data commands to GDM vars.");
-    ready = true;
-    create();
+function setLanguages(languages) {
+    //languages parameter is of JSON type
+    var languagesLeft = true;
+    var i = 0;
+    var j = 0;
+
+    while (languagesLeft) {
+        languageNames[j] = languages[i];
+        languageIDs[j] = languages[i+1];
+
+        i = i + 2;
+        j = j + 1;
+
+        if(languages[i] == undefined) {
+            languagesLeft = false;
+        }
+    }
+
+    //Combination of languageNames[a] and languageIDs[a] links the language to it's value/id
+}
+
+function setTemplates(templates) {
+    //languages parameter is of JSON type
+    var templatesLeft = true;
+    var i = 0;
+
+    var tempSource;
+    var tempID;
+
+    while (templatesLeft) {
+        tempSource = templates[i];
+        tempID = templates[i + 1];
+        
+        for(var j = 0; j < languageIDs.length; j++) {
+            if(languageIDs[j] == tempID) {
+                templatesCode[j] = tempSource;
+            }
+        }
+
+        i = i + 2;
+
+        if (templates[i] == undefined) {
+            templatesLeft = false;
+        }
+    }
+
+    //Combination of templatesCode[a] and languageIDs[a] links the templateCode to it's value/id
 }
