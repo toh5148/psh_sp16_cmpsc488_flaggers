@@ -179,7 +179,7 @@ function getLanguages() {
             alert('The database encountered an error.');
         } else {
             var json = JSON.parse(response);
-            setLanguages(json);
+            setLanguageVariables(json);
         }
     };
 
@@ -208,7 +208,7 @@ function getTemplates(cid) {
             alert('The database encountered an error.');
         } else {
             var json = JSON.parse(response);
-            setTemplates(json);
+            setTemplateVariables(json);
         }
     };
 

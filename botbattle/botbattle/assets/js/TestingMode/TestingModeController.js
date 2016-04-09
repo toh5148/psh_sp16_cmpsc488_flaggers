@@ -1,9 +1,16 @@
 ﻿var currentTurn = 1;
 var tempCounter = 1; //TODO REMOVE
 
+
+//These are used for keeping track of language and templates
 var languageNames = [];
 var languageIDs = [];
 var templatesCode = [];
+var langReady = false;
+var templatesReady = false;
+
+
+
 
 function beginPageLoad() {
 
@@ -18,13 +25,13 @@ function beginPageLoad() {
     else {
         //Passed all error checks
         //Begin Testing Mode Initilization
-        
         initTestingArena(cid);
     }
 }
 
 function initTestingArena(cid) {
     //Write first pending turn request
+
     writeInitialTurnRequest(cid);
     //Write a function here that polls until completion??
     //getInitialTurn(cid);
@@ -64,8 +71,7 @@ function addCompilerError(playerNum, error) {
     document.getElementById("div_compilerErrors" + playerNum).innerHTML += error + tempCounter + "<br/>";
 }
 
-function setLanguages(languages) {
-    //languages parameter is of JSON type
+function setLanguageVariables(languages) {
     var languagesLeft = true;
     var i = 0;
     var j = 0;
@@ -82,11 +88,16 @@ function setLanguages(languages) {
         }
     }
 
+    if (templatesReady) {
+        //Means it has been incremented twice
+        setLanguageAndTemplates();
+    }
+    langReady = true;
     //Combination of languageNames[a] and languageIDs[a] links the language to it's value/id
 }
 
-function setTemplates(templates) {
-    //languages parameter is of JSON type
+function setTemplateVariables(templates) {
+    //TODO: theres a bug with this if it is returned before languages are set...Tom is working on it
     var templatesLeft = true;
     var i = 0;
 
@@ -110,5 +121,34 @@ function setTemplates(templates) {
         }
     }
 
+    if (langReady) {
+        //Means it has been incremented twice
+        setLanguageAndTemplates();
+    }
+
+    templatesReady = true;
     //Combination of templatesCode[a] and languageIDs[a] links the templateCode to it's value/id
+}
+
+function setLanguageAndTemplates() {
+    //Function will set languages drop down and first listed source code to the editor
+    for (var i = 1; i <= 2; i++) {
+        document.getElementById("ddl_languages" + i).innerHTML = "";
+
+        for (var j = 0; j < languageIDs.length; j++) {
+            document.getElementById("ddl_languages" + i).innerHTML += "<option value=\'" + languageIDs[j] + "\'>" + languageNames[j] + "</option>";
+        }
+        var editor = ace.edit("div_editorP" + i);
+        editor.setValue(templatesCode[0]);
+    }
+}
+
+function langChange(playerNum) {
+    var editor = ace.edit("div_editorP" + playerNum);
+    var value = document.getElementById("ddl_languages" + playerNum).value;
+    for(var j = 0; j < languageIDs.length; j++) {
+        if(languageIDs[j] == value) {
+            editor.setValue(templatesCode[j]);
+        }
+    }
 }
