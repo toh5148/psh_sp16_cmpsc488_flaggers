@@ -4,6 +4,17 @@ import java.util.Scanner;
 public class Flagger {
 
 	public static void main(String args[]){
+	//TODO Need to make the JSON turn array, and will ask (again, to be safe) about that format
+		//this week.  After doing so, will need to implement the game logic within
+		//the named functions, and make sure the return values line up for the
+		//Game Evaluation team's specifications.  The while loop logic should be mostly fine,
+		//but I'll need to change the input from System.in to the JSON string.
+		
+	//TODO Possibly add random chance to break ties.  Blum doesn't seem to like
+		//the idea of ties for tournament play, and although I've made the odds of
+		//a tie almost impossible in competative play, two students could easily
+		//make two bots to intentionally make a tie.  Still, I don't know if I like
+		//the random chance idea.  Still debating it.
 	
 	//Variables used to keep track of game data
 	int flagsCaptured = 0;
@@ -20,7 +31,7 @@ public class Flagger {
 	int EnemyStudents = totalPossible;
 	int totalStudents = botPossible;
 	int reinforceAmount = 10;
-	
+	boolean gameover = false;
 	Scanner sc = new Scanner(System.in);
 	
 	//Initial data relayed to a human user.  In the bot game version,
@@ -33,7 +44,12 @@ public class Flagger {
 
 	System.out.print("Enter a command: ");
 	
-	while (sc.hasNext()){
+	
+	//This while loop will soon be put inside the Game Evaluation function
+	//and the generate turn function should be called where I generate the
+	//human and bot turns.
+	
+	while (sc.hasNext() && turn != 100){
 		boolean attackSenior = false;
 		boolean defendSenior = false;
 		boolean botAttackSenior = false;
@@ -251,22 +267,55 @@ public class Flagger {
 		System.out.println("Enemy Students Captured: " + (botPossible - EnemyStudents));
 		System.out.println("Flags Captured: " + flagsCaptured);
 		System.out.println("Enemy Flags Captured: " + EnemyFlagsCaptured);
-	
+		gameover = false;
 		//Victory condition check
-		if (flagsCaptured == flagsNeeded && EnemyFlagsCaptured == flagsNeeded){
-			System.out.println("It's a tie!");
+		
+		//Made ties much more difficult to happen.
+		if (flagsCaptured >= flagsNeeded && EnemyFlagsCaptured >= flagsNeeded && flagsCaptured == EnemyFlagsCaptured){
+			System.out.println("Game is currently tied. Next round is a tiebreaker.");
 		}
-		if (flagsCaptured == flagsNeeded){
+		else if (flagsCaptured >= flagsNeeded){
 			System.out.println("You win!");
+			gameover = true;
 			break;
 		}
-		if (EnemyFlagsCaptured == flagsNeeded){
+		else if (EnemyFlagsCaptured >= flagsNeeded){
 			System.out.println("You lose.");
+			gameover = true;
 			break;
 		}
 		turn++;
 		//Added this to better keep track of what commands the user entered.
 		System.out.print("Enter a command: ");
+		}
+		
+		//If the game is not over by turn 100, then
+		//whoever has the most flags will win.
+	
+		//In the case of equal flags, whoever has the most students left will win.
+	
+		//If those are also equal, then both teams have played identically, and
+		//the match will be declared a tie.
+		if (turn == 100 && !gameover) {
+			if (flagsCaptured > EnemyFlagsCaptured){
+				System.out.println("You won the tiebreaker!");
+			}
+			else if (flagsCaptured < EnemyFlagsCaptured){
+				System.out.println("You lost the tiebreaker!");
+			}
+			else {
+				if (totalStudents > EnemyStudents){
+					System.out.println("You won the tiebreaker!");
+				}
+				else if (EnemyStudents > totalStudents){
+					System.out.println("You lost the tiebreaker!");
+				}
+				else {
+					System.out.println("It's a tie.");
+				}
+				
+			}
+				
 		}
 	
 	}
