@@ -181,6 +181,7 @@ function getLanguages() {
             var json = JSON.parse(response);
             setLanguageVariables(json);
         }
+        getTemplates(getChallengeID());
     };
 
     xhr.onerror = function () {

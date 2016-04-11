@@ -6,17 +6,11 @@ var tempCounter = 1; //TODO REMOVE
 var languageNames = [];
 var languageIDs = [];
 var templatesCode = [];
-var langReady = false;
-var templatesReady = false;
-
-
-
 
 function beginPageLoad() {
 
     var cid = getChallengeID(); //from QueryStringFunctions.js
-    getLanguages();
-    getTemplates(cid);
+    getLanguages();//Moved getTemplates to server response function in getLanguages
 
     if (cid == -1) {
         // No challenge specified
@@ -88,11 +82,6 @@ function setLanguageVariables(languages) {
         }
     }
 
-    if (templatesReady) {
-        //Means it has been incremented twice
-        setLanguageAndTemplates();
-    }
-    langReady = true;
     //Combination of languageNames[a] and languageIDs[a] links the language to it's value/id
 }
 
@@ -121,12 +110,8 @@ function setTemplateVariables(templates) {
         }
     }
 
-    if (langReady) {
-        //Means it has been incremented twice
-        setLanguageAndTemplates();
-    }
 
-    templatesReady = true;
+    setLanguageAndTemplates();
     //Combination of templatesCode[a] and languageIDs[a] links the templateCode to it's value/id
 }
 
