@@ -1,4 +1,8 @@
 ﻿var base_url = 'http://localhost:5050';
+var timeout_playback_match = 10000;     // in miliseconds
+var timeout_test_turn = 5000;           // in miliseconds
+var timeout_counter = 0;
+var error_limit = 5;
 
 // Create the XHR object used to send CORS calls to the server
 function createCORSRequest(method, url) {
@@ -84,12 +88,19 @@ function getMatch(matchID) {
         var response = xhr.responseText;
         //console.log(response);
         if (response == 'false') {          // database encountered an error
-            alert('The database encountered an error.');
+            // poll db again 
+            if (timeout_counter < error_limit) {
+                timeout_counter++;
+                setTimeout(function () { getMatch(matchID); }, timeout_playback_match);
+            } else {
+                timeout_counter = 0;
+                alert('The database encountered an error. Please try again later.');
+            }
         } else if (response == 'null') {    // match does not exist
             alert('The specified match with id:' + matchID + ' does not exist.');
         } else if (response == '-1') {      // match is not ready for playback
             // poll db again
-            alert('The specified match with id:' + matchID + ' is not ready for playback.');
+            setTimeout(function () { getMatch(matchID); }, timeout_playback_match);
         } else {
             var json = JSON.parse(response);
             var winner = json[0].winner;
@@ -125,7 +136,32 @@ function getMatch(matchID) {
 
 ********************************************************************/
 
-function getTestTurn(challengeID) {
+function putTurnRequest(challengeID, botType, languageID, botID, botVersion, player, lastTurnIndex) {
+    var url = base_url + '/upload_turn_request?cid=' + challengeID + '&botType=' + botType +
+        '&lid=' + languageID + '&botID=' + botID + '&botVersion=' + botVersion + '&player=' + player +
+        '&lastTurnIndex=' + lastTurnIndex;
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('GET', url);
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
+
+    xhr.onload = function () {
+        var response = xhr.responseText;
+        console.log(response);
+
+    };
+
+    xhr.onerror = function () {
+        console.log('Woops, there was an error making the request.');
+    };
+
+    xhr.send();
+}
+
+function getTestTurn(challengeID, firstTurn) {
     var url = base_url + '/get_test_turn?cid=' + challengeID;
 
     // Create the CORS request to the server
@@ -139,18 +175,25 @@ function getTestTurn(challengeID) {
     xhr.onload = function () {
         var response = xhr.responseText;
         if (response == 'false') {           // database encountered an error
-            alert('The database encountered an error.');
+            // poll the db again
+            if (timeout_counter < error_limit) {
+                timeout_counter++;
+                setTimeout(function () { getTestTurn(challengeID); }, timeout_test_turn);
+            } else {
+                timeout_counter = 0;
+                alert('The database encountered an error. Please try again later.');
+            }
         } else if (response == 'null') {    // match does not exist
             alert('The specified match with challenge_id:' + challengeID + ' does not exist.');
         } else if (response == '-1') {       // match is not ready for playback
             // poll db again
-            alert('The specified match with challenge_id:' + challengeID + ' is not ready for playback.');
+            setTimeout(function () { getTestTurn(challengeID); }, timeout_test_turn);
         } else {
             var json = JSON.parse(response);           
             var init_message = json[0];
             var turns = json[1];
            
-            handleTestTurns(init_message, turns);
+            handleTestTurns(init_message, turns, firstTurn);
         }
     };
 
@@ -176,7 +219,14 @@ function getLanguages() {
         var response = xhr.responseText;
         //console.log(response);
         if (response == 'false') {          // database encountered an error
-            alert('The database encountered an error.');
+            // poll the db again
+            if (timeout_counter < error_limit) {
+                timeout_counter++;
+                setTimeout(function () { getLanguages(); }, timeout_playback_match);
+            } else {
+                timeout_counter = 0;
+                alert('The database encountered an error. Please try again later.');
+            }
         } else {
             var json = JSON.parse(response);
             setLanguageVariables(json);
@@ -206,7 +256,14 @@ function getTemplates(cid) {
         var response = xhr.responseText;
         //console.log(response);
         if (response == 'false') {          // database encountered an error
-            alert('The database encountered an error.');
+            // poll the db again
+            if (timeout_counter < error_limit) {
+                timeout_counter++;
+                setTimeout(function () { getTemplates(cid); }, timeout_playback_match);
+            } else {
+                timeout_counter = 0;
+                alert('The database encountered an error. Please try again later.');
+            }
         } else {
             var json = JSON.parse(response);
             setTemplateVariables(json);

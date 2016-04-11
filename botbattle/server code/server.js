@@ -4,15 +4,12 @@ var express = require('express');
 var http = require('http');
 var bodyParser = require('body-parser');
 var credentials = require('credentials');
-var cookieParser = require('cookie-parser');
 var colors = require('colors'); // for colors in the console
 var app = express();
 var port = 5050;
-var numAttempts = 0; // number of ties we tried to connect to the db and failed
 var db; // connection variable
 var base = 'http://localhost:13558';
 
-app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -130,6 +127,25 @@ function getTestMatchTurn(userID, challengeID, callback){
         }         
         callback(retval); // send the result        
     }); 
+}
+
+function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botVersion, playerNum, lastTurnIndex, callback) {
+    var retval;
+    var turnToUpload = { uid: userID, challenge_id: challengeID, bot_type: botType, language_id: languageID,
+        bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex };
+    // columns: uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
+    db.query('INSERT INTO pending_test_arena_turns SET ?', turnToUpload, function (err, rows) {
+        if (err) {
+            retVal = 'false';
+            console.log(colors.red(err));
+        } else {
+
+
+
+
+        }
+        callback(retval);
+    });
 }
 
 function getLanguages(callback) {
@@ -290,6 +306,31 @@ app.get('/get_test_turn', function(req, res, next){
 	});
 });
 
+// localhost:5050/upload_turn_request?
+app.get('/upload_turn_request', function (req, res, next) {
+    //var user_id = req.session.user;
+    var user_id = 12345;
+    var challenge_id = req.query.cid;
+    var bot_type = req.query.botType;
+    var language_id = req.query.lid;
+    var bot_id = req.query.botID;
+    var bot_version = req.query.botVersion;
+    var player = req.query.player;
+    var last_turn_index = req.query.lastTurnIndex;
+    console.log(challenge_id);
+    console.log(bot_type);
+    console.log(language_id);
+    console.log(bot_id);
+    console.log(bot_version);
+    console.log(player);
+    console.log(last_turn_index);
+
+    uploadTurnRequest(user_id, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
 // localhost:5050/uploadCode?cid=101&lid=1&needs_compiled=1
 app.post('/upload_code', function(req, res, next){
     var source_code = req.body;
@@ -306,8 +347,7 @@ app.post('/upload_code', function(req, res, next){
 });
 
 // localhost:5050/get_languages
-app.get('/get_languages', function(req, res, next){
-	
+app.get('/get_languages', function(req, res, next){	
     getLanguages(function (data) {
         res.header('Access-Control-Allow-Origin', base);
         res.send(data);
