@@ -32,15 +32,15 @@ function generateRows(gameInit,turns) {
 function generateRow(num, turn) {
     // Generate a single row
     var stdIn, stdOut, stdErr;
-    if ('stdIn' in turn)
+    if ('stdin' in turn)
         stdIn = turn.stdIn;
     else
         stdIn = '';
-    if ('stdOut' in turn)
+    if ('stdout' in turn)
         stdOut = turn.stdOut;
     else
         stdOut = '';
-    if ('stdErr' in turn)
+    if ('stderr' in turn)
         stdErr = turn.stdErr;
     else
         stdErr = '';
