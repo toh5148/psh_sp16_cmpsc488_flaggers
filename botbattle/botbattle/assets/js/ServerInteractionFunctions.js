@@ -27,7 +27,7 @@ function createCORSRequest(method, url) {
 ********************************************************************/
 
 function uploadCode(selectedCode, challenge_id, language_id, needs_compiled) {
-    var url = base_url + "/uploadCode?cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
+    var url = base_url + "/upload_code?cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
     
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
@@ -227,5 +227,3 @@ function getTemplates(cid) {
 
 
 ********************************************************************/
-
-
