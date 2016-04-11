@@ -12,6 +12,7 @@ spriteActions = ['walk', 'fall', 'attack', 'defend'];
 var gameInitializer, turns;
 
 var ready = false;
+var playbackMode; //TODO: Set to true for playback mode, set to false for testing arena mode. (Shouldn't be too much difference between them)
 
 function preload() {
     // Load graphical assets
@@ -326,4 +327,6 @@ var animationList = {
         attack: {frames: [6,7,8], speed: 15},
         defend: {frames: [10,10,9], speed: 15}
     }
+    
+    //TODO: Josiah other 2 sprites animations list.
 };
