@@ -133,16 +133,15 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
     var retval;
     var turnToUpload = { uid: userID, challenge_id: challengeID, bot_type: botType, language_id: languageID,
         bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex };
+
     // columns: uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
     db.query('INSERT INTO pending_test_arena_turns SET ?', turnToUpload, function (err, rows) {
         if (err) {
-            retVal = 'false';
+            retval = 'false';
             console.log(colors.red(err));
         } else {
-
-
-
-
+            retval = 'true';
+            console.log('Row inserted into the pending_test_arena_turns table.');
         }
         callback(retval);
     });
@@ -191,7 +190,7 @@ function getTemplates(cid, callback) {
             console.log(colors.red(err));
         } else if (rows[0] == undefined) {  // No templates with cid
 			retVal = 'null';
-			console.log(colors.red('WARNING: No templates found'));
+			console.log(colors.red('ERROR: No templates found for challenge_id:' + cid + '.'));
         } else {                            // Template(s) exist
 			var rowsLeft = true;
 			var i = 0;
@@ -210,7 +209,7 @@ function getTemplates(cid, callback) {
 			}
 			retVal += ']';
 			retVal = JSON.parse(retVal);
-			console.log('Returned test arena bot templates list.');
+			console.log('Returned test arena templates list.');
         }
         callback(retVal); // send the result
     });
@@ -223,17 +222,17 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
 	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
     db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {
-            retval = false;
+            retval = 'false';
             console.log(colors.red(err));
         } else {
             if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
                 var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
                 db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
                     if (err) {
-                        retval = false;
+                        retval = 'false';
                         console.log(colors.red(err));
                     } else {
-                        retval = true;
+                        retval = 'true';
                         console.log('Row inserted into test_arena_bots.');
                     }
                     callback(retval); // send the result
@@ -244,10 +243,10 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
 
                 db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
                     if (err) {
-                        retval = false;
+                        retval = 'false';
                         console.log(colors.red(err));
                     } else {
-                        retval = true;
+                        retval = 'true';
                         console.log('Row updated in test_arena_bots.');
                     }
                     callback(retval); // send the result
@@ -306,7 +305,7 @@ app.get('/get_test_turn', function(req, res, next){
 	});
 });
 
-// localhost:5050/upload_turn_request?
+// localhost:5050/upload_turn_request?cid=101&botType='TEST_ARENA'&lid=1&botID=3&botVersion=1&player=2&lastTurnIndex=3
 app.get('/upload_turn_request', function (req, res, next) {
     //var user_id = req.session.user;
     var user_id = 12345;
@@ -317,13 +316,6 @@ app.get('/upload_turn_request', function (req, res, next) {
     var bot_version = req.query.botVersion;
     var player = req.query.player;
     var last_turn_index = req.query.lastTurnIndex;
-    console.log(challenge_id);
-    console.log(bot_type);
-    console.log(language_id);
-    console.log(bot_id);
-    console.log(bot_version);
-    console.log(player);
-    console.log(last_turn_index);
 
     uploadTurnRequest(user_id, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index, function (data) {
         res.header('Access-Control-Allow-Origin', base);
