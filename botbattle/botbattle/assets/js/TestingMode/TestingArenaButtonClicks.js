@@ -105,8 +105,10 @@ function SaveBot_click(ele) {
     var ID = ele.id;
     switch (ID) {
         case "btn_P1Save":
+            saveBot(1);
             break;
         case "btn_P2Save":
+            saveBot(2);
             break;
     }
 }

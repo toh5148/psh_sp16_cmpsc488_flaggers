@@ -7,10 +7,16 @@ var languageNames = [];
 var languageIDs = [];
 var templatesCode = [];
 
+//These are used to keep track of information for each player's bot
+var Player_1_Bot_ID, Player_2_Bot_ID; //Int Types
+var Player_1_Bot_Version, Player_2_Bot_Version; //Int Version Type
+var Player_1_Bot_Ready, Player_2_Bot_Ready; //Boolean types
+var Player_1_Bot_Type, Player_2_Bot_Type; //String type -- either 'user' or 'test_arena'
+
 function beginPageLoad() {
 
     var cid = getChallengeID(); //from QueryStringFunctions.js
-    getLanguages();//Moved getTemplates to server response function in getLanguages
+    getLanguages(); // getTemplates(cid) is called after languages are returned
 
     if (cid == -1) {
         // No challenge specified
@@ -25,15 +31,102 @@ function beginPageLoad() {
 
 function initTestingArena(cid) {
     //Write first pending turn request
-
-    writeInitialTurnRequest(cid);
-    //Write a function here that polls until completion??
-    //getInitialTurn(cid);
+    //writeTurnRequest(cid, true);
+    //Get the first turn data...(This should be set 
+    //getTestTurn(cid, true);
     //When this function is finished, it will call handleTestTurns with the true flag set
 }
 
-function writeInitialTurnRequest(cid) {
+function writeTurnRequest(cid, first) {
+    //Database schema for pending_test_arena_turns
+    //pending_turn_id		    → Auto Increment, Unique
+    //uid: integer			    → Primary Key, Foreign Key (users.uid)
+    //challenge_id: integer		→ Primary Key, Foreign Key (challenges.challenge_id)
+    //bot_type: varchar(10)
+    //language_id: int(11)		→ Foreign Key (languages.language_id ), NULLABLE
+    //bot_id: integer			→ Foreign Key (bot_versions.bot_id), NULLABLE
+    //bot_version: integer		→ Foreign Key (bot_versions.version), NULLABLE
+    //player: integer	
+    //last_turn_index: integer
 
+    var challengeID = cid;
+    var botType;
+    var langID;
+    var botID;
+    var botVersion;
+    var playerNum;
+    var lastTurnIndex;
+
+
+    if (first) {
+        if (Player_1_Bot_Ready) {
+            botType = Player_1_Bot_Type;
+            playerNum = 1;
+            lastTurnIndex = -1;
+
+            if (botType == 'test_arena') {
+                langID = getLanguageID(1);
+                botID = null;
+                botVersion = null;
+            }
+            else if (botType == 'user') {
+                langID = null;
+                botID = Player_1_Bot_ID;
+                //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
+                botVersion = Player_1_Bot_Version;
+            }
+        }
+        else {
+            //Bot isn't ready (due to change or no upload, etc)
+            //Throw alert and log in console
+            alert("Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
+            console.warn("WARNING: Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
+            return;
+        }
+
+    }
+    else {
+        //Not first
+        var Bot_Ready = false;
+
+        switch (playerNum) {
+            case 1:
+                Bot_Ready = Player_1_Bot_Ready;
+                botType = Player_1_Bot_Type;
+                botID = Player_1_Bot_ID;
+                botVersion = Player_1_Bot_Version;
+                break;
+            case 2:
+                Bot_Ready = Player_2_Bot_Ready;
+                botType = Player_2_Bot_Type;
+                botID = Player_2_Bot_ID;
+                botVersion = Player_2_Bot_Version;
+                break;
+            default:
+                console.error("ERROR: Invalid player number of: " + playerNum);
+                break;
+        }
+
+        if (Bot_Ready) {
+            botType = Player_1_Bot_Type;
+            playerNum = 1;
+            lastTurnIndex = -1;
+
+            if (botType == 'test_arena') {
+                langID = getLanguageID(1);
+                botID = null;
+                botVersion = null;
+            }
+            else if (botType == 'user') {
+                langID = null;
+                botID = Player_1_Bot_ID;
+                //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
+                botVersion = Player_1_Bot_Version;
+            }
+        }
+    }
+
+    //putTurnRequest(challengeID, botType, langID, botID, botVersion, playerNum, lastTurnIndex);
 }
 
 function handleTestTurns(init, turnData, first) {
@@ -86,7 +179,6 @@ function setLanguageVariables(languages) {
 }
 
 function setTemplateVariables(templates) {
-    //TODO: theres a bug with this if it is returned before languages are set...Tom is working on it
     var templatesLeft = true;
     var i = 0;
 
@@ -129,11 +221,19 @@ function setLanguageAndTemplates() {
 }
 
 function langChange(playerNum) {
-    var editor = ace.edit("div_editorP" + playerNum);
-    var value = document.getElementById("ddl_languages" + playerNum).value;
-    for(var j = 0; j < languageIDs.length; j++) {
-        if(languageIDs[j] == value) {
-            editor.setValue(templatesCode[j]);
+    var changeTemplates = document.getElementById("chk_changeTemplates" + playerNum).checked;
+    console.log(changeTemplates);
+    if (changeTemplates) {
+        var editor = ace.edit("div_editorP" + playerNum);
+        var value = document.getElementById("ddl_languages" + playerNum).value;
+        for (var j = 0; j < languageIDs.length; j++) {
+            if (languageIDs[j] == value) {
+                editor.setValue(templatesCode[j]);
+            }
         }
     }
+}
+
+function getLanguageID(playerNum) {
+    return document.getElementById("ddl_languages" + playerNum).value;
 }

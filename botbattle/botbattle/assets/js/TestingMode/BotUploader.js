@@ -41,6 +41,10 @@ function upload(playerNum) {
     }
 }
 
+function saveBot(playerNum) {
+
+}
+
 function getUploadType(playerNum) {
     //This function will check which of the '4' options (Upload, code, public, default)
     //are selected and return an int value relating to the correct option
