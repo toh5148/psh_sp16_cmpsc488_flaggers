@@ -205,6 +205,10 @@ function putTurnRequest(challengeID, botType, languageID, botID, botVersion, pla
                     putTurnRequest(challengeID, botType, languageID, botID, botVersion, player, lastTurnIndex);
                 }, timeout_test_turn);
         }
+        else {
+            //Successfulling wrote request to database
+            matchRequestSubmitted();
+        }
     };
 
     xhr.onerror = function () {

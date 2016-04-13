@@ -31,13 +31,50 @@ function beginPageLoad() {
 
 function initTestingArena(cid) {
     //Write first pending turn request
-    //writeTurnRequest(cid, true);
+    //writeFirstTurnRequest(cid);
     //Get the first turn data...(This should be set 
     //getTestTurn(cid, true);
     //When this function is finished, it will call handleTestTurns with the true flag set
 }
 
-function writeTurnRequest(cid, first) {
+function writeFirstTurnRequest(cid) {
+    var challengeID = cid;
+    var botType;
+    var langID;
+    var botID;
+    var botVersion;
+    var playerNum;
+    var lastTurnIndex;
+
+    if (Player_1_Bot_Ready) {
+        botType = Player_1_Bot_Type;
+        playerNum = 1;
+        lastTurnIndex = -1;
+
+        if (botType == 'test_arena') {
+            langID = getLanguageID(1);
+            botID = null;
+            botVersion = null;
+        }
+        else if (botType == 'user') {
+            langID = null;
+            botID = Player_1_Bot_ID;
+            //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
+            botVersion = Player_1_Bot_Version;
+        }
+    }
+    else {
+        //Bot isn't ready (due to change or no upload, etc)
+        //Throw alert and log in console
+        alert("Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
+        console.warn("WARNING: Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
+        return;
+    }
+
+    putTurnRequest(challengeID, botType, langID, botID, botVersion, playerNum, lastTurnIndex);
+}
+
+function writeTurnRequest(cid) {
     //Database schema for pending_test_arena_turns
     //pending_turn_id		    → Auto Increment, Unique
     //uid: integer			    → Primary Key, Foreign Key (users.uid)
@@ -57,76 +94,50 @@ function writeTurnRequest(cid, first) {
     var playerNum;
     var lastTurnIndex;
 
+    var Bot_Ready = false;
 
-    if (first) {
-        if (Player_1_Bot_Ready) {
+    switch (playerNum) {
+        case 1:
+            Bot_Ready = Player_1_Bot_Ready;
             botType = Player_1_Bot_Type;
-            playerNum = 1;
-            lastTurnIndex = -1;
-
-            if (botType == 'test_arena') {
-                langID = getLanguageID(1);
-                botID = null;
-                botVersion = null;
-            }
-            else if (botType == 'user') {
-                langID = null;
-                botID = Player_1_Bot_ID;
-                //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
-                botVersion = Player_1_Bot_Version;
-            }
-        }
-        else {
-            //Bot isn't ready (due to change or no upload, etc)
-            //Throw alert and log in console
-            alert("Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
-            console.warn("WARNING: Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
+            botID = Player_1_Bot_ID;
+            botVersion = Player_1_Bot_Version;
+            break;
+        case 2:
+            Bot_Ready = Player_2_Bot_Ready;
+            botType = Player_2_Bot_Type;
+            botID = Player_2_Bot_ID;
+            botVersion = Player_2_Bot_Version;
+            break;
+        default:
+            console.error("ERROR: Invalid player number value: " + playerNum);
             return;
-        }
+    }
 
+    if (Bot_Ready) {
+        lastTurnIndex = 3; //TODO: Get the current turn number (Should be stored  in gdm)
+
+        if (botType == 'test_arena') {
+            langID = document.getElementById("ddl_languages" + playerNum).value;;
+            botID = null;
+            botVersion = null;
+        }
+        else if (botType == 'user') {
+            langID = null;
+            botID = Player_1_Bot_ID;
+            //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
+            botVersion = Player_1_Bot_Version;
+        }
     }
     else {
-        //Not first
-        var Bot_Ready = false;
-
-        switch (playerNum) {
-            case 1:
-                Bot_Ready = Player_1_Bot_Ready;
-                botType = Player_1_Bot_Type;
-                botID = Player_1_Bot_ID;
-                botVersion = Player_1_Bot_Version;
-                break;
-            case 2:
-                Bot_Ready = Player_2_Bot_Ready;
-                botType = Player_2_Bot_Type;
-                botID = Player_2_Bot_ID;
-                botVersion = Player_2_Bot_Version;
-                break;
-            default:
-                console.error("ERROR: Invalid player number of: " + playerNum);
-                break;
-        }
-
-        if (Bot_Ready) {
-            botType = Player_1_Bot_Type;
-            playerNum = 1;
-            lastTurnIndex = -1;
-
-            if (botType == 'test_arena') {
-                langID = getLanguageID(1);
-                botID = null;
-                botVersion = null;
-            }
-            else if (botType == 'user') {
-                langID = null;
-                botID = Player_1_Bot_ID;
-                //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
-                botVersion = Player_1_Bot_Version;
-            }
-        }
+        //Bot isn't ready (due to change or no upload, etc)
+        //Throw alert and log in console
+        alert("Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
+        console.warn("WARNING: Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
+        return;
     }
 
-    //putTurnRequest(challengeID, botType, langID, botID, botVersion, playerNum, lastTurnIndex);
+    putTurnRequest(challengeID, botType, langID, botID, botVersion, playerNum, lastTurnIndex);
 }
 
 function handleTestTurns(init, turnData, first) {
@@ -234,6 +245,11 @@ function langChange(playerNum) {
     }
 }
 
-function getLanguageID(playerNum) {
-    return document.getElementById("ddl_languages" + playerNum).value;
+function doNextTurn() {
+    writeTurnRequest(getChallengeID()); //Upon completion of writing turn request, matchRequestSubmitted() is called
+}
+
+function matchRequestSubmitted() {
+    //Since the turn request was successfully submitted we can make the request for the display of the test turn
+    getTestTurn(getChallengeID(), false);
 }

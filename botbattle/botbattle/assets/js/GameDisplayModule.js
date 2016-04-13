@@ -12,7 +12,6 @@ spriteActions = ['walk', 'fall', 'attack', 'defend'];
 var gameInitializer, turns;
 
 var ready = false;
-var playbackMode; //TODO: Set to true for playback mode, set to false for testing arena mode. (Shouldn't be too much difference between them)
 
 function preload() {
     // Load graphical assets
@@ -229,6 +228,15 @@ function startTurn(tn,tm) {
     turnLength = defaultTimestep * turns[turn].timeScale;
     turnFrame = 0;
     entityChangeNums = {};
+}
+
+//I believe this should be all thats necessary to call when we recieve a new set of turns
+function setNewTestingArenaTurn() {
+    generateTurnChanges();
+    generateGameStates();
+    generateRows(gameInitializer, turns);
+    // Set turn
+    restoreGameState(turn+1);
 }
 
 function Entity(e) {

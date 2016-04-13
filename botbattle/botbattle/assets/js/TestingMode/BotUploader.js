@@ -51,11 +51,9 @@ function getUploadType(playerNum) {
     //1 - Upload File
     //2 - Edit Code
     //3 - Public
-    //4 - Default
     var str_upload = "rb_p" + playerNum + "Upload";
     var str_edit = "rb_p" + playerNum + "Edit";
     var str_public = "rb_p" + playerNum + "Public";
-    var str_default = "rb_p" + playerNum + "Default";
 
     if (document.getElementById(str_upload).checked) {
         return 1;
@@ -65,9 +63,6 @@ function getUploadType(playerNum) {
     }
     else if (document.getElementById(str_public).checked) {
         return 3;
-    }
-    else if (document.getElementById(str_default).checked) {
-        return 4;
     }
     else {
         return -1;
