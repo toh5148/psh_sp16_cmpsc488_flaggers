@@ -32,13 +32,14 @@ function upload(playerNum) {
         case 3:
             publicBotChoice(playerNum);
             break;
-        case 4:
-            defaultBotChoice(playerNum);
-            break;
         default:
             //setError("mes=t2");
             break;
     }
+}
+
+function saveBot(playerNum) {
+
 }
 
 function getUploadType(playerNum) {
@@ -47,11 +48,9 @@ function getUploadType(playerNum) {
     //1 - Upload File
     //2 - Edit Code
     //3 - Public
-    //4 - Default
     var str_upload = "rb_p" + playerNum + "Upload";
     var str_edit = "rb_p" + playerNum + "Edit";
     var str_public = "rb_p" + playerNum + "Public";
-    var str_default = "rb_p" + playerNum + "Default";
 
     if (document.getElementById(str_upload).checked) {
         return 1;
@@ -61,9 +60,6 @@ function getUploadType(playerNum) {
     }
     else if (document.getElementById(str_public).checked) {
         return 3;
-    }
-    else if (document.getElementById(str_default).checked) {
-        return 4;
     }
     else {
         return -1;
@@ -111,9 +107,4 @@ function uploadCodeChoice(playerNum) {
 function publicBotChoice(playerNum) {
     //Should grab name of bot and attempt to find it in one of the databases...
     //Return an error code if it isn't found or isn't public
-}
-
-function defaultBotChoice(playerNum) {
-    //Should have some default bot selection for each challenge...
-    //I'm still figuring out where this is stored
 }

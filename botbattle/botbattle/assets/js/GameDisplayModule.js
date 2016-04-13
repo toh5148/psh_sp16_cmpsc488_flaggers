@@ -47,8 +47,8 @@ function create() {
         restoreGameState(0);
         ready = false;
         console.log("The GDM create method has now run");
-        //console.log(JSON.stringify(gameInitializer, null, 2));
-        //console.log(JSON.stringify(turns, null, 2));
+        console.log(JSON.stringify(gameInitializer, null, 2));
+        console.log(JSON.stringify(turns, null, 2));
     }
 }
 
@@ -230,6 +230,15 @@ function startTurn(tn,tm) {
     entityChangeNums = {};
 }
 
+//I believe this should be all thats necessary to call when we recieve a new set of turns
+function setNewTestingArenaTurn() {
+    generateTurnChanges();
+    generateGameStates();
+    generateRows(gameInitializer, turns);
+    // Set turn
+    restoreGameState(turn+1);
+}
+
 function Entity(e) {
     this.id = e.id;
     this.type = e.type;
@@ -326,4 +335,6 @@ var animationList = {
         attack: {frames: [6,7,8], speed: 15},
         defend: {frames: [10,10,9], speed: 15}
     }
+    
+    //TODO: Josiah other 2 sprites animations list.
 };

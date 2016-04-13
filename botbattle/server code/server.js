@@ -4,15 +4,13 @@ var express = require('express');
 var http = require('http');
 var bodyParser = require('body-parser');
 var credentials = require('credentials');
-var cookieParser = require('cookie-parser');
 var colors = require('colors'); // for colors in the console
 var app = express();
 var port = 5050;
-var numAttempts = 0; // number of ties we tried to connect to the db and failed
 var db; // connection variable
-var base = 'http://localhost:13558';
+var base = 'http://localhost:50363';
 
-app.use(cookieParser());
+app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true}));
 
@@ -112,7 +110,7 @@ function getTestMatchTurn(userID, challengeID, callback){
                 var init_message = match.game_initialization_message;
 
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
-                console.log('Data for match with user_id:' + userID + ' and challange_id:' + challengeID + ' sent to the client.');
+                console.log('Data for match with user_id:' + userID + ' and challenge_id:' + challengeID + ' sent to the client.');
 
                 // Change the last_turn_status to DISPLAYED
                 if (status == 'READY') {
@@ -131,6 +129,92 @@ function getTestMatchTurn(userID, challengeID, callback){
     }); 
 }
 
+function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botVersion, playerNum, lastTurnIndex, callback) {
+    var retval;
+    var turnToUpload = { uid: userID, challenge_id: challengeID, bot_type: botType, language_id: languageID,
+        bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex };
+
+    // columns: uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
+    db.query('INSERT INTO pending_test_arena_turns SET ?', turnToUpload, function (err, rows) {
+        if (err) {
+            retval = 'false';
+            console.log(colors.red(err));
+        } else {
+            retval = 'true';
+            console.log('Row inserted into the pending_test_arena_turns table.');
+        }
+        callback(retval);
+    });
+}
+
+function getLanguages(callback) {
+    var retVal;
+    // column names: language_id, name
+    db.query('SELECT * FROM languages', function (err, rows) {
+        if (err) { // error with the database
+            retVal = 'false';
+            console.log(colors.red(err));
+        } else if (rows[0] == undefined) {  // No languages in table
+			retVal = 'null';
+			console.log(colors.red('ERROR: No languages found'));
+        } else {                            // Language(s) exist
+			var rowsLeft = true;
+			var i = 0;
+			retVal = '[';
+			while(rowsLeft)
+			{
+				retVal += '\"' + rows[i].name + '\",' + rows[i].language_id;
+				i++;
+				
+				if(rows[i] == undefined) {
+					rowsLeft = false;
+				}
+				else {
+					retVal += ',';
+				}
+			}
+			retVal += ']';
+			retVal = JSON.parse(retVal);
+			console.log('Returned language list.');
+        }
+        callback(retVal); // send the result
+    });
+}
+
+function getTemplates(cid, callback) {
+    var retVal;
+    // column names: challenge_id, language_id, source_code
+    db.query('SELECT language_id, source_code FROM test_arena_template_bots WHERE challenge_id = ' + cid, function (err, rows) {
+        if (err) { // error with the database
+            retVal = 'false';
+            console.log(colors.red(err));
+        } else if (rows[0] == undefined) {  // No templates with cid
+			retVal = 'null';
+			console.log(colors.red('ERROR: No templates found for challenge_id:' + cid + '.'));
+        } else {                            // Template(s) exist
+			var rowsLeft = true;
+			var i = 0;
+			retVal = '[';
+			while(rowsLeft)
+			{
+				retVal += '\"' + rows[i].source_code + '\",' + rows[i].language_id;
+				i++;
+				
+				if(rows[i] == undefined) {
+					rowsLeft = false;
+				}
+				else {
+					retVal += ',';
+				}
+			}
+			retVal += ']';
+			retVal = JSON.parse(retVal);
+			console.log('Returned test arena templates list.');
+        }
+        callback(retVal); // send the result
+    });
+}
+
 
 function uploadCode(botText, userID, challengeID, languageID, needs_compiled, callback){	
     var retval;
@@ -138,18 +222,17 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
 	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
     db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {
-            retval = false;
+            retval = 'false';
             console.log(colors.red(err));
         } else {
             if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
                 var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
-
                 db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
                     if (err) {
-                        retval = false;
+                        retval = 'false';
                         console.log(colors.red(err));
                     } else {
-                        retval = true;
+                        retval = 'true';
                         console.log('Row inserted into test_arena_bots.');
                     }
                     callback(retval); // send the result
@@ -160,10 +243,10 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
 
                 db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
                     if (err) {
-                        retval = false;
+                        retval = 'false';
                         console.log(colors.red(err));
                     } else {
-                        retval = true;
+                        retval = 'true';
                         console.log('Row updated in test_arena_bots.');
                     }
                     callback(retval); // send the result
@@ -172,6 +255,17 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
         }
     });
 }
+
+// function uploadmatch(init, turn) {
+	// var uploadValue = {match_id:123, winner: 'tom', game_initialization_message: init, turns: turn, ready_for_playback: 1};
+	// db.query('INSERT INTO matches SET ?', uploadValue, function (err, rows) {
+        // if (err) { // error with the database
+            // console.log(colors.red(err));
+        // } else {                            // Template(s) exist
+			// console.log(colors.green('Inserted!'));
+        // }
+    // });
+// }
 
 // ****************************************************
 
@@ -211,8 +305,26 @@ app.get('/get_test_turn', function(req, res, next){
 	});
 });
 
+// localhost:5050/upload_turn_request?cid=101&botType='TEST_ARENA'&lid=1&botID=3&botVersion=1&player=2&lastTurnIndex=3
+app.get('/upload_turn_request', function (req, res, next) {
+    //var user_id = req.session.user;
+    var user_id = 12345;
+    var challenge_id = req.query.cid;
+    var bot_type = req.query.botType;
+    var language_id = req.query.lid;
+    var bot_id = req.query.botID;
+    var bot_version = req.query.botVersion;
+    var player = req.query.player;
+    var last_turn_index = req.query.lastTurnIndex;
+
+    uploadTurnRequest(user_id, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
 // localhost:5050/uploadCode?cid=101&lid=1&needs_compiled=1
-app.post('/uploadCode', function(req, res, next){
+app.post('/upload_code', function(req, res, next){
     var source_code = req.body;
     //var user_id = req.session.user;
     var user_id = 12345;
@@ -223,6 +335,24 @@ app.post('/uploadCode', function(req, res, next){
 	uploadCode(source_code, user_id, challenge_id, language_id, needs_compiled, function (data) {
 	    res.header('Access-Control-Allow-Origin', base);
 	    res.send(data);
+    });
+});
+
+// localhost:5050/get_languages
+app.get('/get_languages', function(req, res, next){	
+    getLanguages(function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
+// localhost:5050/get_templates?cid=101
+app.get('/get_templates', function(req, res, next){
+	var challenge_id = req.query.cid;
+	
+    getTemplates(challenge_id, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
     });
 });
 
