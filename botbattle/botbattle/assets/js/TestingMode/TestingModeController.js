@@ -91,10 +91,11 @@ function writeTurnRequest(cid) {
     var langID;
     var botID;
     var botVersion;
-    var playerNum;
+    var playerNum = getNextPlayer();
     var lastTurnIndex;
 
     var Bot_Ready = false;
+    
 
     switch (playerNum) {
         case 1:
@@ -115,7 +116,7 @@ function writeTurnRequest(cid) {
     }
 
     if (Bot_Ready) {
-        lastTurnIndex = 3; //TODO: Get the current turn number (Should be stored  in gdm)
+        lastTurnIndex = getGDMTurn(); //TODO: Get the current turn number (Should be stored  in gdm)
 
         if (botType == 'test_arena') {
             langID = document.getElementById("ddl_languages" + playerNum).value;;
@@ -124,9 +125,7 @@ function writeTurnRequest(cid) {
         }
         else if (botType == 'user') {
             langID = null;
-            botID = Player_1_Bot_ID;
-            //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
-            botVersion = Player_1_Bot_Version;
+            //botID and botVersion set in switch case
         }
     }
     else {
@@ -252,4 +251,22 @@ function doNextTurn() {
 function matchRequestSubmitted() {
     //Since the turn request was successfully submitted we can make the request for the display of the test turn
     getTestTurn(getChallengeID(), false);
+}
+
+function getNextPlayer() {
+    //This function should check "nextPlayer" field of the current turn in the turn data
+    //If no turn data, current turn is player 1
+    var player = 1;
+
+    return player;
+}
+
+function getGDMTurn() {
+    var turnNumber = -1;
+
+    if (turn != undefined) {
+        turnNumber = turn;
+    }
+
+    return turnNumber;
 }

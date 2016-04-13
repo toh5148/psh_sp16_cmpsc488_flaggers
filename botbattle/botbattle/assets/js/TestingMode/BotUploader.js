@@ -32,9 +32,6 @@ function upload(playerNum) {
         case 3:
             publicBotChoice(playerNum);
             break;
-        case 4:
-            defaultBotChoice(playerNum);
-            break;
         default:
             //setError("mes=t2");
             break;
@@ -110,9 +107,4 @@ function uploadCodeChoice(playerNum) {
 function publicBotChoice(playerNum) {
     //Should grab name of bot and attempt to find it in one of the databases...
     //Return an error code if it isn't found or isn't public
-}
-
-function defaultBotChoice(playerNum) {
-    //Should have some default bot selection for each challenge...
-    //I'm still figuring out where this is stored
 }
