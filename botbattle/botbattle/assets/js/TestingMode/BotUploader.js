@@ -16,7 +16,7 @@ function readText(f, playerNum) {
 
 function upload(playerNum) {
     var uploadType = getUploadType(playerNum);
-    //Verified - upload type will hold number 1-4, or -1 in case of 'alien pig sighting'?
+    //Verified - upload type will hold number 1-3, or -1 in case of 'alien pig sighting'?
     switch (uploadType) {
         //If default or public, there is no upload necessary
         //1 - Upload File - upload file directly
@@ -68,8 +68,7 @@ function getUploadType(playerNum) {
 
 function uploadFileChoice(playerNum) {
     //Since we're just placing the code from the file in the code editor,
-    //for the sake of writing duplicate code, just call uploadCodeChoice(playerNum)
-    //from within here..
+    //just call uploadCodeChoice(playerNum) from within here.
 
     uploadCodeChoice(playerNum);
 }

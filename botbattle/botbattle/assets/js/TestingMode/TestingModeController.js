@@ -11,7 +11,10 @@ var templatesCode = [];
 var Player_1_Bot_ID, Player_2_Bot_ID; //Int Types
 var Player_1_Bot_Version, Player_2_Bot_Version; //Int Version Type
 var Player_1_Bot_Ready, Player_2_Bot_Ready; //Boolean types
-var Player_1_Bot_Type, Player_2_Bot_Type; //String type -- either 'user' or 'test_arena'
+var Player_1_Bot_Type, Player_2_Bot_Type; //String type -- equal to one of the constants set below
+
+const USER_STRING = 'user';
+const TEST_ARENA_STRING = 'test_arena';
 
 function beginPageLoad() {
 
@@ -51,12 +54,12 @@ function writeFirstTurnRequest(cid) {
         playerNum = 1;
         lastTurnIndex = -1;
 
-        if (botType == 'test_arena') {
+        if (botType == TEST_ARENA_STRING) {
             langID = getLanguageID(1);
             botID = null;
             botVersion = null;
         }
-        else if (botType == 'user') {
+        else if (botType == USER_STRING) {
             langID = null;
             botID = Player_1_Bot_ID;
             //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
@@ -118,12 +121,12 @@ function writeTurnRequest(cid) {
     if (Bot_Ready) {
         lastTurnIndex = getGDMTurn(); //TODO: Get the current turn number (Should be stored  in gdm)
 
-        if (botType == 'test_arena') {
+        if (botType == TEST_ARENA_STRING) {
             langID = document.getElementById("ddl_languages" + playerNum).value;;
             botID = null;
             botVersion = null;
         }
-        else if (botType == 'user') {
+        else if (botType == USER_STRING) {
             langID = null;
             //botID and botVersion set in switch case
         }
@@ -150,97 +153,6 @@ function handleTestTurns(init, turnData, first) {
     else {
         //It's not the first turn, just set the turns to be turnData
         turns = turnData;
-    }
-}
-
-function updateCompilerErrors(playerNum) {
-    var errorsLeft = true;
-    document.getElementById("div_compilerErrors" + playerNum).innerHTML = "";
-
-    while (errorsLeft) {
-        var error = "Error: this is a test error...";
-        addCompilerError(playerNum, error);
-        errorsLeft = false;
-    }
-}
-
-function addCompilerError(playerNum, error) {
-    document.getElementById("div_compilerErrors" + playerNum).innerHTML += error + tempCounter + "<br/>";
-}
-
-function setLanguageVariables(languages) {
-    var languagesLeft = true;
-    var i = 0;
-    var j = 0;
-
-    while (languagesLeft) {
-        languageNames[j] = languages[i];
-        languageIDs[j] = languages[i+1];
-
-        i = i + 2;
-        j = j + 1;
-
-        if(languages[i] == undefined) {
-            languagesLeft = false;
-        }
-    }
-
-    //Combination of languageNames[a] and languageIDs[a] links the language to it's value/id
-}
-
-function setTemplateVariables(templates) {
-    var templatesLeft = true;
-    var i = 0;
-
-    var tempSource;
-    var tempID;
-
-    while (templatesLeft) {
-        tempSource = templates[i];
-        tempID = templates[i + 1];
-        
-        for(var j = 0; j < languageIDs.length; j++) {
-            if(languageIDs[j] == tempID) {
-                templatesCode[j] = tempSource;
-            }
-        }
-
-        i = i + 2;
-
-        if (templates[i] == undefined) {
-            templatesLeft = false;
-        }
-    }
-
-
-    setLanguageAndTemplates();
-    //Combination of templatesCode[a] and languageIDs[a] links the templateCode to it's value/id
-}
-
-function setLanguageAndTemplates() {
-    //Function will set languages drop down and first listed source code to the editor
-    for (var i = 1; i <= 2; i++) {
-        document.getElementById("ddl_languages" + i).innerHTML = "";
-
-        for (var j = 0; j < languageIDs.length; j++) {
-            document.getElementById("ddl_languages" + i).innerHTML += "<option value=\'" + languageIDs[j] + "\'>" + languageNames[j] + "</option>";
-        }
-        var editor = ace.edit("div_editorP" + i);
-        editor.setValue(templatesCode[0]);
-    }
-}
-
-function langChange(playerNum) {
-    var changeTemplates = document.getElementById("chk_changeTemplates" + playerNum).checked;
-    console.log(changeTemplates);
-    if (changeTemplates) {
-        var editor = ace.edit("div_editorP" + playerNum);
-        var value = document.getElementById("ddl_languages" + playerNum).value;
-        for (var j = 0; j < languageIDs.length; j++) {
-            if (languageIDs[j] == value) {
-                editor.setValue(templatesCode[j]);
-            }
-        }
     }
 }
 
