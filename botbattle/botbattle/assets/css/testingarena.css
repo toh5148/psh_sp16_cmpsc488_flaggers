@@ -107,3 +107,12 @@
     border:2px red;
     color: red;
 }
+
+#loading {
+    width: 270px; 
+    height: 40px; 
+    text-align:center;
+    font-weight:bold;
+    padding-top: 10px;
+    background: url('../images/spinner.gif') no-repeat;
+}

@@ -30,7 +30,7 @@
 <body onload="beginPageLoad()">
     <div id="div_container">
         <div id="div_mainHolder">
-
+            <div id="loading" style="display:none;">Loading...Please be patient</div>
             <div id="tabs_player1" class="tab_select" onclick="tab_click(this)">Player 1</div>
             <div id="tabs_player2" class="tab_noselect" onclick="tab_click(this)">Player 2</div>
             <div id="tabs_gamedisplay" class="tab_noselect" onclick="tab_click(this)">Game Display</div>
@@ -45,7 +45,8 @@
 
                     <input id="file_p1Upload" type="file" onchange="readText(this, 1)"/>
                     <div id="div_p1PublicBot" style="display:none">
-                        <input id="name_p1PublicBot" type="text" /> Enter the name of the public bot.
+                        Enter the id of the public bot <br/>
+                        <input id="name_p1PublicBot" type="text" />
                     </div>
                     <div id="div_uploadBots1">
                         <br />
@@ -77,14 +78,14 @@
             <div id="div_Player2Tab" class="main_tab_hidden">
                 <div class="main_left">
                     <div class="headerText">Bot Type</div>
-                    <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="UploadFile" checked="checked" />Upload File<br />
-                    <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="EditCode" />Edit Code<br />
-                    <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
-                    <input type="radio" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
+                    <input type="radio" id="rb_p2Upload" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="UploadFile" checked="checked" />Upload File<br />
+                    <input type="radio" id="rb_p2Edit" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="EditCode" />Edit Code<br />
+                    <input type="radio" id="rb_p2Public" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PublicBot" />Public Bot<br />
+                    <input type="radio" id="rb_p2Default" name="p2BotType" onclick="Player2_BotTypeClick(this)" value="PreloadedBot" />Default Bot<br /><br />
 
                     <input id="file_p2Upload" type="file" onchange="readText(this, 2)" />
                     <div id="div_p2PublicBot" style="display:none">
-                        Enter the name of the public bot.<br/>
+                        Enter the id of the public bot.<br/>
                         <input id="name_p2PublicBot" type="text" /> 
                     </div>
                     <div id="div_uploadBots2">

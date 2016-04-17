@@ -1,4 +1,4 @@
-﻿var currentTurn = 1;
+﻿var nextPlayer = 1;
 var tempCounter = 1; //TODO REMOVE
 
 
@@ -17,7 +17,7 @@ const USER_STRING = 'user';
 const TEST_ARENA_STRING = 'test_arena';
 
 function beginPageLoad() {
-
+    setLoadingDisplay();
     var cid = getChallengeID(); //from QueryStringFunctions.js
     getLanguages(); // getTemplates(cid) is called after languages are returned
 
@@ -34,9 +34,9 @@ function beginPageLoad() {
 
 function initTestingArena(cid) {
     //Write first pending turn request
-    //writeFirstTurnRequest(cid);
-    //Get the first turn data...(This should be set 
-    //getTestTurn(cid, true);
+    writeFirstTurnRequest(cid);
+    //Get the first turn data...(This should be set )
+    getTestTurn(cid, true);
     //When this function is finished, it will call handleTestTurns with the true flag set
 }
 
@@ -153,6 +153,8 @@ function handleTestTurns(init, turnData, first) {
     else {
         //It's not the first turn, just set the turns to be turnData
         turns = turnData;
+        //setNewTestingArenaTurn();
+        nextPlayer = getNextPlayer();
     }
 }
 
@@ -160,8 +162,12 @@ function doNextTurn() {
     writeTurnRequest(getChallengeID()); //Upon completion of writing turn request, matchRequestSubmitted() is called
 }
 
+function undoTestTurn() {
+    restoreGameState(turn - 1);
+}
+
 function matchRequestSubmitted() {
-    //Since the turn request was successfully submitted we can make the request for the display of the test turn
+    //Since the turn request was successfully submitted we can make the request for the turn data
     getTestTurn(getChallengeID(), false);
 }
 
@@ -181,4 +187,24 @@ function getGDMTurn() {
     }
 
     return turnNumber;
+}
+
+function attemptUpload(playerNum) {
+    if (nextPlayer == playerNum) {
+        upload(playerNum);
+    }
+    else {
+        //Attempting to upload a bot for playerNum...but it isn't playerNum's turn so bot would overwrite
+        //So throw alert and don't upload
+        alert('Woops! You are attempting to upload a bot for player ' + playerNum + ', but it is currently player ' + nextPlayer + '\'s turn. Upload was aborted');
+    }
+}
+
+function setLoadingDisplay(visible) {
+    if (visible) {
+        document.getElementById('loading').style.display = "block";
+    }
+    else {
+        document.getElementById('loading').style.display = "none";
+    }
 }

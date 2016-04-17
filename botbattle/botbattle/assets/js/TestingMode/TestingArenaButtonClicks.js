@@ -60,6 +60,10 @@ function Player1_BotTypeClick(ele) {
             document.getElementById("div_p1PublicBot").style.display = "block";
             Player_1_Bot_Type = USER_STRING;
             break;
+        case "PreloadedBot":
+            Player_1_Bot_Type = USER_STRING;
+            Player_1_Bot_ID = Default_Bot_ID;
+            break;
     }
 }
 
@@ -81,7 +85,7 @@ function Player2_BotTypeClick(ele) {
             document.getElementById("div_editorHolder2").style.display = "inline-block";
             var editor = ace.edit("div_editorP2");
             editor.resize();
-            document.getElementById("btn_P2Save").style.display = "none";
+            document.getElementById("btn_P2Save").style.display = "block";
             Player_2_Bot_Type = TEST_ARENA_STRING;
             break;
         case "PublicBot":
@@ -89,6 +93,8 @@ function Player2_BotTypeClick(ele) {
             Player_2_Bot_Type = USER_STRING;
             break;
         case "PreloadedBot":
+            Player_2_Bot_Type = USER_STRING;
+            Player_2_Bot_ID = Default_Bot_ID;
             break;
     }
 }
@@ -97,10 +103,10 @@ function UploadBot_click(ele) {
     var ID = ele.id;
     switch (ID) {
         case "btn_P1Upload":
-            upload(1);
+            attemptUpload(1);
             break;
         case "btn_P2Upload":
-            upload(2);
+            attemptUpload(2);
             break;
     }
 }
@@ -122,5 +128,5 @@ function next_click() {
 }
 
 function undo_click() {
-    restoreGameState(turn - 1);
+    undoTestTurn();
 }

@@ -9,12 +9,12 @@
         sendError(10, "");
     }
     else {
+        //setInput();
         getMatch(matchID);
     }
 }
 
 function handleCommands(winner, initMessage, turnData) {
-    // TODO: tom do something with the winner
     gameInitializer = initMessage;
     turns = turnData;
     console.log("Set database commands to GDM vars.");
