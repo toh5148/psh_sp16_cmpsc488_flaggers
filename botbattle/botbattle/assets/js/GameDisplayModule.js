@@ -1,93 +1,37 @@
 const gameWidth=800,gameHeight=600,fps=60;
-var gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
-    { preload: preload, create: create, update: drawTurn }),
-	playing, turn, defaultTimestep, turnTime, turnFrame, turnLength, playbackSpeed,
-	entities, entityList, entityChangeNums, gameStates,
+var gameDisplayWindow, playing, turn, defaultTimestep, turnTime, turnFrame, turnLength, playbackSpeed,
+	entities, entityList, entityChangeNums, gameStates, gameInitializer, turns
     defaultValues = ['visible', 'initX', 'initY', 'initWidth', 'initHeight', 'flipped', 'value'],
     defaultReplace = ['visible', 'x', 'y', 'width', 'height', 'flipped', 'value'],
-    textProperties = ['font', 'fontStyle', 'fontVariant', 'fontWeight', 'fontSize', 'backgroundColor', 'fill', 'align',
-        'boundsAlignH','boundsAlignV', 'stroke', 'strokeThickness', 'wordWrap', 'wordWrapWidth', 'tabs'];
-spriteActions = ['walk', 'fall', 'attack', 'defend'];
-
-var gameInitializer, turns;
-
-var ready = false;
+    textProperties = ['font', 'fontStyle', 'fontWeight', 'fontSize', 'backgroundColor', 'fill'],
+    textDefaults = ['bold 20pt Arial', 'bold', 'bold', '20pt', null, '#00FF00']
+    spriteActions = ['walk', 'fall', 'attack', 'defend'];
 
 function preload() {
     // Load graphical assets
-    gameDisplayWindow.load.image('background', 'assets/images/background.png');
     gameDisplayWindow.load.spritesheet('spriteRabbit', 'assets/images/spriteBunny.png', 800, 800);
     gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteChicken.png', 800, 800);
     //gameDisplayWindow.load.spritesheet('spriteZombie', 'assets/images/spriteZombie.png', 800, 800);
     //gameDisplayWindow.load.spritesheet('spriteAlien', 'assets/images/spriteAlien.png', 800, 800);
-    gameDisplayWindow.load.image('brickWall', 'assets/images/brickWall.png');
-}
-
-function create() {
-    if (ready) {
-
-        // Set background
-        var bkg = gameDisplayWindow.add.image(0, 0, 'background');
-        bkg.width = gameWidth;
-        bkg.height = gameHeight;
-        // Set default timestep
-        defaultTimestep = gameInitializer.defaultTimestep;
-        // Set initial variables
-        entities = [];
-        entityList = [];
-        playbackSpeed = 1;
-        gameStates = [];
-        turn = 0;
-        // Generate game
-        createEnts();
-        generateTurnChanges();
-        generateGameStates();
-        generateRows(gameInitializer, turns);
-        // Set first turn
-        restoreGameState(0);
-        ready = false;
-        console.log("The GDM create method has now run");
-        console.log(JSON.stringify(gameInitializer, null, 2));
-        console.log(JSON.stringify(turns, null, 2));
-    }
-}
-
-function drawTurn() {
-    // Draw the state of the game every frame
-    if (!playing) return;
-    // Go to next turn if current turn has ended
-    if (turnTime > 1)
-        startTurn(turn + 1, false);
-    // Stop if we've reached the end
-    if (!playing) return;
-    // Get current turn changes
-    var tc = turns[turn].turnChanges;
-    // Iterate through the turn changes
-    for (var i = 0; i < tc.length; i++) {
-        // Get the change to execute for this entity
-        var c = tc[i], e = entities[c.id];
-        if (!(e.id in entityChangeNums))
-            entityChangeNums[e.id] = 0;
-        var cn = entityChangeNums[e.id];
-        var changes = c.changes;
-        while (cn < changes.length - 1 && changes[cn + 1].start <= turnTime) {
-            entityChangeNums[e.id]++;
-            cn = entityChangeNums[e.id];
-        }
-        // Execute change
-        if (cn < changes.length) {
-            var c2 = changes[cn];
-            if (turnTime >= c2.start && (!('end' in c2) || turnTime <= c2.end))
-                e.action(c2, turnTime);
-        }
-    }
-    // Increase turn time
-    turnFrame++;
-    turnTime = (turnFrame * playbackSpeed) / (fps * turnLength);
+    gameDisplayWindow.load.image('background', gameInitializer.background);
+    // Set default timestep
+    defaultTimestep = gameInitializer.defaultTimestep;
+    // Set initial variables
+    entities = [];
+    entityList = [];
+    playbackSpeed = 1;
+    gameStates = [];
+    turn = 0;
+    // Generate game
+    createEnts();                           // Create entity objects
+    generateTurnChanges();                  // Set initial values for all turn changes
+    generateGameStates();                   // Save game states
+    generateRows(gameInitializer, turns);   // Generate rows for the status table
+    loadObjectImages();                     // Get and preload all object images
 }
 
 function createEnts(){
-    // Spawn all the entities
+    // Create all the entity objects
     gameStates.push({});
     var e = gameInitializer.entity;
     for (var i = 0; i < e.length; i++)
@@ -95,8 +39,7 @@ function createEnts(){
 }
 
 function addEnt(e) {
-    // Spawn an entity and add its initial game state
-    var ent = new Entity(e);
+    // Create an entity object and add its initial game state
     var gs = {
         action: 'create',
         start: 0,
@@ -115,7 +58,7 @@ function addEnt(e) {
             if (p in e)
                 gs[p] = e[p];
             else
-                gs[p] = ent.obj[p];
+                gs[p] = textDefaults[i];
         }
     }
     else {
@@ -125,6 +68,7 @@ function addEnt(e) {
             gs.value = e.value;
     }
     gameStates[0][e.id] = gs;
+    var ent = new Entity(e);
     entities[ent.id] = ent;
     entityList.push(ent);
 }
@@ -189,9 +133,91 @@ function generateGameStates() {
         for (var j = 0; j < tc.length; j++) {
             var c = tc[j];
             gs[c.id] = c.changes[c.changes.length - 1];
+            entities[c.id].finalTurn = i + 1;
         }
         gameStates.push(gs);
     }
+}
+
+function loadObjectImages() {
+    var loadedImages = {}, ents = gameInitializer.entity;
+    for (var i = 0; i < ents.length; i++) {
+        if ('value' in ents[i])
+            loadImage(ents[i].value, loadedImages);
+    }
+    for (var i = 0; i < turns.length; i++) {
+        var turnChanges = turns[i].turnChanges;
+        for (var j = 0; j < turnChanges.length; j++) {
+            var changes = turnChanges[j].changes, id = turnChanges[j].id;
+            if (entities[id].type == 'object') {
+                for (var k = 0; k < changes.length; k++) {
+                    if ('value' in changes[k])
+                        loadImage(changes[k].value, loadedImages);
+                }
+            }
+        }
+    }
+}
+
+function loadImage(img,loadedImages) {
+    if (!(img in loadedImages)) {
+        gameDisplayWindow.load.image(img, img);
+        loadedImages[img] = true;
+    }
+}
+
+function create() {
+    gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
+        {preload: preload, create: create2, update: drawTurn})
+}
+
+function create2() {
+    // Set background
+    var bkg = gameDisplayWindow.add.image(0, 0, 'background');
+    bkg.width = gameWidth;
+    bkg.height = gameHeight;
+    for (var i = 0; i < entityList.length; i++)
+        entityList[i].instantiate();
+    // Set first turn
+    restoreGameState(0);
+    ready = false;
+    console.log("The GDM create method has now run");
+    console.log(JSON.stringify(gameInitializer, null, 2));
+    console.log(JSON.stringify(turns, null, 2));
+}
+
+function drawTurn() {
+    // Draw the state of the game every frame
+    if (!playing) return;
+    // Go to next turn if current turn has ended
+    if (turnTime > 1)
+        startTurn(turn + 1, false);
+    // Stop if we've reached the end
+    if (!playing) return;
+    // Get current turn changes
+    var tc = turns[turn].turnChanges;
+    // Iterate through the turn changes
+    for (var i = 0; i < tc.length; i++) {
+        // Get the change to execute for this entity
+        var c = tc[i], e = entities[c.id];
+        if (!(e.id in entityChangeNums))
+            entityChangeNums[e.id] = 0;
+        var cn = entityChangeNums[e.id];
+        var changes = c.changes;
+        while (cn < changes.length - 1 && changes[cn + 1].start <= turnTime) {
+            entityChangeNums[e.id]++;
+            cn = entityChangeNums[e.id];
+        }
+        // Execute change
+        if (cn < changes.length) {
+            var c2 = changes[cn];
+            if (turnTime >= c2.start && (!('end' in c2) || turnTime <= c2.end))
+                e.action(c2, turnTime);
+        }
+    }
+    // Increase turn time
+    turnFrame++;
+    turnTime = (turnFrame * playbackSpeed) / (fps * turnLength);
 }
 
 function restoreGameState(turnNum) {
@@ -199,7 +225,7 @@ function restoreGameState(turnNum) {
     if (turnNum < 0)
         turnNum = 0;
     for (var i = 0; i < entityList.length; i++) {
-        var j = turnNum, ent = entityList[i], entId = ent.id;
+        var ent = entityList[i], j = Math.min(turnNum,ent.finalTurn), entId = ent.id;
         while (!(entId in gameStates[j]))
             j--;
         ent.action(gameStates[j][entId], 1);
@@ -240,26 +266,50 @@ function setNewTestingArenaTurn() {
 }
 
 function Entity(e) {
-    this.id = e.id;
-    this.type = e.type;
-    this.animations = animationList[e.type];
-    // Create the sprite or text object
-    if (this.type == 'object') {
-        this.obj = gameDisplayWindow.add.sprite(0, 0, e.value);
-        this.obj.anchor.setTo(0.5, 0.5);
+    this.initMessage = e;               // Initialization of this entity
+    this.id = this.initMessage.id;      // Unique numerical id
+    this.type = this.initMessage.type;  // The type of entity: 'object', 'text', or a type of sprite
+    this.finalTurn = 0;                 // The last turn on which this entity executes a change
+    if (this.type == 'object' || this.type == 'text')
         this.isAnimated = false;
-    }
-    else if (this.type == 'text') {
-        this.obj = gameDisplayWindow.add.text(0, 0, e.value);
-        this.isAnimated = false;
-    }
     else {
         this.isAnimated = true;
-        this.obj = gameDisplayWindow.add.sprite(0, 0, e.type);
-        this.obj.anchor.setTo(0.5, 0.5);
+        this.animations = animationList[this.type];
     }
+    // Create the sprite or text object
+    this.instantiate = function() {
+        if (this.type == 'object') {
+            this.obj = gameDisplayWindow.add.sprite(0, 0, this.initMessage.value);
+            this.obj.name = this.initMessage.value;
+            this.obj.anchor.setTo(0.5, 0.5);
+        }
+        else if (this.type == 'text')
+            this.obj = gameDisplayWindow.add.text(0, 0, this.initMessage.value);
+        else {
+            this.obj = gameDisplayWindow.add.sprite(0, 0, this.initMessage.type);
+            this.obj.anchor.setTo(0.5, 0.5);
+        }
+    };
     // Code to execute when performing a change
     this.action = function (f, t) {
+        // Object/Text value
+        if(this.type == 'object') {
+            if(this.obj.name != f.value) {
+                this.obj.destroy();
+                this.obj = gameDisplayWindow.add.sprite(0, 0, f.value);
+                this.obj.name = f.value;
+                this.obj.anchor.setTo(0.5, 0.5);
+            }
+        }
+        else if(this.type == 'text') {
+            this.obj.text = f.value;
+            for(var i=0;i<textProperties.length;i++){
+                var c=textProperties[i];
+                if(c in f)
+                    this.obj[c]=f[c];
+            }
+        }
+
         // Visibility
         if (!f.visible) {
             this.obj.visible = false;
@@ -297,16 +347,6 @@ function Entity(e) {
             this.obj.angle = f.initRotation;
         if (f.flipped)
             this.obj.width *= -1;
-        if(this.type == 'object')
-            this.obj.sprite = f.value;
-        else if(this.type == 'text') {
-            this.obj.text = f.value;
-            for(var i=0;i<textProperties.length;i++){
-                var c=textProperties[i];
-                if(c in f)
-                    this.obj[c]=f[c];
-            }
-        }
 
         // Animation
         if (this.isAnimated) {

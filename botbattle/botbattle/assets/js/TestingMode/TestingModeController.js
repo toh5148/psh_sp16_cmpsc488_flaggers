@@ -147,7 +147,6 @@ function handleTestTurns(init, turnData, first) {
         //If it's the first turn, just set the initMessage
         //turnData will be null in this condition
         gameInitializer = init;
-        ready = true;
         create();
     }
     else {

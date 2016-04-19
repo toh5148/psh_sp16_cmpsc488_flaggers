@@ -9,8 +9,8 @@
         sendError(10, "");
     }
     else {
-        //setInput();
-        getMatch(matchID);
+        setInput();
+        //getMatch(matchID);
     }
 }
 
@@ -18,6 +18,5 @@ function handleCommands(winner, initMessage, turnData) {
     gameInitializer = initMessage;
     turns = turnData;
     console.log("Set database commands to GDM vars.");
-    ready = true;
     create();
 }
