@@ -54,7 +54,9 @@ function setGameInit() {
                 flipped: false,
                 rotation: 0,
                 value: 'Turn: 1',
-                fill: '#808080'
+                font: '30pt Arial',
+                fill: '#00FF00',
+                backgroundColor: '#808080'
             }
         ],
         stdin: '000',
@@ -186,7 +188,10 @@ function setGameTurns() {
                             start: 1,
                             value: 'Turn: 3',
                             backgroundColor: 'rgba(255,0,0,0.25)',
-                            fill: '#808080'
+                            fill: '#808080',
+                            fontStyle: 'italic',
+                            fontWeight: 'bold',
+                            fontSize: 5
                         }
                     ]
                 },
@@ -196,6 +201,33 @@ function setGameTurns() {
                         {
                             start: 1,
                             value: 'games/checkers/king_red.png'
+                        }
+                    ]
+                },
+                {
+                    id: 105,
+                    changes: [
+                        {
+                            start: .3,
+                            create: {
+                                id: 105,
+                                type: 'spriteMummy',
+                                visible: true,
+                                initX: 500,
+                                initY: 400,
+                                width: 50,
+                                height: 50,
+                                flipped: true,
+                                rotation: 0
+                            }
+                        },
+                        {
+                            action: 'walk',
+                            visible: true,
+                            x: 800,
+                            y: 600,
+                            start: .5,
+                            end: .8
                         }
                     ]
                 }

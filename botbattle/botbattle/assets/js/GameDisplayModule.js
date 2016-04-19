@@ -1,21 +1,35 @@
+// Code for displaying the game on the game display window, in phaser
+// This module stores all entity data within changes, thus the state of an entity at a specific point in time can be
+//  perfectly restored upon running the change
+
 const gameWidth=800,gameHeight=600,fps=60;
 var gameDisplayWindow, playing, turn, defaultTimestep, turnTime, turnFrame, turnLength, playbackSpeed,
 	entities, entityList, entityChangeNums, gameStates, gameInitializer, turns
     defaultValues = ['visible', 'initX', 'initY', 'initWidth', 'initHeight', 'flipped', 'value'],
     defaultReplace = ['visible', 'x', 'y', 'width', 'height', 'flipped', 'value'],
     textProperties = ['font', 'fontStyle', 'fontWeight', 'fontSize', 'backgroundColor', 'fill'],
-    textDefaults = ['bold 20pt Arial', 'bold', 'bold', '20pt', null, '#00FF00']
+    textDefaults = ['bold 20pt Arial', 'bold', 'bold', '20pt', null, '#000000'],
     spriteActions = ['walk', 'fall', 'attack', 'defend'];
+
+function create() {
+    gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
+        {preload: preload, create: create2, update: drawTurn})
+}
 
 function preload() {
     // Load graphical assets
-    gameDisplayWindow.load.spritesheet('spriteRabbit', 'assets/images/spriteBunny.png', 800, 800);
-    gameDisplayWindow.load.spritesheet('spriteChicken', 'assets/images/spriteChicken.png', 800, 800);
-    //gameDisplayWindow.load.spritesheet('spriteZombie', 'assets/images/spriteZombie.png', 800, 800);
-    //gameDisplayWindow.load.spritesheet('spriteAlien', 'assets/images/spriteAlien.png', 800, 800);
+    sl=spriteList.sprites;
+    for(var i=0;i<sl.length;i++) {
+        var spr=spriteList[sl[i]];
+        gameDisplayWindow.load.spritesheet(sl[i],spr.spriteSheet,spr.width,spr.height);
+    }
     gameDisplayWindow.load.image('background', gameInitializer.background);
     // Set default timestep
     defaultTimestep = gameInitializer.defaultTimestep;
+    startGame();
+}
+
+function startGame(){
     // Set initial variables
     entities = [];
     entityList = [];
@@ -35,11 +49,11 @@ function createEnts(){
     gameStates.push({});
     var e = gameInitializer.entity;
     for (var i = 0; i < e.length; i++)
-        addEnt(e[i]);
+        addEnt(e[i],0);
 }
 
-function addEnt(e) {
-    // Create an entity object and add its initial game state
+function addEnt(e,t) {
+    // Create an entity object and add its initial game state as a change
     var gs = {
         action: 'create',
         start: 0,
@@ -51,6 +65,8 @@ function addEnt(e) {
         flipped: e.flipped,
         anim: {frames: [0], speed: 0}
     };
+    if(t>0)
+        gs.visible=false;
     if (e.type == 'text') {
         gs.value = e.value;
         for (var i = 0; i < textProperties.length; i++) {
@@ -68,7 +84,8 @@ function addEnt(e) {
             gs.value = e.value;
     }
     gameStates[0][e.id] = gs;
-    var ent = new Entity(e);
+    // Make the entity object
+    var ent = new Entity(e,t);
     entities[ent.id] = ent;
     entityList.push(ent);
 }
@@ -87,6 +104,11 @@ function generateTurnChanges() {
             var changes = turnChanges[j].changes, id = turnChanges[j].id;
             for (var k = 0; k < changes.length; k++) {
                 var c = changes[k];
+                if('create' in c) {
+                    addEnt(c.create, i);
+                    prevChange[id] = gameStates[0][id];
+                    c.visible = c.create.visible;
+                }
                 addDefaultValues(id, c, prevChange[id]);
                 prevChange[id] = c;
             }
@@ -140,6 +162,7 @@ function generateGameStates() {
 }
 
 function loadObjectImages() {
+    // Get the images we need to preload and preload them
     var loadedImages = {}, ents = gameInitializer.entity;
     for (var i = 0; i < ents.length; i++) {
         if ('value' in ents[i])
@@ -160,15 +183,11 @@ function loadObjectImages() {
 }
 
 function loadImage(img,loadedImages) {
+    // Preload a specific image
     if (!(img in loadedImages)) {
         gameDisplayWindow.load.image(img, img);
         loadedImages[img] = true;
     }
-}
-
-function create() {
-    gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
-        {preload: preload, create: create2, update: drawTurn})
 }
 
 function create2() {
@@ -176,6 +195,7 @@ function create2() {
     var bkg = gameDisplayWindow.add.image(0, 0, 'background');
     bkg.width = gameWidth;
     bkg.height = gameHeight;
+    // Spawn entities
     for (var i = 0; i < entityList.length; i++)
         entityList[i].instantiate();
     // Set first turn
@@ -228,7 +248,8 @@ function restoreGameState(turnNum) {
         var ent = entityList[i], j = Math.min(turnNum,ent.finalTurn), entId = ent.id;
         while (!(entId in gameStates[j]))
             j--;
-        ent.action(gameStates[j][entId], 1);
+        gs=gameStates[j][entId];
+        ent.action(gs, gs.end);
     }
     startTurn(turnNum, false);
     playing = false;
@@ -265,16 +286,17 @@ function setNewTestingArenaTurn() {
     restoreGameState(turn+1);
 }
 
-function Entity(e) {
+function Entity(e,ft) {
     this.initMessage = e;               // Initialization of this entity
     this.id = this.initMessage.id;      // Unique numerical id
     this.type = this.initMessage.type;  // The type of entity: 'object', 'text', or a type of sprite
+    this.firstTurn = ft;                // The first turn this entity exists on, for deleting in the testing arena
     this.finalTurn = 0;                 // The last turn on which this entity executes a change
     if (this.type == 'object' || this.type == 'text')
         this.isAnimated = false;
     else {
         this.isAnimated = true;
-        this.animations = animationList[this.type];
+        this.animations = spriteList[this.type];
     }
     // Create the sprite or text object
     this.instantiate = function() {
@@ -303,11 +325,13 @@ function Entity(e) {
         }
         else if(this.type == 'text') {
             this.obj.text = f.value;
-            for(var i=0;i<textProperties.length;i++){
-                var c=textProperties[i];
-                if(c in f)
-                    this.obj[c]=f[c];
+            for (var i = 0; i < textProperties.length; i++) {
+                var c = textProperties[i];
+                if (c in f)
+                    this.obj.style[c] = f[c];
             }
+            this.obj.style.fontSize=80;
+            this.obj.style.fontWeight='bold';
         }
 
         // Visibility
@@ -319,7 +343,7 @@ function Entity(e) {
 
         // Movement
         var m = 1 / (f.end - f.start),
-            t1 = (f.end - t) * m, t2 = (t - f.start) * m,
+            t1 = (f.end - t) * m, t2 = 1 - t1,
             time = t - f.start, scaledTime = time * m;
         if ('x' in f)
             this.obj.x = (f.initX * t1 + f.x * t2);
@@ -361,20 +385,3 @@ function Entity(e) {
         return this.animations[f.action];
     };
 }
-
-var animationList = {
-    spriteRabbit: {
-        walk: {frames: [0,1,2,3,4,5,6,7,8,9], speed: 15},
-        fall: {frames: [13,14], speed: 15},
-        attack: {frames: [15,16,17,18,19], speed: 15},
-        defend: {frames: [10,11,12,12,12,12,12,11], speed: 15}
-    },
-    spriteChicken: {
-        walk: {frames: [0,1,2,3,4,5], speed: 15},
-        fall: {frames: [11], speed: 15},
-        attack: {frames: [6,7,8], speed: 15},
-        defend: {frames: [10,10,9], speed: 15}
-    }
-    
-    //TODO: Josiah other 2 sprites animations list.
-};
