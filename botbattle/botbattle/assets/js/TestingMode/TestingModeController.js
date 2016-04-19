@@ -18,7 +18,7 @@ const TEST_ARENA_STRING = 'test_arena';
 
 function beginPageLoad() {
     setLoadingDisplay();
-    var cid = getChallengeID(); //from QueryStringFunctions.js
+    var cid = getChallengeID();
     getLanguages(); // getTemplates(cid) is called after languages are returned
 
     if (cid == -1) {
@@ -49,30 +49,14 @@ function writeFirstTurnRequest(cid) {
     var playerNum;
     var lastTurnIndex;
 
-    if (Player_1_Bot_Ready) {
-        botType = Player_1_Bot_Type;
-        playerNum = 1;
-        lastTurnIndex = -1;
+    botType = Player_1_Bot_Type;
+    playerNum = 1;
+    lastTurnIndex = -1;
 
-        if (botType == TEST_ARENA_STRING) {
-            langID = getLanguageID(1);
-            botID = null;
-            botVersion = null;
-        }
-        else if (botType == USER_STRING) {
-            langID = null;
-            botID = Player_1_Bot_ID;
-            //botVersion will require a db query to get the default bot version from user_bots table for the given bot id....do this when checking public bot
-            botVersion = Player_1_Bot_Version;
-        }
-    }
-    else {
-        //Bot isn't ready (due to change or no upload, etc)
-        //Throw alert and log in console
-        alert("Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
-        console.warn("WARNING: Cannot complete next turn, please upload your new bot or changes or finish selecting a valid public bot.");
-        return;
-    }
+    //Bot data won't be used for first turn, so go with default data...
+    langID = 1;
+    botID = null;
+    botVersion = null;
 
     putTurnRequest(challengeID, botType, langID, botID, botVersion, playerNum, lastTurnIndex);
 }
@@ -98,7 +82,7 @@ function writeTurnRequest(cid) {
     var lastTurnIndex;
 
     var Bot_Ready = false;
-    
+
 
     switch (playerNum) {
         case 1:

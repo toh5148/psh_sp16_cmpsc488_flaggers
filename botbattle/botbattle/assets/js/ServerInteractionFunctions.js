@@ -47,10 +47,9 @@ function createCORSRequest(method, url) {
         1) selectedCode - String version of the source code to be uploaded to the database.
         2) challenge_id - The id of the challenge that the source code is related to.
         3) language_id - The id of the language that the source code is written in.
-        4) needs_compiled - Does the source code need compiled? 0 = false, 1 = true.
 */
-function uploadCode(selectedCode, challenge_id, language_id, needs_compiled) {
-    var url = base_url + "/upload_code?cid=" + challenge_id + "&lid=" + language_id + "&needs_compiled=" + needs_compiled;
+function uploadCode(selectedCode, challenge_id, language_id) {
+    var url = base_url + "/upload_code?cid=" + challenge_id + "&lid=" + language_id;
     
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
@@ -63,6 +62,51 @@ function uploadCode(selectedCode, challenge_id, language_id, needs_compiled) {
     xhr.onload = function () {
         if (xhr.responseText == 'true') {
             timeout_counter = 0;
+            alert('Code uploaded successfully.');
+        } else {
+            if (timeout_counter < error_limit) {// Try to upload the code again
+                timeout_counter++;
+                setTimeout(function () { uploadCode(selectedCode, challenge_id, language_id, needs_compiled); }, timeout_upload_code);
+            } else {                            // Upload has failed to many times, so there is a problem with the database
+                timeout_counter = 0;
+                alert('The database encountered an error. Please try again later.');
+            }
+        }
+    }
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    xhr.send(selectedCode);
+}
+
+/*
+    This function sends a request to the server to SAVE a bot's source code to the user bot database.
+    If uploading fails, the function will resend the request to the server until the code was
+    uploaded successfully or until the function has succeeded the allocated number of times it
+    can send the request.
+
+    Arguments:
+        1) selectedCode - String version of the source code to be uploaded to the database.
+        2) challenge_id - The id of the challenge that the source code is related to.
+        3) language_id - The id of the language that the source code is written in.
+*/
+function saveTestingArenaBot(selectedCode, challenge_id, language_id) {
+    var url = base_url + "/save_testing_bot?";
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('POST', url);
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
+
+    // Successfully got a response
+    xhr.onload = function () {
+        if (xhr.responseText == 'true') {
+            timeout_counter = 0;
+
             alert('Code uploaded successfully.');
         } else {
             if (timeout_counter < error_limit) {// Try to upload the code again
@@ -185,6 +229,7 @@ function getMatch(matchID) {
         6) lastTurnIndex - The last turn that was displayed to the user.
 */
 function putTurnRequest(challengeID, botType, languageID, botID, botVersion, player, lastTurnIndex) {
+
     var url = base_url + '/upload_turn_request?cid=' + challengeID + '&botType=' + botType +
         '&lid=' + languageID + '&botID=' + botID + '&botVersion=' + botVersion + '&player=' + player +
         '&lastTurnIndex=' + lastTurnIndex;

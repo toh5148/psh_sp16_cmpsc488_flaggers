@@ -131,6 +131,7 @@ function getTestMatchTurn(userID, challengeID, callback){
 
 function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botVersion, playerNum, lastTurnIndex, callback) {
     var retval;
+	console.log(languageID);
     var turnToUpload = { uid: userID, challenge_id: challengeID, bot_type: botType, language_id: languageID,
         bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex };
 
@@ -138,7 +139,7 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
     db.query('INSERT INTO pending_test_arena_turns SET ?', turnToUpload, function (err, rows) {
         if (err) {
             retval = 'false';
-            console.log(colors.red(err));
+            console.log(err);
         } else {
             retval = 'true';
             console.log('Row inserted into the pending_test_arena_turns table.');
@@ -216,7 +217,7 @@ function getTemplates(cid, callback) {
 }
 
 
-function uploadCode(botText, userID, challengeID, languageID, needs_compiled, callback){	
+function uploadCode(botText, userID, challengeID, languageID, callback){	
     var retval;
 
 	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
@@ -226,7 +227,8 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
             console.log(colors.red(err));
         } else {
             if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
-                var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+				var time = Date.now();
+                var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, needs_compiled: time, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
                 db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
                     if (err) {
                         retval = 'false';
@@ -239,7 +241,8 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
                 });
             }
             else {                      // Code for this challenge exists in the db, update the row
-                var codeToUpdate = { language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+                var time = Date.now();
+				var codeToUpdate = { language_id: languageID, source_code: botText, needs_compiled: time, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
 
                 db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
                     if (err) {
@@ -323,16 +326,15 @@ app.get('/upload_turn_request', function (req, res, next) {
     });
 });
 
-// localhost:5050/uploadCode?cid=101&lid=1&needs_compiled=1
+// localhost:5050/uploadCode?cid=101&lid=1
 app.post('/upload_code', function(req, res, next){
     var source_code = req.body;
     //var user_id = req.session.user;
     var user_id = 12345;
 	var challenge_id = req.query.cid;
 	var language_id = req.query.lid;
-	var needs_compiled = req.query.needs_compiled;
 
-	uploadCode(source_code, user_id, challenge_id, language_id, needs_compiled, function (data) {
+	uploadCode(source_code, user_id, challenge_id, language_id, function (data) {
 	    res.header('Access-Control-Allow-Origin', base);
 	    res.send(data);
     });
