@@ -5,8 +5,10 @@ var timeout_test_turn = 3 * 1000;
 var timeout_languages = 7 * 1000;           
 var timeout_templates = 7 * 1000;
 var timeout_upload_code = 3 * 1000;
+var timeout_get_errors = 3 * 1000;
 
 var timeout_counter = 0;                    // Counter for how many times we have resent the request
+var timeout_counter_errors = 0;
 var error_limit = 5;                        // How many times do we want to resend the request if we receive an error
 
 /* 
@@ -82,6 +84,50 @@ function uploadCode(selectedCode, challenge_id, language_id, needs_compiled) {
     xhr.send(selectedCode);
 }
 
+/*
+    This function sends a request to the server to SAVE a bot's source code to the user bot database.
+    If uploading fails, the function will resend the request to the server until the code was
+    uploaded successfully or until the function has succeeded the allocated number of times it
+    can send the request.
+
+    Arguments:
+        1) selectedCode - String version of the source code to be uploaded to the database.
+        2) challenge_id - The id of the challenge that the source code is related to.
+        3) language_id - The id of the language that the source code is written in.
+*/
+function saveTestingArenaBot(selectedCode, challenge_id, language_id) {
+    var url = base_url + "/save_testing_bot?";
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('POST', url);
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
+
+    // Successfully got a response
+    xhr.onload = function () {
+        if (xhr.responseText == 'true') {
+            timeout_counter = 0;
+
+            alert('Code uploaded successfully.');
+        } else {
+            if (timeout_counter < error_limit) {// Try to upload the code again
+                timeout_counter++;
+                setTimeout(function () { uploadCode(selectedCode, challenge_id, language_id, needs_compiled); }, timeout_upload_code);
+            } else {                            // Upload has failed to many times, so there is a problem with the database
+                timeout_counter = 0;
+                alert('The database encountered an error. Please try again later.');
+            }
+        }
+    }
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    xhr.send(selectedCode);
+}
 
 /********************************************************************
 
@@ -351,6 +397,54 @@ function getTemplates(challengeID) {
             setTemplateVariables(json);
         }
     };
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    xhr.send();
+}
+
+function getCompilerErrors(challengeID) {
+    var url = base_url + '/get_compiler_errors?cid=' + challengeID;
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('GET', url);
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
+
+    xhr.onload = function () {
+        var response = xhr.responseText;
+
+        if (response == 'false') { // Server had an error
+            if (timeout_counter_errors < error_limit) {// Poll the database again
+                timeout_counter_errors++;
+                setTimeout(function () { getCompilerErrors(challengeID); }, timeout_get_errors);
+            } else {                            // Polling has failed to many times, so there is a problem with the database
+                timeout_counter_errors = 0;
+                alert('The database encountered an error. Please try again later.');
+            }
+        } else {
+            var json = JSON.parse(response);
+            var num_errors = json.errors;
+            var num_warnings = json.warnings;
+            var error_messages = json.error_messages;
+            var warning_messages = json.warning_messages;
+
+            console.log('num_errors: ' + num_errors +
+                '\nnum_warnings: ' + num_warnings +
+                '\nerror_messages: ' + error_messages +
+                '\nwarning_messages: ' + warning_messages);
+
+            /* ****************************************************
+
+                I HAVE THE INFO WHAT SHOULD I DO WITH IT?
+
+            ******************************************************/
+        }
+    }
 
     xhr.onerror = function () {
         console.error('Woops, there was an error making the request.');

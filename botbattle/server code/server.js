@@ -131,17 +131,44 @@ function getTestMatchTurn(userID, challengeID, callback){
 
 function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botVersion, playerNum, lastTurnIndex, callback) {
     var retval;
-    var turnToUpload = { uid: userID, challenge_id: challengeID, bot_type: botType, language_id: languageID,
-        bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex };
 
-    // columns: uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
-    db.query('INSERT INTO pending_test_arena_turns SET ?', turnToUpload, function (err, rows) {
+    db.query('SELECT uid FROM pending_test_arena_turns WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {
             retval = 'false';
-            console.log(colors.red(err));
+            console.log(err);
         } else {
-            retval = 'true';
-            console.log('Row inserted into the pending_test_arena_turns table.');
+            if (rows[0] == undefined) { // There is not a row for this challengeID and userID in the table, insert one
+                var turnToInsert = {
+                    uid: userID, challenge_id: challengeID, bot_type: botType, language_id: languageID,
+                    bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex
+                };
+
+                // columns: uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
+                db.query('INSERT INTO pending_test_arena_turns SET ?', turnToInsert, function (err, rows) {
+                    if (err) {
+                        retval = 'false';
+                        console.log(colors.red(err));
+                    } else {
+                        retval = 'true';
+                        console.log('Row inserted into the pending_test_arena_turns table.');
+                    }
+                });
+            } else { // There is an entry for this challengeID and userID, update it
+                var turnToUpdate = {
+                    bot_type: botType, language_id: languageID,
+                    bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex
+                };
+
+                db.query('UPDATE pending_test_arena_turns SET ?', turnToUpdate, function (err, rows) {
+                    if (err) {
+                        retval = 'false';
+                        console.log(colors.red(err));
+                    } else {
+                        retval = 'true';
+                        console.log('Row updated in pending_test_arena_turns tbalse.');
+                    }
+                });
+            }
         }
         callback(retval);
     });
@@ -149,6 +176,7 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
 
 function getLanguages(callback) {
     var retVal;
+
     // column names: language_id, name
     db.query('SELECT * FROM languages', function (err, rows) {
         if (err) { // error with the database
@@ -183,6 +211,7 @@ function getLanguages(callback) {
 
 function getTemplates(cid, callback) {
     var retVal;
+
     // column names: challenge_id, language_id, source_code
     db.query('SELECT language_id, source_code FROM test_arena_template_bots WHERE challenge_id = ' + cid, function (err, rows) {
         if (err) { // error with the database
@@ -216,22 +245,24 @@ function getTemplates(cid, callback) {
 }
 
 
-function uploadCode(botText, userID, challengeID, languageID, needs_compiled, callback){	
+function uploadCode(botText, userID, challengeID, languageID, callback) {
     var retval;
 
-	// column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
+    // column names: uid, challenge_id, language_id, source_code, errors, error_messages, warnings, warning_messages, needs_compiled
     db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {
             retval = 'false';
             console.log(colors.red(err));
         } else {
             if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
-                var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+                var time = Date.now();
+                var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, needs_compiled: time, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
                 db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
                     if (err) {
                         retval = 'false';
                         console.log(colors.red(err));
                     } else {
+                        // PASS BACK THE BOT ID????? AND ALERT USER?
                         retval = 'true';
                         console.log('Row inserted into test_arena_bots.');
                     }
@@ -239,7 +270,8 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
                 });
             }
             else {                      // Code for this challenge exists in the db, update the row
-                var codeToUpdate = { language_id: languageID, source_code: botText, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+                var time = Date.now();
+                var codeToUpdate = { language_id: languageID, source_code: botText, needs_compiled: time, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
 
                 db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
                     if (err) {
@@ -256,16 +288,33 @@ function uploadCode(botText, userID, challengeID, languageID, needs_compiled, ca
     });
 }
 
-// function uploadmatch(init, turn) {
-	// var uploadValue = {match_id:123, winner: 'tom', game_initialization_message: init, turns: turn, ready_for_playback: 1};
-	// db.query('INSERT INTO matches SET ?', uploadValue, function (err, rows) {
-        // if (err) { // error with the database
-            // console.log(colors.red(err));
-        // } else {                            // Template(s) exist
-			// console.log(colors.green('Inserted!'));
-        // }
-    // });
-// }
+function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
+    var retval;
+
+    db.query('SELECT errors, warnings, error_messages, warning_messages FROM test_arena_bots WHERE uid='
+        + userID + ' AND challenge_id=' + challengeID, function (err, rows) {
+            if (err) {
+                retval = 'false';
+                console.log(colors.red(err));
+            } else {
+                var errors = rows[0].errors;
+                var warnings = rows[0].warnings;
+                var error_msgs = rows[0].error_messages;
+                var warning_msgs = rows[0].warning_messages;
+
+                var json = '{' +
+                                '"errors": ' + errors + ',' +
+                                '"warnings": ' + warnings + ',' +
+                                '"error_messages": "' + error_msgs + '",' +
+                                '"warning_messages": "' + warning_msgs + '"' +
+                            '}';
+
+                retval = json;
+                console.log('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
+            }
+            callback(retval);
+        });
+}
 
 // ****************************************************
 
@@ -351,6 +400,18 @@ app.get('/get_templates', function(req, res, next){
 	var challenge_id = req.query.cid;
 	
     getTemplates(challenge_id, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
+// localhost:5050/get_compiler_errors?cid=101
+app.get('/get_compiler_errors', function (req, res, next) {
+    //var user_id = req.session.user;
+    var user_id = 12345
+    var challenge_id = req.query.cid;
+
+    getCompilerErrorsAndWarnings(user_id, challenge_id, function (data) {
         res.header('Access-Control-Allow-Origin', base);
         res.send(data);
     });
