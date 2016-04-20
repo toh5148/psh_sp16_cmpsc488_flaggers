@@ -8,7 +8,11 @@ var colors = require('colors'); // for colors in the console
 var app = express();
 var port = 5050;
 var db; // connection variable
-var base = 'http://localhost:13558';
+
+//Sawyer's base
+//var base = 'http://localhost:13558';
+//Tom's base
+var base = 'http://localhost:50363';
 
 app.use(bodyParser.json());
 app.use(bodyParser.text());
