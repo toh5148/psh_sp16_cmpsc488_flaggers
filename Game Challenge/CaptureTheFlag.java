@@ -7,7 +7,7 @@ public class CaptureTheFlag extends Game {
 	private int flagsCaptured;
 	private int flagsNeeded;
 	private int Seniors;
-	private int turn;
+	private int rounds;
 	private int EnemySeniors;
 	private int EnemyFlagsCaptured;
 	private int totalPossible;
@@ -24,14 +24,15 @@ public class CaptureTheFlag extends Game {
 	private int botAttackingStudents;
 	private int botDefendingStudents;
 	private int gameWinner;
-	
+	private String playeroneprevious
+	private String playertwoprevious
 	public GameState initializeGame(boolean testMode) {
 		// Add logic to build tracking variables and data structures
 		//
 		flagsCaptured = 0;
 		flagsNeeded = 10;
 		Seniors = 5;
-		turn = 1;
+		rounds = 1;
 		EnemySeniors = 5;
 		EnemyFlagsCaptured = 0;
 		totalPossible = 150;
@@ -41,6 +42,8 @@ public class CaptureTheFlag extends Game {
 		reinforceAmount = 10;
 		gameover = false;
 		gameWinner = 0;
+		playeroneprevious = "";
+		playertwoprevious = "";
 		
 		attackSenior = false;
 		defendSenior =  false;
@@ -300,14 +303,165 @@ public class CaptureTheFlag extends Game {
 		// determine next current player
 		if (getCurrentPlayer() == 1){
 			currentPlayer = 2;
+			if (attackSenior && defendSenior){
+				playeroneprevious += "senior:senior:";
+			}
+			if (attackSenior && !defendSenior){
+				playeroneprevious += "senior:" + defendingStudents + ":";
+			}
+			if (!attackSenior && defendSenior){
+				playeroneprevious += attackingStudents + ":" + "senior:";
+			}
+			if (!attackSenior && !defendSenior){
+				playeroneprevious += attackingStudents + ":" + defendingStudents + ":";
+			}
 		}
 		else if (getCurrentPlayer() == 2){
 			currentPlayer = 1;
+			rounds++;
+			
+			if (botAttackSenior && botDefendSenior){
+				playertwoprevious += "senior:senior:";
+			}
+			if (botAttackSenior && !botDefendSenior){
+				playertwoprevious += "senior:" + botDefendingStudents + ":";
+			}
+			if (!botAttackSenior && botDefendSenior){
+				playertwoprevious += botAttackingStudents + ":" + "senior:";
+			}
+			if (!botAttackSenior && !botDefendSenior){
+				playertwoprevious += botAttackingStudents + ":" + botDefendingStudents + ":";
+			}
+			
+				//If one side sends a senior while the other does not, that side
+			//will claim the round and capture all opposing students.
+			boolean player1success = false;
+			boolean player2success = false;
+			if (botAttackSenior && !defendSenior){
+				totalStudents -= defendingStudents;
+				EnemyFlagsCaptured += 1;
+				player2success = true;
+				//followed by JSON representing capture
+			}
+			if (attackSenior && !botDefendSenior){
+				EnemyStudents -= botDefendingStudents;
+				flagsCaptured += 1;
+				player1success = true;
+				//followed by JSON representing capture
+			}
+			if (botDefendSenior && !attackSenior){
+				totalStudents -= attackingStudents;
+				//followed by JSON representing capture
+			}
+			if (defendSenior && !botAttackSenior){
+				EnemyStudents -= botAttackingStudents;
+				//followed by JSON representing capture
+			}
+			//Otherwise, the player that sent the higher number of students will
+			//claim victory for the round.
+			if (!botDefendSenior && !attackSenior){
+				if (attackingStudents > botDefendingStudents){
+					EnemyStudents -= botDefendingStudents;
+					flagsCaptured += 1;
+					player1success = true;
+					//followed by JSON
+				}
+				if (attackingStudents < botDefendingStudents){
+				totalStudents -= attackingStudents;
+				//followed by JSON
+				}
+			}
+			if (!botAttackSenior && !defendSenior){
+				if (botAttackingStudents < defendingStudents){
+					EnemyStudents -= botAttackingStudents;
+					//followed by JSON
+				}
+				if (botAttackingStudents > defendingStudents){
+					totalStudents -= defendingStudents;
+					EnemyFlagsCaptured += 1;
+					player2success = true;
+					//followed by JSON
+				}
+			}
+			
+			if (player1success && player2success){
+				playeroneprevious += "3:";
+				playertwoprevious += "3:";
+			}
+			if (player1success && !player2success){
+				playeroneprevious += "1:";
+				playertwoprevious += "1:";
+			}
+			if (!player1success && player2success){
+				playeroneprevious += "2:";
+				playertwoprevious += "2:";
+			}
+			if (!player1success && !player2success){
+				playeroneprevious += "0:";
+				playertwoprevious += "0:";
+			}
+			
+			//Game victory if statements
+			if (flagsCaptured >= flagsNeeded && EnemyFlagsCaptured >= flagsNeeded && flagsCaptured == EnemyFlagsCaptured){
+				//Game is currently tied, Possibly introduce JSON text to indicate tiebreaker round
+			}
+			else if (flagsCaptured >= flagsNeeded && flagsCaptured > EnemyFlagsCaptured){
+				gameWinner = 1;
+				gameover = true;
+			}
+			else if (EnemyFlagsCaptured >= flagsNeeded && EnemyFlagsCaptured > flagsCaptured){
+				gameWinner = 2;
+				gameover = true;
+			}
 		}
 		
-		String inputForBot = "reduced state information for next bot";
+		if (rounds == 50 && !gameover) {
+            if (flagsCaptured > EnemyFlagsCaptured){
+                gameWinner = 1;
+				gameover = true;
+            }
+            else if (flagsCaptured < EnemyFlagsCaptured){
+                gameWinner = 2;
+				gameover = true;
+            }
+            else {
+                if (totalStudents > EnemyStudents){
+                    gameWinner = 1;
+					gameover = true;
+                }
+                else if (EnemyStudents > totalStudents){
+                    gameWinner = 2;
+					gameover = true;
+                }
+                else {
+                    gameWinner = 1;
+					gameover = true;
+                }
+               
+            }
+               
+        }
+		
+		if (pastPlayer == 1){
+		String inputForBot = EnemyStudents + ";" ;
+		inputForBot += EnemySeniors + ";";
+		inputForBot += (botPossible - EnemyStudents) + ";";
+		inputForBot += (totalPossible - totalStudents) + ";";
+		inputForBot += EnemyFlagsCaptured + ";";
+		inputForBot += flagsCaptured + ";";
+		inputForBot += playertwoprevious;
 		String gameState = null;
-
+		}
+		if (pastPlayer == 2){
+		String inputForBot = totalStudents + ";" ;
+		inputForBot += Seniors + ";";
+		inputForBot += (totalPossible - totalStudents) + ";";
+		inputForBot += (botPossible - EnemyStudents) + ";";
+		inputForBot += flagsCaptured + ";";
+		inputForBot += EnemyFlagsCaptured + ";";
+		inputForBot += playeroneprevious;
+		String gameState = null;
+		}
 		if (testMode) {
 			gameState = "provide all needed state information";
 		}
