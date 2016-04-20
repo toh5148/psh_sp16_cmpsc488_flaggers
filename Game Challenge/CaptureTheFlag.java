@@ -27,6 +27,7 @@ public class CaptureTheFlag extends Game {
 	private int gameWinner;
 	private String playeroneprevious;
 	private String playertwoprevious;
+	
 	public GameState initializeGame(boolean testMode) {
 		// Add logic to build tracking variables and data structures
 		//
@@ -72,7 +73,7 @@ public class CaptureTheFlag extends Game {
 
 		ArrayList<Entity> entities = new ArrayList<Entity>();
 		ArrayList<String> assets = new ArrayList<String>();
-
+		/*
 		// Build two sample entities
 		for (int i = 0; i < 2; ++i) {
 			Entity entity = new Entity();
@@ -94,10 +95,81 @@ public class CaptureTheFlag extends Game {
 			entities.add(entity);
 		}
 		
+		*/
+		Entity entity = new Entity();
+		entity.id = 1;
+		entity.type = "text";
+		entity.visible = true;
+		entity.initX =  400;
+		entity.initY = 50;
+		entity.width = 300;
+		entity.height = 50;
+		entity.flipped = false;
+		entity.rotation = 0.0;
+		entity.args = new ArrayList<String>();
+		entity.args.add("font:Times New Roman");
+		entity.args.add("wordWrap:true");
+		entity.args.add("strokeThickness:2em");
+		entity.args.add("tabs:3");
+		entity.args.add("fontSize:10");
+		entities.add(entity);
+		
+		entity = new Entity();
+		entity.id = 2;
+		entity.type = "spriteChicken";
+		entity.visible = true;
+		entity.initX =  250;
+		entity.initY = 100;
+		entity.width = 50;
+		entity.height = 50;
+		entity.flipped = false;
+		entity.rotation = 0.0;
+		entity.args = new ArrayList<String>();
+		entities.add(entity);
+		
+		entity = new Entity();
+		entity.id = 3;
+		entity.type = "spriteChicken";
+		entity.visible = true;
+		entity.initX =  250;
+		entity.initY = 350;
+		entity.width = 50;
+		entity.height = 50;
+		entity.flipped = false;
+		entity.rotation = 0.0;
+		entity.args = new ArrayList<String>();
+		entities.add(entity);
+		
+		entity = new Entity();
+		entity.id = 4;
+		entity.type = "spriteRabbit";
+		entity.visible = true;
+		entity.initX =  550;
+		entity.initY = 100;
+		entity.width = 50;
+		entity.height = 50;
+		entity.flipped = true;
+		entity.rotation = 0.0;
+		entity.args = new ArrayList<String>();
+		entities.add(entity);
+		
+		entity = new Entity();
+		entity.id = 5;
+		entity.type = "spriteRabbit";
+		entity.visible = true;
+		entity.initX =  550;
+		entity.initY = 350;
+		entity.width = 50;
+		entity.height = 50;
+		entity.flipped = true;
+		entity.rotation = 0.0;
+		entity.args = new ArrayList<String>();
+		entities.add(entity);
+		
 		// Map 3 asset names to their url paths
-		assets.add("asset1:" + assetBasePath + "SampleGame/asset1.png");
-		assets.add("asset2:" + assetBasePath + "SampleGame/asset2.png");
-		assets.add("asset3:" + assetBasePath + "SampleGame/asset3.png");
+		//assets.add("asset1:" + assetBasePath + "CaptureTheFlag/asset1.png");
+		//assets.add("asset2:" + assetBasePath + "CaptureTheFlag/asset2.png");
+		//assets.add("asset3:" + assetBasePath + "CaptureTheFlag/asset3.png");
 
 		// Uncomment to print JSON object prior to being returned
 		// JsonObject result = initializeJson("url/sample.jpg", 1.0, 1, entities).build();
@@ -105,7 +177,7 @@ public class CaptureTheFlag extends Game {
 		//System.out.println(result.toString());
 
 		return new GameState(inputForBot, gameState, initializeJson(
-			assetBasePath + "SampleGame/background.png", 1.0, 1, entities, assets));
+			assetBasePath + "CaptureTheFlag/background.png", 1.0, 1, entities, assets));
 	}
 
 	public int getCurrentPlayer() {
@@ -122,6 +194,12 @@ public class CaptureTheFlag extends Game {
 		defendSenior =  false;
 		attackingStudents = 0;
 		defendingStudents = 0;
+		if (move == null){
+			error = "Player 1 did not submit a move.";
+			gameover = true;
+			gameWinner = 2;
+			return error;
+		}
 		String [] parts = move.split(";");
 			if (parts[0].equals("free")){
 				//This is here in case we change the freedom rules
@@ -136,6 +214,8 @@ public class CaptureTheFlag extends Game {
 				if (parts[0].equals("attack")){
 					if (parts[1].equals("senior")){
 						if (Seniors == 0){
+							gameover = true;
+							gameWinner = 2;
 							error = "Player 1: Illegal move: Not enough Seniors. ";
 						}
 						else {
@@ -151,6 +231,8 @@ public class CaptureTheFlag extends Game {
 						try {
 							int students = Integer.parseInt(parts[1]);
 							if (students > totalStudents){
+								gameover = true;
+								gameWinner = 2;
 								error = "Player 1: Illegal move: Not enough Students. ";
 							}
 							if (students <= 0) {
@@ -162,6 +244,8 @@ public class CaptureTheFlag extends Game {
 							}
 							}
 						catch (NumberFormatException e){
+							gameover = true;
+							gameWinner = 2;
 							error = "Player 1: Illegal move: Not given a number, reinforce, or senior command. ";
 						}
 					}
@@ -169,6 +253,8 @@ public class CaptureTheFlag extends Game {
 				if (parts[2].equals("defend")){
 					if (parts[3].equals("senior")){
 						if (Seniors == 0){
+							gameover = true;
+							gameWinner = 2;
 							error = "Player 1: Illegal move: Not enough Seniors. ";
 						}
 						else {
@@ -184,9 +270,13 @@ public class CaptureTheFlag extends Game {
 						try {
 							int students = Integer.parseInt(parts[3]);
 							if (students > totalStudents){
+								gameover = true;
+								gameWinner = 2;
 								error = "Player 1: Illegal move: Not enough Students. ";
 							}
 							if ((students + attackingStudents) > totalStudents){
+								gameover = true;
+								gameWinner = 2;
 								error = "Player 1: Illegal move: Attacking and defending students exceeds max limit. ";
 							}
 							if (students <= 0){
@@ -198,6 +288,8 @@ public class CaptureTheFlag extends Game {
 							}
 						}
 						catch (NumberFormatException e){
+							gameover = true;
+							gameWinner = 2;
 							error = "Player 1: Illegal move: Not given a number, reinforce, or senior command. ";
 						}
 					}
@@ -209,6 +301,12 @@ public class CaptureTheFlag extends Game {
 			botDefendSenior = false;
 			botAttackingStudents = 0;
 			botDefendingStudents = 0;
+			if (move == null){
+				error = "Player 2 did not submit a move.";
+				gameover = true;
+				gameWinner = 1;
+				return error;
+			}
 			String [] botmove = move.split(";");
 			if (botmove[0].equals("free")){
             //This is here in case we change the freedom rules
@@ -223,6 +321,8 @@ public class CaptureTheFlag extends Game {
 				if (botmove[0].equals("attack")){
 					if (botmove[1].equals("senior")){
 						if (EnemySeniors == 0){
+							gameover = true;
+							gameWinner = 1;
 							error = "Player 2: Illegal move: Not enough Seniors. ";
 						}
 						else {
@@ -238,6 +338,8 @@ public class CaptureTheFlag extends Game {
 						try {
 							int students = Integer.parseInt(botmove[1]);
 							if (students > EnemyStudents){
+								gameover = true;
+								gameWinner = 1;
 								error = "Player 2: Illegal move: Not enough Students. ";
 							}
 							if (students <= 0) {
@@ -249,6 +351,8 @@ public class CaptureTheFlag extends Game {
 							}
 						}
 						catch (NumberFormatException e){
+							gameover = true;
+							gameWinner = 1;
 							error = "Player 2: Illegal move: Not given a number, reinforce, or senior command. ";
 						}
 					}
@@ -256,6 +360,8 @@ public class CaptureTheFlag extends Game {
 				if (botmove[2].equals("defend")){
 					if (botmove[3].equals("senior")){
 						if (EnemySeniors == 0){
+							gameover = true;
+							gameWinner = 1;
 							error = "Player 2: Illegal move: Not enough Seniors. ";
 						}
 						else {
@@ -271,9 +377,13 @@ public class CaptureTheFlag extends Game {
 						try {
 							int students = Integer.parseInt(botmove[3]);
 							if (students > EnemyStudents){
+								gameover = true;
+								gameWinner = 1;
 								error = "Player 2: Illegal move: Not enough Students. ";
 							}
 							if ((students + botAttackingStudents) > EnemyStudents){
+								gameover = true;
+								gameWinner = 1;
 								error = "Player 2: Illegal move: Attacking and defending students exceeds max limit. ";
 							}
 							if (students <= 0){
@@ -285,6 +395,8 @@ public class CaptureTheFlag extends Game {
 							}
 						}
 						catch (NumberFormatException e){
+							gameover = true;
+							gameWinner = 1;
 							error = "Player 2: Illegal move: Not given a number, reinforce, or senior command. ";
 						}
 					}
@@ -300,8 +412,11 @@ public class CaptureTheFlag extends Game {
 	public GameState updateState(String move, boolean testMode) {
 		// Update game state information and construct turn JSON to represent
 		// changes.
-		int maxbound;
 		
+		ArrayList<Change> changes = new ArrayList<Change>();
+		String gameState = null;
+		int maxbound;
+		int changenum = 0;
 		if (EnemyStudents == 0 && totalStudents == 0) {
 			maxbound = 1;
 		}
@@ -314,71 +429,185 @@ public class CaptureTheFlag extends Game {
 		int attackheight = 50;
 		int attackwidth = 50;
 		int defendheight = 50;
-		int defendwidth 50;
+		int defendwidth = 50;
 		// Save copy of current player
 		int pastPlayer = getCurrentPlayer();
 
 		// Add logic to update state based on valid move
 		// This is done in isValidMove mostly
 		
+		changes.add(new Change());
+		changes.get(changenum).id = 1;
+		changes.get(changenum).actions = new ArrayList<Action>();
+		changes.get(changenum).actions.add(new Action());
+		changes.get(changenum).actions.get(0).action = "move";
+		changes.get(changenum).actions.get(0).starttime = 0.0;
+		changes.get(changenum).actions.get(0).endtime = 1.0;
+		changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+		changes.get(changenum).actions.get(0).args.add("value:" + move);
+		changenum++;
+		
 		// determine next current player
 		if (getCurrentPlayer() == 1){
 			currentPlayer = 2;
-			attackheight = 50 + (200 * attackingStudents) / maxbound;
-			defendheight = 50 + (200 * defendingStudents) / maxbound;
+			attackheight = 50 + (150 * attackingStudents) / maxbound;
+			defendheight = 50 + (150 * defendingStudents) / maxbound;
 			attackwidth = 50 + (50 * attackingStudents) / maxbound;
 			defendwidth = 50 + (50 * defendingStudents) / maxbound;
 			if (attackSenior && defendSenior){
 				playeroneprevious += "senior:senior:";
 				attackheight = 225;
-				attackwidth = 225;
+				attackwidth = 125;
 				defendheight = 225;
-				defendwidth = 225;
+				defendwidth = 125;
 			}
 			if (attackSenior && !defendSenior){
 				playeroneprevious += "senior:" + defendingStudents + ":";
 				attackheight = 225;
-				attackwidth = 225;
+				attackwidth = 125;
 			}
 			if (!attackSenior && defendSenior){
 				playeroneprevious += attackingStudents + ":" + "senior:";
 				defendheight = 225;
-				defendwidth = 225;
+				defendwidth = 125;
 			}
 			if (!attackSenior && !defendSenior){
 				playeroneprevious += attackingStudents + ":" + defendingStudents + ":";
 			}
 			//Need JSON here to represent player 1 unit growth
+			changes.add(new Change());
+			changes.get(changenum).id = 2;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).action = "move";
+			changes.get(changenum).actions.get(0).starttime = 0.0;
+			changes.get(changenum).actions.get(0).endtime = 2.0;
+			changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+			changes.get(changenum).actions.get(0).args.add("width:" + defendwidth);
+			changes.get(changenum).actions.get(0).args.add("height:" + defendheight);
+			changenum++;
+			
+			changes.add(new Change());
+			changes.get(changenum).id = 3;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).action = "move";
+			changes.get(changenum).actions.get(0).starttime = 0.0;
+			changes.get(changenum).actions.get(0).endtime = 2.0;
+			changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+			changes.get(changenum).actions.get(0).args.add("width:" + attackwidth);
+			changes.get(changenum).actions.get(0).args.add("height:" + attackheight);
+			changenum++;
+			
+			/*
+			entity = new Entity();
+			entity.id = 2;
+			entity.type = "spriteChicken";
+			entity.visible = true;
+			entity.initX =  250;
+			entity.initY = 150;
+			entity.width = 50;
+			entity.height = 50;
+			entity.flipped = false;
+			entity.rotation = 0.0;
+			entity.args = new ArrayList<String>();
+			entities.add(entity);
+			
+			entity = new Entity();
+			entity.id = 3;
+			entity.type = "spriteChicken";
+			entity.visible = true;
+			entity.initX =  250;
+			entity.initY = 400;
+			entity.width = 50;
+			entity.height = 50;
+			entity.flipped = false;
+			entity.rotation = 0.0;
+			entity.args = new ArrayList<String>();
+			entities.add(entity);
+			
+			entity = new Entity();
+			entity.id = 4;
+			entity.type = "spriteRabbit";
+			entity.visible = true;
+			entity.initX =  550;
+			entity.initY = 150;
+			entity.width = 50;
+			entity.height = 50;
+			entity.flipped = false;
+			entity.rotation = 0.0;
+			entity.args = new ArrayList<String>();
+			entities.add(entity);
+			
+			entity = new Entity();
+			entity.id = 5;
+			entity.type = "spriteRabbit";
+			entity.visible = true;
+			entity.initX =  550;
+			entity.initY = 400;
+			entity.width = 50;
+			entity.height = 50;
+			entity.flipped = false;
+			entity.rotation = 0.0;
+			entity.args = new ArrayList<String>();
+			entities.add(entity);
+			
+			*/
 		}
 		else if (getCurrentPlayer() == 2){
 			currentPlayer = 1;
 			rounds++;
-			attackheight = 50 + (200 * attackingStudents) / maxbound;
-			defendheight = 50 + (200 * defendingStudents) / maxbound;
+			attackheight = 50 + (150 * attackingStudents) / maxbound;
+			defendheight = 50 + (150 * defendingStudents) / maxbound;
 			attackwidth = 50 + (50 * attackingStudents) / maxbound;
 			defendwidth = 50 + (50 * defendingStudents) / maxbound;
 			if (botAttackSenior && botDefendSenior){
 				playertwoprevious += "senior:senior:";
 				attackheight = 225;
-				attackwidth = 225;
+				attackwidth = 125;
 				defendheight = 225;
-				defendwidth = 225;
+				defendwidth = 125;
 			}
 			if (botAttackSenior && !botDefendSenior){
 				playertwoprevious += "senior:" + botDefendingStudents + ":";
 				attackheight = 225;
-				attackwidth = 225;
+				attackwidth = 125;
 			}
 			if (!botAttackSenior && botDefendSenior){
 				playertwoprevious += botAttackingStudents + ":" + "senior:";
 				defendheight = 225;
-				defendwidth = 225;
+				defendwidth = 125;
 			}
 			if (!botAttackSenior && !botDefendSenior){
 				playertwoprevious += botAttackingStudents + ":" + botDefendingStudents + ":";
 			}
 			
 			//Need JSON here to represent player 2 unit growth
+			
+			changes.add(new Change());
+			changes.get(changenum).id = 4;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).action = "move";
+			changes.get(changenum).actions.get(0).starttime = 0.0;
+			changes.get(changenum).actions.get(0).endtime = 2.0;
+			changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+			changes.get(changenum).actions.get(0).args.add("width:" + defendwidth);
+			changes.get(changenum).actions.get(0).args.add("height:" + defendheight);
+			changenum++;
+			
+			changes.add(new Change());
+			changes.get(changenum).id = 5;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).action = "move";
+			changes.get(changenum).actions.get(0).starttime = 0.0;
+			changes.get(changenum).actions.get(0).endtime = 2.0;
+			changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+			changes.get(changenum).actions.get(0).args.add("width:" + attackwidth);
+			changes.get(changenum).actions.get(0).args.add("height:" + attackheight);
+			changenum++;
+			
 			
 				//If one side sends a senior while the other does not, that side
 			//will claim the round and capture all opposing students.
@@ -389,20 +618,109 @@ public class CaptureTheFlag extends Game {
 				EnemyFlagsCaptured += 1;
 				player2success = true;
 				//followed by JSON representing capture
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 5;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "attack";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 2;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "fall";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changes.get(changenum).actions.get(0).args.add("width:50");
+				changes.get(changenum).actions.get(0).args.add("height:50");
+				changenum++;
+				
 			}
 			if (attackSenior && !botDefendSenior){
 				EnemyStudents -= botDefendingStudents;
 				flagsCaptured += 1;
 				player1success = true;
 				//followed by JSON representing capture
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 3;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "attack";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 4;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "fall";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changes.get(changenum).actions.get(0).args.add("width:50");
+				changes.get(changenum).actions.get(0).args.add("height:50");
+				changenum++;
 			}
 			if (botDefendSenior && !attackSenior){
 				totalStudents -= attackingStudents;
 				//followed by JSON representing capture
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 4;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "defend";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 3;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "fall";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changes.get(changenum).actions.get(0).args.add("width:50");
+				changes.get(changenum).actions.get(0).args.add("height:50");
+				changenum++;
 			}
 			if (defendSenior && !botAttackSenior){
 				EnemyStudents -= botAttackingStudents;
 				//followed by JSON representing capture
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 2;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "defend";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 5;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "fall";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changes.get(changenum).actions.get(0).args.add("width:50");
+				changes.get(changenum).actions.get(0).args.add("height:50");
+				changenum++;
 			}
 			//Otherwise, the player that sent the higher number of students will
 			//claim victory for the round.
@@ -412,22 +730,109 @@ public class CaptureTheFlag extends Game {
 					flagsCaptured += 1;
 					player1success = true;
 					//followed by JSON
+					changes.add(new Change());
+					changes.get(changenum).id = 3;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).action = "attack";
+					changes.get(changenum).actions.get(0).starttime = 0.0;
+					changes.get(changenum).actions.get(0).endtime = 2.0;
+					changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+					changenum++;
+					
+					changes.add(new Change());
+					changes.get(changenum).id = 4;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).action = "fall";
+					changes.get(changenum).actions.get(0).starttime = 0.0;
+					changes.get(changenum).actions.get(0).endtime = 2.0;
+					changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+					changes.get(changenum).actions.get(0).args.add("width:50");
+					changes.get(changenum).actions.get(0).args.add("height:50");
+					changenum++;
 				}
 				if (attackingStudents < botDefendingStudents){
 				totalStudents -= attackingStudents;
 				//followed by JSON
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 4;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "defend";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 3;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "fall";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 2.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changes.get(changenum).actions.get(0).args.add("width:50");
+				changes.get(changenum).actions.get(0).args.add("height:50");
+				changenum++;
 				}
 			}
 			if (!botAttackSenior && !defendSenior){
 				if (botAttackingStudents < defendingStudents){
 					EnemyStudents -= botAttackingStudents;
 					//followed by JSON
+					
+					changes.add(new Change());
+					changes.get(changenum).id = 2;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).action = "defend";
+					changes.get(changenum).actions.get(0).starttime = 0.0;
+					changes.get(changenum).actions.get(0).endtime = 2.0;
+					changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+					changenum++;
+					
+					changes.add(new Change());
+					changes.get(changenum).id = 5;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).action = "fall";
+					changes.get(changenum).actions.get(0).starttime = 0.0;
+					changes.get(changenum).actions.get(0).endtime = 2.0;
+					changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+					changes.get(changenum).actions.get(0).args.add("width:50");
+					changes.get(changenum).actions.get(0).args.add("height:50");
+					changenum++;
 				}
 				if (botAttackingStudents > defendingStudents){
 					totalStudents -= defendingStudents;
 					EnemyFlagsCaptured += 1;
 					player2success = true;
 					//followed by JSON
+					
+					changes.add(new Change());
+					changes.get(changenum).id = 5;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).action = "attack";
+					changes.get(changenum).actions.get(0).starttime = 0.0;
+					changes.get(changenum).actions.get(0).endtime = 2.0;
+					changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+					changenum++;
+					
+					changes.add(new Change());
+					changes.get(changenum).id = 2;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).action = "fall";
+					changes.get(changenum).actions.get(0).starttime = 0.0;
+					changes.get(changenum).actions.get(0).endtime = 2.0;
+					changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+					changes.get(changenum).actions.get(0).args.add("width:50");
+					changes.get(changenum).actions.get(0).args.add("height:50");
+					changenum++;
 				}
 			}
 			
@@ -488,9 +893,9 @@ public class CaptureTheFlag extends Game {
             }
                
         }
-		
+		String inputForBot = "";
 		if (pastPlayer == 1){
-		String inputForBot = EnemyStudents + ";" ;
+		inputForBot = EnemyStudents + ";" ;
 		inputForBot += EnemySeniors + ";";
 		inputForBot += (botPossible - EnemyStudents) + ";";
 		inputForBot += (totalPossible - totalStudents) + ";";
@@ -498,10 +903,9 @@ public class CaptureTheFlag extends Game {
 		inputForBot += flagsCaptured + ";";
 		inputForBot += rounds + ";";
 		inputForBot += playertwoprevious;
-		String gameState = null;
 		}
 		if (pastPlayer == 2){
-		String inputForBot = totalStudents + ";" ;
+		inputForBot = totalStudents + ";" ;
 		inputForBot += Seniors + ";";
 		inputForBot += (totalPossible - totalStudents) + ";";
 		inputForBot += (botPossible - EnemyStudents) + ";";
@@ -509,15 +913,40 @@ public class CaptureTheFlag extends Game {
 		inputForBot += EnemyFlagsCaptured + ";";
 		inputForBot += rounds + ";";
 		inputForBot += playeroneprevious;
-		String gameState = null;
 		}
 		if (testMode) {
 			gameState = "provide all needed state information";
 		}
 
 		// Sample turn JSON
-		ArrayList<Change> changes = new ArrayList<Change>();
-
+		if (gameover){
+			//Print out the winner
+			if (gameWinner == 1){
+				changes.add(new Change());
+				changes.get(changenum).id = 1;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "move";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 1.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changes.get(changenum).actions.get(0).args.add("value:" + "Player 1 Wins");
+				changenum++;
+			}
+			else {
+				changes.add(new Change());
+				changes.get(changenum).id = 1;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).action = "move";
+				changes.get(changenum).actions.get(0).starttime = 0.0;
+				changes.get(changenum).actions.get(0).endtime = 1.0;
+				changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+				changes.get(changenum).actions.get(0).args.add("value:" + "Player 2 Wins");
+				changenum++;
+			}
+		}
+		/*
 		for (int i = 0; i < 2; ++i) {
 			changes.add(new Change());
 			changes.get(i).id = i + 1;
@@ -535,6 +964,8 @@ public class CaptureTheFlag extends Game {
 			changes.get(i).actions.get(0).args.add("flipped:false");
 		}
 
+		*/
+		
 		// Uncomment to view turn json prior to being returned in object
 		// JsonObjectBuilder turn = buildTurnJson(1.0, changes, 1, 1);
 		// System.out.println("\n\nSample turn JSON object\n\n");
