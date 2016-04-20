@@ -99,12 +99,16 @@ function getTestMatchTurn(userID, challengeID, callback){
             console.log(colors.red('ERROR: Test instance with user_id:' + userID + ' and challenge_id:' + challengeID + ' not found.'));
         } else {                            // Match exist       	
             var match = rows[0];		      
-            var status = match.last_turn_status;
+            var status = match.last_turn_status.toUpperCase();
             
             if (status == 'PENDING') {       // turn is not ready to be displayed
                 retval = '-1';
                 console.log(colors.yellow('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
                     ' is not ready to be displayed.'));               
+            } else if (status == 'DISPLAYED') {
+                retval = '-1';
+                console.log(colors.yellow('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                    ' has already been displayed.'))
             } else {
                 var turns = match.turns;
                 var init_message = match.game_initialization_message;
@@ -114,6 +118,7 @@ function getTestMatchTurn(userID, challengeID, callback){
 
                 // Change the last_turn_status to DISPLAYED
                 if (status == 'READY') {
+                    var updated = false;
                     db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + userID
                         + ' AND challenge_id = ' + challengeID, function (err, rows) {
                             if (err) {
@@ -123,7 +128,7 @@ function getTestMatchTurn(userID, challengeID, callback){
                             }
                         });
                 }
-            }		
+            }
         }         
         callback(retval); // send the result        
     }); 
