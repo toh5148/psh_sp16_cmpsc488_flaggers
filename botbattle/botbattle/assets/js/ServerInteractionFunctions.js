@@ -106,13 +106,9 @@ function saveTestingArenaBot(selectedCode, challengeID, languageID, botName, bot
         return;
     }
 
-    // Successfully got a response
+    // Successfully got a response, bot id is passed in the response text
     xhr.onload = function () {
-        if (xhr.responseText == 'true') {
-            timeout_counter = 0;
-
-            alert('Code saved successfully.');
-        } else {
+        if (xhr.responseText == 'false') {
             if (timeout_counter < error_limit) {// Try to upload the code again
                 timeout_counter++;
                 setTimeout(function () { saveTestingArenaBot(selectedCode, challengeID, languageID, botName, botDescription); }, timeout_save_testing_bot);
@@ -120,6 +116,9 @@ function saveTestingArenaBot(selectedCode, challengeID, languageID, botName, bot
                 timeout_counter = 0;
                 alert('The database encountered an error. Please try again later.');
             }
+        } else {            
+            timeout_counter = 0;
+            alert('Code saved successfully. The bot_id is ' + xhr.responseText);
         }
     }
 
@@ -180,6 +179,7 @@ function getMatch(matchID) {
                 alert('The database encountered an error. Please try again later.');
             }
         } else if (response == 'null') {        // Match does not exist
+            timeout_counter = 0;
             alert('The specified match with id:' + matchID + ' does not exist.');
         } else if (response == '-1') {          // Match is not ready for playback, poll the database again
             setTimeout(function () { getMatch(matchID); }, timeout_playback_match);
@@ -302,6 +302,7 @@ function getTestTurn(challengeID, firstTurn) {
                 alert('The database encountered an error. Please try again later.');
             }
         } else if (response == 'null') {        // Match does not exist
+            timeout_counter = 0;
             alert('The specified match with challenge_id:' + challengeID + ' does not exist.');
         } else if (response == '-1') {          // Match is not ready for playback, poll the database again
             setTimeout(function () { getTestTurn(challengeID, firstTurn); }, timeout_test_turn);
@@ -391,6 +392,7 @@ function getTemplates(challengeID) {
                 alert('The database encountered an error. Please try again later.');
             }
         } else if (response == 'null') {
+            timeout_counter = 0;
             alert('No source code templates found for the given challenge.');
         } else {
             timeout_counter = 0;
@@ -419,15 +421,16 @@ function getCompilerErrors(challengeID) {
     xhr.onload = function () {
         var response = xhr.responseText;
 
-        if (response == 'false') { // Server had an error
-            if (timeout_counter_errors < error_limit) {// Poll the database again
+        if (response == 'false') {                      // Server had an error
+            if (timeout_counter_errors < error_limit) { // Poll the database again
                 timeout_counter_errors++;
                 setTimeout(function () { getCompilerErrors(challengeID); }, timeout_get_errors);
-            } else {                            // Polling has failed to many times, so there is a problem with the database
+            } else {                                    // Polling has failed to many times, so there is a problem with the database
                 timeout_counter_errors = 0;
                 alert('The database encountered an error. Please try again later.');
             }
         } else {
+            timeout_counter_errors = 0;
             var json = JSON.parse(response);
             var num_errors = json.errors;
             var num_warnings = json.warnings;

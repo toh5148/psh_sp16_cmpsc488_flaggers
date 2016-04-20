@@ -338,7 +338,7 @@ function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, bo
                     console.log(colors.red(err));
                     retval = 'false';
                 } else {
-                    retval = 'true';
+                    retval = botID.toString();
                 }
                 callback(retval);
             });
@@ -409,9 +409,8 @@ app.post('/upload_code', function(req, res, next){
     var user_id = 12345;
 	var challenge_id = req.query.cid;
 	var language_id = req.query.lid;
-	var needs_compiled = req.query.needs_compiled;
 
-	uploadCode(source_code, user_id, challenge_id, language_id, needs_compiled, function (data) {
+	uploadCode(source_code, user_id, challenge_id, language_id, function (data) {
 	    res.header('Access-Control-Allow-Origin', base);
 	    res.send(data);
     });
