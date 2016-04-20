@@ -6,6 +6,7 @@ var timeout_languages = 7 * 1000;
 var timeout_templates = 7 * 1000;
 var timeout_upload_code = 3 * 1000;
 var timeout_get_errors = 3 * 1000;
+var timeout_save_testing_bot = 4 * 1000;
 
 var timeout_counter = 0;                    // Counter for how many times we have resent the request
 var timeout_counter_errors = 0;
@@ -95,8 +96,8 @@ function uploadCode(selectedCode, challenge_id, language_id, needs_compiled) {
         2) challenge_id - The id of the challenge that the source code is related to.
         3) language_id - The id of the language that the source code is written in.
 */
-function saveTestingArenaBot(selectedCode, challenge_id, language_id) {
-    var url = base_url + "/save_testing_bot?";
+function saveTestingArenaBot(selectedCode, challengeID, languageID, botName, botDescription) {
+    var url = base_url + "/save_testing_bot?cid=" + challengeID + "&lid=" + languageID + "&name=" + botName + "&desc=" + botDescription;
 
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
@@ -110,11 +111,11 @@ function saveTestingArenaBot(selectedCode, challenge_id, language_id) {
         if (xhr.responseText == 'true') {
             timeout_counter = 0;
 
-            alert('Code uploaded successfully.');
+            alert('Code saved successfully.');
         } else {
             if (timeout_counter < error_limit) {// Try to upload the code again
                 timeout_counter++;
-                setTimeout(function () { saveTestingArenaBot(selectedCode, challenge_id, language_id); }, timeout_upload_code);
+                setTimeout(function () { saveTestingArenaBot(selectedCode, challengeID, languageID, botName, botDescription); }, timeout_save_testing_bot);
             } else {                            // Upload has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
                 alert('The database encountered an error. Please try again later.');
@@ -253,7 +254,7 @@ function putTurnRequest(challengeID, botType, languageID, botID, botVersion, pla
         }
         else {
             //Successfulling wrote request to database
-            matchRequestSubmitted();
+            matchRequestSubmitted(lastTurnIndex == -1);
         }
     };
 
@@ -295,7 +296,7 @@ function getTestTurn(challengeID, firstTurn) {
         if (response == 'false') {              // Database encountered an error
             if (timeout_counter < error_limit) {// Poll the database again
                 timeout_counter++;
-                setTimeout(function () { getTestTurn(challengeID); }, timeout_test_turn);
+                setTimeout(function () { getTestTurn(challengeID, firstTurn); }, timeout_test_turn);
             } else {                            // Polling has failed to many times, so there is a problem with the database  
                 timeout_counter = 0;
                 alert('The database encountered an error. Please try again later.');
@@ -303,7 +304,7 @@ function getTestTurn(challengeID, firstTurn) {
         } else if (response == 'null') {        // Match does not exist
             alert('The specified match with challenge_id:' + challengeID + ' does not exist.');
         } else if (response == '-1') {          // Match is not ready for playback, poll the database again
-            setTimeout(function () { getTestTurn(challengeID); }, timeout_test_turn);
+            setTimeout(function () { getTestTurn(challengeID, firstTurn); }, timeout_test_turn);
         } else {
             timeout_counter = 0;
             var json = JSON.parse(response);           

@@ -8,7 +8,7 @@ var colors = require('colors'); // for colors in the console
 var app = express();
 var port = 5050;
 var db; // connection variable
-var base = 'http://localhost:50363';
+var base = 'http://localhost:13558';
 
 app.use(bodyParser.json());
 app.use(bodyParser.text());
@@ -165,7 +165,7 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
                         console.log(colors.red(err));
                     } else {
                         retval = 'true';
-                        console.log('Row updated in pending_test_arena_turns tbalse.');
+                        console.log('Row updated in pending_test_arena_turns table.');
                     }
                 });
             }
@@ -313,7 +313,37 @@ function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
                 console.log('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
             }
             callback(retval);
-        });
+        });   
+}
+
+function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, botDescription, callback) {
+    var retval;
+    
+    var botToInsert = { uid: userID, challenge_id: challengeID, default_version: 1, name: botName, description: botDescription };
+    // Insert new bot into user_bots table
+    // columns: bot_id, uid, challenge_id, default_version, name, creation_date, description, public
+    db.query('INSERT INTO user_bots SET ?', botToInsert, function (err, rows) {
+        if (err) {
+            console.log(colors.red(err));
+            retval = 'false';
+            callback(retval);
+        } else {
+            var botID = rows.insertId; // get the bot_id of the newly inserted row
+         
+            // columns: bot_id, version, creation_date, language_id, comments, errors, warnings, error_messages, warning_messages, source_code
+            var botVersionToInsert = { bot_id: botID, version: 1, language_id: languageID, comments: 'none', source_code: sourceCode };
+
+            db.query('INSERT INTO user_bots_versions SET ?', botVersionToInsert, function (err, rows) {
+                if (err) {
+                    console.log(colors.red(err));
+                    retval = 'false';
+                } else {
+                    retval = 'true';
+                }
+                callback(retval);
+            });
+        }
+    });
 }
 
 // ****************************************************
@@ -417,6 +447,21 @@ app.get('/get_compiler_errors', function (req, res, next) {
     });
 });
 
+app.post('/save_testing_bot', function (req, res, next) {
+    //var user_id = req.session.user;
+    var user_id = 12346;
+    var challenge_id = req.query.cid
+    var language_id = req.query.lid;
+    var source_code = req.body;
+    var bot_name = req.query.name;
+    var bot_description = req.query.desc;
+
+    saveTestingBot(user_id, challenge_id, language_id, source_code, bot_name, bot_description, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
 // ****************************************************
 
 
@@ -426,6 +471,7 @@ app.get('/get_compiler_errors', function (req, res, next) {
 // ****************************************************
 
 openConnection();
+//saveTestingBot(12346, 101, 1, 'this is source code', 'testBot', 'random description', function (x) { console.log(x); });
 // Start the server
 http.createServer(app).listen(port, function() {
 	console.log(colors.cyan('Server listening on port ' + port + '.'));
