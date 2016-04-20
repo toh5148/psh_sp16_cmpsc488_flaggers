@@ -1,4 +1,5 @@
 ﻿function retrieveMatch() {
+    PLAYBACK_MODE = true;
     var matchID = getMatchID();
 
     //Handle query string errors
@@ -9,8 +10,8 @@
         sendError(10, "");
     }
     else {
-        setInput();
-        //getMatch(matchID);
+        //setInput();
+        getMatch(matchID);
     }
 }
 

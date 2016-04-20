@@ -114,7 +114,7 @@ function saveTestingArenaBot(selectedCode, challenge_id, language_id) {
         } else {
             if (timeout_counter < error_limit) {// Try to upload the code again
                 timeout_counter++;
-                setTimeout(function () { uploadCode(selectedCode, challenge_id, language_id, needs_compiled); }, timeout_upload_code);
+                setTimeout(function () { saveTestingArenaBot(selectedCode, challenge_id, language_id); }, timeout_upload_code);
             } else {                            // Upload has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
                 alert('The database encountered an error. Please try again later.');

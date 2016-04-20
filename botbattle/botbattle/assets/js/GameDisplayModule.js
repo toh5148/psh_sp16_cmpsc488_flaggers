@@ -10,6 +10,7 @@ var gameDisplayWindow, playing, turn, defaultTimestep, turnTime, turnFrame, turn
     textProperties = ['font', 'fontStyle', 'fontWeight', 'fontSize', 'backgroundColor', 'fill'],
     textDefaults = ['bold 20pt Arial', 'bold', 'bold', '20pt', null, '#000000'],
     spriteActions = ['walk', 'fall', 'attack', 'defend'];
+var PLAYBACK_MODE = false;
 
 function create() {
     gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
@@ -165,7 +166,7 @@ function loadObjectImages() {
     // Get the images we need to preload and preload them
     var loadedImages = {}, ents = gameInitializer.entity;
     for (var i = 0; i < ents.length; i++) {
-        if ('value' in ents[i])
+        if ('value' in ents[i] && ents[i].type != "text")
             loadImage(ents[i].value, loadedImages);
     }
     for (var i = 0; i < turns.length; i++) {
@@ -200,10 +201,9 @@ function create2() {
         entityList[i].instantiate();
     // Set first turn
     restoreGameState(0);
-    ready = false;
     console.log("The GDM create method has now run");
-    console.log(JSON.stringify(gameInitializer, null, 2));
-    console.log(JSON.stringify(turns, null, 2));
+    //console.log(JSON.stringify(gameInitializer, null, 2));
+    //console.log(JSON.stringify(turns, null, 2));
 }
 
 function drawTurn() {
@@ -279,11 +279,10 @@ function startTurn(tn,tm) {
 
 //I believe this should be all thats necessary to call when we recieve a new set of turns
 function setNewTestingArenaTurn() {
-    generateTurnChanges();
-    generateGameStates();
-    generateRows(gameInitializer, turns);
-    // Set turn
-    restoreGameState(turn+1);
+    generateTurnChanges();                  // Set initial values for all turn changes
+    generateGameStates();                   // Save game states
+    generateRows(gameInitializer, turns);   // Generate rows for the status table
+    loadObjectImages();                     // Get and preload all object images
 }
 
 function Entity(e,ft) {
