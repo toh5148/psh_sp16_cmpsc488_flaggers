@@ -4,15 +4,15 @@
 
 const gameWidth=800,gameHeight=600,fps=60;
 var gameDisplayWindow, playing, turn, defaultTimestep, turnTime, turnFrame, turnLength, playbackSpeed,
-	entities, entityList, entityChangeNums, gameStates, gameInitializer, turns
+	entities, entityList, entityChangeNums, gameStates, gameInitializer, turns,
     defaultValues = ['visible', 'initX', 'initY', 'initWidth', 'initHeight', 'flipped', 'value'],
     defaultReplace = ['visible', 'x', 'y', 'width', 'height', 'flipped', 'value'],
     textProperties = ['font', 'fontStyle', 'fontWeight', 'fontSize', 'backgroundColor', 'fill'],
     textDefaults = ['bold 20pt Arial', 'bold', 'bold', '20pt', null, '#000000'],
     spriteActions = ['walk', 'fall', 'attack', 'defend'];
-var PLAYBACK_MODE = false;
 
 function create() {
+    playbackSpeed = 1;
     gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
         {preload: preload, create: create2, update: drawTurn})
 }
@@ -24,6 +24,13 @@ function preload() {
         var spr=spriteList[sl[i]];
         gameDisplayWindow.load.spritesheet(sl[i],spr.spriteSheet,spr.width,spr.height);
     }
+    // Get and preload all object images
+    var images=gameInitializer.imagesToLoad;
+    for(var i= 0;i<images.length;i++){
+        var img=images[i];
+        gameDisplayWindow.load.image(img.name, img.imagePath);
+    }
+    // Load background
     gameDisplayWindow.load.image('background', gameInitializer.background);
     // Set default timestep
     defaultTimestep = gameInitializer.defaultTimestep;
@@ -34,7 +41,6 @@ function startGame(){
     // Set initial variables
     entities = [];
     entityList = [];
-    playbackSpeed = 1;
     gameStates = [];
     turn = 0;
     // Generate game
@@ -42,7 +48,6 @@ function startGame(){
     generateTurnChanges();                  // Set initial values for all turn changes
     generateGameStates();                   // Save game states
     generateRows(gameInitializer, turns);   // Generate rows for the status table
-    loadObjectImages();                     // Get and preload all object images
 }
 
 function createEnts(){
@@ -162,35 +167,6 @@ function generateGameStates() {
     }
 }
 
-function loadObjectImages() {
-    // Get the images we need to preload and preload them
-    var loadedImages = {}, ents = gameInitializer.entity;
-    for (var i = 0; i < ents.length; i++) {
-        if ('value' in ents[i] && ents[i].type != "text")
-            loadImage(ents[i].value, loadedImages);
-    }
-    for (var i = 0; i < turns.length; i++) {
-        var turnChanges = turns[i].turnChanges;
-        for (var j = 0; j < turnChanges.length; j++) {
-            var changes = turnChanges[j].changes, id = turnChanges[j].id;
-            if (entities[id].type == 'object') {
-                for (var k = 0; k < changes.length; k++) {
-                    if ('value' in changes[k])
-                        loadImage(changes[k].value, loadedImages);
-                }
-            }
-        }
-    }
-}
-
-function loadImage(img,loadedImages) {
-    // Preload a specific image
-    if (!(img in loadedImages)) {
-        gameDisplayWindow.load.image(img, img);
-        loadedImages[img] = true;
-    }
-}
-
 function create2() {
     // Set background
     var bkg = gameDisplayWindow.add.image(0, 0, 'background');
@@ -201,9 +177,10 @@ function create2() {
         entityList[i].instantiate();
     // Set first turn
     restoreGameState(0);
+    ready = false;
     console.log("The GDM create method has now run");
-    //console.log(JSON.stringify(gameInitializer, null, 2));
-    //console.log(JSON.stringify(turns, null, 2));
+    console.log(JSON.stringify(gameInitializer, null, 2));
+    console.log(JSON.stringify(turns, null, 2));
 }
 
 function drawTurn() {
@@ -272,17 +249,18 @@ function startTurn(tn,tm) {
         turnTime = 1;
     else
         turnTime = 0;
-    turnLength = defaultTimestep * turns[turn].timeScale;
+    turnLength = defaultTimestep * turns[turn].timescale;
     turnFrame = 0;
     entityChangeNums = {};
 }
 
-//I believe this should be all thats necessary to call when we recieve a new set of turns
 function setNewTestingArenaTurn() {
-    generateTurnChanges();                  // Set initial values for all turn changes
-    generateGameStates();                   // Save game states
-    generateRows(gameInitializer, turns);   // Generate rows for the status table
-    loadObjectImages();                     // Get and preload all object images
+    // Call when receiving a new set of turns
+    for(var i=0;i<entityList.length;i++)
+        entityList[i].obj.destroy();
+    startGame();
+    // Set turn
+    restoreGameState(turns.length-1);
 }
 
 function Entity(e,ft) {
