@@ -23,9 +23,10 @@ public class CaptureTheFlag extends Game {
 	private int defendingStudents;
 	private int botAttackingStudents;
 	private int botDefendingStudents;
+	private boolean gameover;
 	private int gameWinner;
-	private String playeroneprevious
-	private String playertwoprevious
+	private String playeroneprevious;
+	private String playertwoprevious;
 	public GameState initializeGame(boolean testMode) {
 		// Add logic to build tracking variables and data structures
 		//
@@ -121,7 +122,7 @@ public class CaptureTheFlag extends Game {
 		defendSenior =  false;
 		attackingStudents = 0;
 		defendingStudents = 0;
-		String parts = move;
+		String [] parts = move.split(";");
 			if (parts[0].equals("free")){
 				//This is here in case we change the freedom rules
 				if (totalStudents >= totalPossible){
@@ -208,7 +209,7 @@ public class CaptureTheFlag extends Game {
 			botDefendSenior = false;
 			botAttackingStudents = 0;
 			botDefendingStudents = 0;
-			String botmove = move;
+			String [] botmove = move.split(";");
 			if (botmove[0].equals("free")){
             //This is here in case we change the freedom rules
 				if (EnemyStudents >= botPossible){
@@ -299,7 +300,21 @@ public class CaptureTheFlag extends Game {
 	public GameState updateState(String move, boolean testMode) {
 		// Update game state information and construct turn JSON to represent
 		// changes.
-
+		int maxbound;
+		
+		if (EnemyStudents == 0 && totalStudents == 0) {
+			maxbound = 1;
+		}
+		else if (EnemyStudents > totalStudents) {
+			maxbound = EnemyStudents;
+		}
+		else {
+			maxbound = totalStudents;
+		}
+		int attackheight = 50;
+		int attackwidth = 50;
+		int defendheight = 50;
+		int defendwidth 50;
 		// Save copy of current player
 		int pastPlayer = getCurrentPlayer();
 
@@ -309,35 +324,61 @@ public class CaptureTheFlag extends Game {
 		// determine next current player
 		if (getCurrentPlayer() == 1){
 			currentPlayer = 2;
+			attackheight = 50 + (200 * attackingStudents) / maxbound;
+			defendheight = 50 + (200 * defendingStudents) / maxbound;
+			attackwidth = 50 + (50 * attackingStudents) / maxbound;
+			defendwidth = 50 + (50 * defendingStudents) / maxbound;
 			if (attackSenior && defendSenior){
 				playeroneprevious += "senior:senior:";
+				attackheight = 225;
+				attackwidth = 225;
+				defendheight = 225;
+				defendwidth = 225;
 			}
 			if (attackSenior && !defendSenior){
 				playeroneprevious += "senior:" + defendingStudents + ":";
+				attackheight = 225;
+				attackwidth = 225;
 			}
 			if (!attackSenior && defendSenior){
 				playeroneprevious += attackingStudents + ":" + "senior:";
+				defendheight = 225;
+				defendwidth = 225;
 			}
 			if (!attackSenior && !defendSenior){
 				playeroneprevious += attackingStudents + ":" + defendingStudents + ":";
 			}
+			//Need JSON here to represent player 1 unit growth
 		}
 		else if (getCurrentPlayer() == 2){
 			currentPlayer = 1;
 			rounds++;
-			
+			attackheight = 50 + (200 * attackingStudents) / maxbound;
+			defendheight = 50 + (200 * defendingStudents) / maxbound;
+			attackwidth = 50 + (50 * attackingStudents) / maxbound;
+			defendwidth = 50 + (50 * defendingStudents) / maxbound;
 			if (botAttackSenior && botDefendSenior){
 				playertwoprevious += "senior:senior:";
+				attackheight = 225;
+				attackwidth = 225;
+				defendheight = 225;
+				defendwidth = 225;
 			}
 			if (botAttackSenior && !botDefendSenior){
 				playertwoprevious += "senior:" + botDefendingStudents + ":";
+				attackheight = 225;
+				attackwidth = 225;
 			}
 			if (!botAttackSenior && botDefendSenior){
 				playertwoprevious += botAttackingStudents + ":" + "senior:";
+				defendheight = 225;
+				defendwidth = 225;
 			}
 			if (!botAttackSenior && !botDefendSenior){
 				playertwoprevious += botAttackingStudents + ":" + botDefendingStudents + ":";
 			}
+			
+			//Need JSON here to represent player 2 unit growth
 			
 				//If one side sends a senior while the other does not, that side
 			//will claim the round and capture all opposing students.
