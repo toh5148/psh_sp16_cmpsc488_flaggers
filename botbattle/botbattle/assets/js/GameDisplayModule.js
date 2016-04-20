@@ -179,8 +179,8 @@ function create2() {
     restoreGameState(0);
     ready = false;
     console.log("The GDM create method has now run");
-    console.log(JSON.stringify(gameInitializer, null, 2));
-    console.log(JSON.stringify(turns, null, 2));
+    //console.log(JSON.stringify(gameInitializer, null, 2));
+    //console.log(JSON.stringify(turns, null, 2));
 }
 
 function drawTurn() {

@@ -36,7 +36,7 @@ function initTestingArena(cid) {
     //Write first pending turn request
     writeFirstTurnRequest(cid);
     //Get the first turn data...(This should be set )
-    getTestTurn(cid, true);
+    //getCompilerErrors();
     //When this function is finished, it will call handleTestTurns with the true flag set
 }
 
@@ -132,13 +132,13 @@ function handleTestTurns(init, turnData, first) {
         //If it's the first turn, just set the initMessage
         //turnData will be null in this condition
         gameInitializer = init;
+        turns = [];
         create();
     }
     else {
-        //It's not the first turn, just set the turns to be turnData
+        //It's not the first turn, so set both turnData and first
         turns = turnData;
         gameInitializer = init;
-        //setNewTestingArenaTurn();
         //nextPlayer = getNextPlayer();
     }
 }
@@ -151,9 +151,9 @@ function undoTestTurn() {
     restoreGameState(turn - 1);
 }
 
-function matchRequestSubmitted() {
+function matchRequestSubmitted(first) {
     //Since the turn request was successfully submitted we can make the request for the turn data
-    getTestTurn(getChallengeID(), false);
+    getTestTurn(getChallengeID(), first);
 }
 
 function getNextPlayer() {
