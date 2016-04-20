@@ -62,6 +62,7 @@ public class CaptureTheFlag extends Game {
 		inputForBot += (botPossible - EnemyStudents) + ";";
 		inputForBot += flagsCaptured + ";";
 		inputForBot += EnemyFlagsCaptured + ";";
+		inputForBot += rounds + ";";
 		String gameState = null;
 
 		if (testMode) {
@@ -454,6 +455,7 @@ public class CaptureTheFlag extends Game {
 		inputForBot += (totalPossible - totalStudents) + ";";
 		inputForBot += EnemyFlagsCaptured + ";";
 		inputForBot += flagsCaptured + ";";
+		inputForBot += rounds + ";";
 		inputForBot += playertwoprevious;
 		String gameState = null;
 		}
@@ -464,6 +466,7 @@ public class CaptureTheFlag extends Game {
 		inputForBot += (botPossible - EnemyStudents) + ";";
 		inputForBot += flagsCaptured + ";";
 		inputForBot += EnemyFlagsCaptured + ";";
+		inputForBot += rounds + ";";
 		inputForBot += playeroneprevious;
 		String gameState = null;
 		}
