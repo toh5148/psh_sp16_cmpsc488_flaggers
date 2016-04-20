@@ -8,6 +8,7 @@ function setGameInit() {
     gameInitializer = {
         "background": "assets/images/background.png",
         "defaultTimestep": 1,
+        "imagesToLoad": [{ "imagePath": "games/checkers/basic_red.png", "name": "basic_red" }, { "imagePath": "games/checkers/king_red.png", "name": "king_red" }],
         "entity": [
                        {
                            "id": 101,
@@ -41,7 +42,7 @@ function setGameInit() {
                            "height": 50,
                            "flipped": true,
                            "rotation": 0,
-                           "value": "games/checkers/basic_red.png"
+                           "value": "basic_red"
                        },
                        {
                            "id": 104,
@@ -65,7 +66,7 @@ function setGameInit() {
 function setGameTurns() {
     turns = [
                    {
-                       "timeScale": 1,
+                       "timescale": 1,
                        "turnChanges": [
                           {
                               "id": 101,
@@ -99,7 +100,7 @@ function setGameTurns() {
                               "changes": [
                                  {
                                      "action": "walk",
-                                     "start": 0.2,
+                                     "start": 0,
                                      "end": 0.8,
                                      "x": 550,
                                      "y": 450,
@@ -113,7 +114,7 @@ function setGameTurns() {
                               "changes": [
                                  {
                                      "action": "move",
-                                     "start": 0,
+                                     "start": 0.9,
                                      "end": 1,
                                      "x": 250,
                                      "y": 250,
@@ -140,7 +141,7 @@ function setGameTurns() {
                        "stderr": "ccc"
                    },
                    {
-                       "timeScale": 2,
+                       "timescale": 2,
                        "turnChanges": [
                           {
                               "id": 101,
@@ -197,7 +198,7 @@ function setGameTurns() {
                               "changes": [
                                  {
                                      "start": 1,
-                                     "value": "games/checkers/king_red.png"
+                                     "value": "king_red"
                                  }
                               ]
                           },
@@ -234,7 +235,7 @@ function setGameTurns() {
                        "stderr": "fff"
                    },
                    {
-                       "timeScale": 1,
+                       "timescale": 1,
                        "turnChanges": [
                           {
                               "id": 101,
