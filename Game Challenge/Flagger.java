@@ -3,19 +3,7 @@ import java.util.Scanner;
 
 public class Flagger {
 
-    public static void main(String args[]){
-    //TODO Need to make the JSON turn array, and will ask (again, to be safe) about that format
-        //this week.  After doing so, will need to implement the game logic within
-        //the named functions, and make sure the return values line up for the
-        //Game Evaluation team's specifications.  The while loop logic should be mostly fine,
-        //but I'll need to change the input from System.in to the JSON string.
-        
-    //TODO Possibly add random chance to break ties.  Blum doesn't seem to like
-        //the idea of ties for tournament play, and although I've made the odds of
-        //a tie almost impossible in competative play, two students could easily
-        //make two bots to intentionally make a tie.  Still, I don't know if I like
-        //the random chance idea.  Still debating it.
-   
+    public static void main(String args[]){ 
     //Variables used to keep track of game data
     int flagsCaptured = 0;
     int flagsNeeded = 10;
@@ -89,7 +77,10 @@ public class Flagger {
                 else {
                     try {
                         int students = Integer.parseInt(parts[1]);
-                        if (students > totalStudents){
+                        if (students < 0){
+                        	attackingStudents = 0;
+                        }
+                        else if (students > totalStudents){
                             System.out.println("Illegal move: Not enough Students.");
                         }
                         else
@@ -119,10 +110,13 @@ public class Flagger {
                 else {
                     try {
                         int students = Integer.parseInt(parts[3]);
-                        if (students > totalStudents){
+                        if (students < 0){
+                        	defendingStudents = 0;
+                        }
+                        else if (students > totalStudents){
                             System.out.println("Illegal move: Not enough Students.");
                         }
-                        if ((students + attackingStudents) > totalStudents){
+                        else if ((students + attackingStudents) > totalStudents){
                             System.out.println("Illegal move: Attacking and defending students exceeds max limit.");
                         }
                         else
@@ -172,7 +166,10 @@ public class Flagger {
                 else {
                     try {
                         int students = Integer.parseInt(botmove[1]);
-                        if (students > EnemyStudents){
+                        if (students < 0){
+                        	botAttackingStudents = 0;
+                        }
+                        else if (students > EnemyStudents){
                             System.out.println("Illegal move: Not enough Students.");
                         }
                         else
@@ -202,10 +199,13 @@ public class Flagger {
                 else {
                     try {
                         int students = Integer.parseInt(botmove[3]);
-                        if (students > EnemyStudents){
+                        if (students < 0) {
+                        	botDefendingStudents = 0;
+                        }
+                        else if (students > EnemyStudents){
                             System.out.println("Illegal move: Not enough Students.");
                         }
-                        if ((students + botAttackingStudents) > EnemyStudents){
+                        else if ((students + botAttackingStudents) > EnemyStudents){
                             System.out.println("Illegal move: Attacking and defending students exceeds max limit.");
                         }
                         else
