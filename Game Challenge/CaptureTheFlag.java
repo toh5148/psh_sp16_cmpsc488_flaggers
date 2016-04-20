@@ -56,7 +56,12 @@ public class CaptureTheFlag extends Game {
 		// Choose starting player
 		currentPlayer = 1;
 
-		String inputForBot = "reduced state information to pass to bot";
+		String inputForBot = totalStudents + ";" ;
+		inputForBot += Seniors + ";";
+		inputForBot += (totalPossible - totalStudents) + ";";
+		inputForBot += (botPossible - EnemyStudents) + ";";
+		inputForBot += flagsCaptured + ";";
+		inputForBot += EnemyFlagsCaptured + ";";
 		String gameState = null;
 
 		if (testMode) {
