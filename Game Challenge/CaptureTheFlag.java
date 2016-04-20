@@ -23,9 +23,10 @@ public class CaptureTheFlag extends Game {
 	private int defendingStudents;
 	private int botAttackingStudents;
 	private int botDefendingStudents;
+	private boolean gameover;
 	private int gameWinner;
-	private String playeroneprevious
-	private String playertwoprevious
+	private String playeroneprevious;
+	private String playertwoprevious;
 	public GameState initializeGame(boolean testMode) {
 		// Add logic to build tracking variables and data structures
 		//
@@ -121,7 +122,7 @@ public class CaptureTheFlag extends Game {
 		defendSenior =  false;
 		attackingStudents = 0;
 		defendingStudents = 0;
-		String parts = move;
+		String [] parts = move.split(";");
 			if (parts[0].equals("free")){
 				//This is here in case we change the freedom rules
 				if (totalStudents >= totalPossible){
@@ -208,7 +209,7 @@ public class CaptureTheFlag extends Game {
 			botDefendSenior = false;
 			botAttackingStudents = 0;
 			botDefendingStudents = 0;
-			String botmove = move;
+			String [] botmove = move.split(";");
 			if (botmove[0].equals("free")){
             //This is here in case we change the freedom rules
 				if (EnemyStudents >= botPossible){
