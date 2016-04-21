@@ -14,30 +14,32 @@ var gameDisplayWindow, playing, turn, defaultTimestep, turnTime, turnFrame, turn
 function create() {
     playbackSpeed = 1;
     gameDisplayWindow = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'div_gameCanvas',
-        {preload: preload, create: create2, update: drawTurn})
+        {preload: preload, create: onCreateWindow, update: drawTurn})
 }
 
 function preload() {
     // Load graphical assets
-    sl=spriteList.sprites;
-    for(var i=0;i<sl.length;i++) {
-        var spr=spriteList[sl[i]];
-        gameDisplayWindow.load.spritesheet(sl[i],spr.spriteSheet,spr.width,spr.height);
-    }
-    // Get and preload all object images
-    var images=gameInitializer.imagesToLoad;
-    for(var i= 0;i<images.length;i++){
-        var img=images[i];
-        gameDisplayWindow.load.image(img.name, img.imagePath);
-    }
     // Load background
     gameDisplayWindow.load.image('background', gameInitializer.background);
+    // Load sprites
+    sl = spriteList.sprites;
+    for (var i = 0; i < sl.length; i++) {
+        var spr = spriteList[sl[i]];
+        gameDisplayWindow.load.spritesheet(sl[i], spr.spriteSheet, spr.width, spr.height);
+    }
+    // Get and preload all object images
+    var images = gameInitializer.imagesToLoad;
+    for (var i = 0; i < images.length; i++) {
+        var img = images[i];
+        gameDisplayWindow.load.image(img.name, img.imagePath);
+    }
     // Set default timestep
     defaultTimestep = gameInitializer.defaultTimestep;
     startGame();
 }
 
 function startGame(){
+    // Start the game, or restart it if already started
     // Set initial variables
     entities = [];
     entityList = [];
@@ -167,20 +169,21 @@ function generateGameStates() {
     }
 }
 
-function create2() {
+function onCreateWindow(){
     // Set background
     var bkg = gameDisplayWindow.add.image(0, 0, 'background');
     bkg.width = gameWidth;
     bkg.height = gameHeight;
+    spawnEnts();                            // Spawn entities
+}
+
+function spawnEnts() {
     // Spawn entities
     for (var i = 0; i < entityList.length; i++)
         entityList[i].instantiate();
     // Set first turn
     restoreGameState(0);
-    ready = false;
     console.log("The GDM create method has now run");
-    //console.log(JSON.stringify(gameInitializer, null, 2));
-    //console.log(JSON.stringify(turns, null, 2));
 }
 
 function drawTurn() {
@@ -259,6 +262,7 @@ function setNewTestingArenaTurn() {
     for(var i=0;i<entityList.length;i++)
         entityList[i].obj.destroy();
     startGame();
+    spawnEnts();
     // Set turn
     restoreGameState(turns.length-1);
 }
