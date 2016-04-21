@@ -49,7 +49,7 @@ function newRow(turnNum, stdIn, stdOut, stdErr) {
     return row;
 }
 
-function showRows(turnNum) {
+function updateStatusTable(turnNum) {
     // Show all rows up to a specified turn
     var tbl = '';
     for (var i = 0; i < turnNum+2; i++)

@@ -7,8 +7,8 @@ var gameDisplayWindow, playing, turn, defaultTimestep, turnTime, turnFrame, turn
 	entities, entityList, entityChangeNums, gameStates, gameInitializer, turns,
     defaultValues = ['visible', 'initX', 'initY', 'initWidth', 'initHeight', 'flipped', 'value'],
     defaultReplace = ['visible', 'x', 'y', 'width', 'height', 'flipped', 'value'],
-    textProperties = ['font', 'fontStyle', 'fontWeight', 'fontSize', 'backgroundColor', 'fill'],
-    textDefaults = ['bold 20pt Arial', 'bold', 'bold', '20pt', null, '#000000'],
+    textProperties = ['font', 'backgroundColor', 'fill'],
+    textDefaults = ['bold 20pt Arial', null, '#000000'],
     spriteActions = ['walk', 'fall', 'attack', 'defend'];
 
 function create() {
@@ -240,11 +240,11 @@ function startTurn(tn,tm) {
         playing = false;
         turnTime = Infinity;
         turn = turns.length;
-        showRows(turn);
+        updateStatusTable(turn);
         return;
     }
     turn = tn;
-    showRows(turn);
+    updateStatusTable(turn);
     if (tm)
         turnTime = 1;
     else

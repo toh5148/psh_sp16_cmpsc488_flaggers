@@ -10,8 +10,8 @@
         sendError(10, "");
     }
     else {
-        //setInput();
-        getMatch(matchID);
+        setInput();
+        //getMatch(matchID);
     }
 }
 

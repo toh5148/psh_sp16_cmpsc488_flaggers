@@ -8,58 +8,69 @@ function setGameInit() {
     gameInitializer = {
         "background": "assets/images/background.png",
         "defaultTimestep": 1,
-        "imagesToLoad": [{ "imagePath": "games/checkers/basic_red.png", "name": "basic_red" }, { "imagePath": "games/checkers/king_red.png", "name": "king_red" }],
+        "imagesToLoad": [{
+            "imagePath": "games/checkers/basic_red.png",
+            "name": "basic_red"
+        },
+            {
+                "imagePath": "games/checkers/king_red.png",
+                "name": "king_red"
+            }
+        ],
         "entity": [
-                       {
-                           "id": 101,
-                           "type": "spriteRabbit",
-                           "visible": true,
-                           "initX": 50,
-                           "initY": 100,
-                           "width": 50,
-                           "height": 50,
-                           "flipped": false,
-                           "rotation": 0
-                       },
-                       {
-                           "id": 102,
-                           "type": "spriteChicken",
-                           "visible": true,
-                           "initX": 500,
-                           "initY": 400,
-                           "width": 50,
-                           "height": 50,
-                           "flipped": true,
-                           "rotation": 0
-                       },
-                       {
-                           "id": 103,
-                           "type": "object",
-                           "visible": true,
-                           "initX": 250,
-                           "initY": 350,
-                           "width": 50,
-                           "height": 50,
-                           "flipped": true,
-                           "rotation": 0,
-                           "value": "basic_red"
-                       },
-                       {
-                           "id": 104,
-                           "type": "text",
-                           "visible": true,
-                           "initX": 50,
-                           "initY": 50,
-                           "width": 50,
-                           "height": 50,
-                           "flipped": false,
-                           "rotation": 0,
-                           "value": "Turn: 1",
-                           "font": "30pt Arial",
-                           "fill": "#00FF00",
-                           "backgroundColor": "#808080"
-                       }
-        ]
+            {
+                "id": 101,
+                "type": "spriteRabbit",
+                "visible": true,
+                "initX": 50,
+                "initY": 100,
+                "width": 50,
+                "height": 50,
+                "flipped": false,
+                "rotation": 0
+            },
+            {
+                "id": 102,
+                "type": "spriteChicken",
+                "visible": true,
+                "initX": 500,
+                "initY": 400,
+                "width": 50,
+                "height": 50,
+                "flipped": true,
+                "rotation": 0
+            },
+            {
+                "id": 103,
+                "type": "object",
+                "visible": true,
+                "initX": 250,
+                "initY": 350,
+                "width": 50,
+                "height": 50,
+                "flipped": true,
+                "rotation": 0,
+                "value": "basic_red"
+            },
+            {
+                "id": 104,
+                "type": "text",
+                "visible": true,
+                "initX": 50,
+                "initY": 50,
+                "width": 50,
+                "height": 50,
+                "flipped": false,
+                "rotation": 0,
+                "value": "Turn: 1",
+                "font": "30pt Arial",
+                "fill": "#00FF00",
+                "backgroundColor": "#808080"
+            }
+        ],
+        "stdin": "111",
+        "stdout": ["222","222"],
+        "stderr": "333"
     };
 }
 

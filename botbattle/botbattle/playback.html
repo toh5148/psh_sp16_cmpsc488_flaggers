@@ -13,7 +13,7 @@
     <script type="text/javascript" src="assets/js/QueryStringFunctions.js"></script>
 	<script type="text/javascript" src="assets/js/GameDisplayModule.js"></script>
     <script type="text/javascript" src="assets/js/Error.js"></script>
-    <script type="text/javascript" src="assets/js/StatusBar.js"></script>
+    <script type="text/javascript" src="assets/js/StatusTable.js"></script>
     <script type="text/javascript" src="assets/js/ServerInteractionFunctions.js"></script>
 
     <!--PLAYBACK SPECIFIC SCRIPTS-->
@@ -32,14 +32,14 @@
         </div>
         <div id="div_controlsHolder">
             <div id="div_controlsBar">
-                <button id="btn_GoToStart" onclick="btn_goToStart_Click()">Go To Start</button>
-                <button id="btn_StepBack" onclick="btn_stepBack_Click()">Step Back One Turn</button>
-                <button id="btn_Pause" onclick="btn_pause_Click()">Pause</button>
-                <button id="btn_Play" onclick="btn_play_Click()">Play</button>
-                <button id="btn_StepForward" onclick="btn_stepForward_Click()">Step Forward One Turn</button>
-                <button id="btn_GoToEnd" onclick="btn_goToEnd_Click()">Go To End</button>
+                <button id="btn_GoToStart" onclick="goToStart()">Go To Start</button>
+                <button id="btn_StepBack" onclick="stepBackOneTurn()">Step Back One Turn</button>
+                <button id="btn_Pause" onclick="pause()">Pause</button>
+                <button id="btn_Play" onclick="play()">Play</button>
+                <button id="btn_StepForward" onclick="stepForwardOneTurn()">Step Forward One Turn</button>
+                <button id="btn_GoToEnd" onclick="goToEnd()">Go To End</button>
 
-                <input id="sldr_Speed" type="range" min=".25" max="2" step=".25" value="1" onchange="sldr_speed_change()" />
+                <input id="sldr_Speed" type="range" min=".25" max="2" step=".25" value="1" onchange="changePlaybackSpeed()" />
             </div>
             <br />
             <div id="div_status">Status: Paused</div>
