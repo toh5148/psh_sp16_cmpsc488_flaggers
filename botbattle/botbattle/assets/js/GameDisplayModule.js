@@ -191,7 +191,7 @@ function drawTurn() {
     if (!playing) return;
     // Go to next turn if current turn has ended
     if (turnTime > 1)
-        startTurn(turn + 1, false);
+        startTurn(turn + 1);
     // Stop if we've reached the end
     if (!playing) return;
     // Get current turn changes
@@ -211,8 +211,12 @@ function drawTurn() {
         // Execute change
         if (cn < changes.length) {
             var c2 = changes[cn];
-            if (turnTime >= c2.start && (!('end' in c2) || turnTime <= c2.end))
-                e.action(c2, turnTime);
+            if (turnTime >= c2.start) {
+                if (!('end' in c2) || turnTime <= c2.end)
+                    e.action(c2, turnTime);
+                else if(('end' in c2) && turnTime > c2.end)
+                    e.action(c2, c2.end);
+            }
         }
     }
     // Increase turn time
@@ -221,21 +225,21 @@ function drawTurn() {
 }
 
 function restoreGameState(turnNum) {
+    startTurn(turnNum);
+    playing = false;
+}
+
+function startTurn(tn) {
     // Load the beginning of a turn
-    if (turnNum < 0)
-        turnNum = 0;
+    if (tn < 0)
+        tn = 0;
     for (var i = 0; i < entityList.length; i++) {
-        var ent = entityList[i], j = Math.min(turnNum,ent.finalTurn), entId = ent.id;
+        var ent = entityList[i], j = Math.min(tn,ent.finalTurn), entId = ent.id;
         while (!(entId in gameStates[j]))
             j--;
         gs=gameStates[j][entId];
         ent.action(gs, gs.end);
     }
-    startTurn(turnNum, false);
-    playing = false;
-}
-
-function startTurn(tn,tm) {
     // Set the beginning variables of a turn
     if (tn < 0)
         tn = 0;
@@ -248,10 +252,7 @@ function startTurn(tn,tm) {
     }
     turn = tn;
     updateStatusTable(turn);
-    if (tm)
-        turnTime = 1;
-    else
-        turnTime = 0;
+    turnTime = 0;
     turnLength = defaultTimestep * turns[turn].timescale;
     turnFrame = 0;
     entityChangeNums = {};
