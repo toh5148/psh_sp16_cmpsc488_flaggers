@@ -7,9 +7,11 @@ var timeout_templates = 7 * 1000;
 var timeout_upload_code = 3 * 1000;
 var timeout_get_errors = 3 * 1000;
 var timeout_save_testing_bot = 4 * 1000;
+var timeout_user_bot = 5 * 1000;
 
 var timeout_counter = 0;                    // Counter for how many times we have resent the request
 var timeout_counter_errors = 0;             // Different counter for how many times we sent counter to get errors
+var timeout_counter_user_bot = 0;
 var error_limit = 5;                        // How many times do we want to resend the request if we receive an error
 
 /* 
@@ -71,12 +73,12 @@ function getMatch(matchID) {
                 setTimeout(function () { getMatch(matchID); }, timeout_playback_match);
             } else {                            // Polling has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
-                alert('The database encountered an error. Please try again later.');
+                alert('The database encountered an error while trying to get the match. Please try again later.');
             }
         } else if (response == 'null') {        // Match does not exist
             timeout_counter = 0;
             alert('The specified match with id:' + matchID + ' does not exist.');
-        } else if (response == 'pending') {          // Match is not ready for playback, poll the database until it is ready for playback
+        } else if (response == 'pending') {     // Match is not ready for playback, poll the database until it is ready for playback
             setTimeout(function () { getMatch(matchID); }, timeout_playback_match);
         } else {
             timeout_counter = 0;
@@ -194,12 +196,13 @@ function getTestTurn(challengeID, firstTurn) {
                 setTimeout(function () { getTestTurn(challengeID, firstTurn); }, timeout_test_turn);
             } else {                            // Polling has failed to many times, so there is a problem with the database  
                 timeout_counter = 0;
-                alert('The database encountered an error. Please try again later.');
+                alert('The database encountered an error while trying to get the next ' +
+                    'testing turn. Please try again later.');
             }
         } else if (response == 'null') {        // Match does not exist
             timeout_counter = 0;
             alert('The specified match with challenge_id:' + challengeID + ' does not exist.');
-        } else if (response == 'pending' || responses == 'displayed') { // Match is not ready for playback, poll the database until it is ready for playback
+        } else if (response == 'pending' || response == 'displayed') { // Match is not ready for playback, poll the database until it is ready for playback
             setTimeout(function () { getTestTurn(challengeID, firstTurn); }, timeout_test_turn);
         } else {
             timeout_counter = 0;
@@ -247,7 +250,7 @@ function getLanguages() {
                 setTimeout(function () { getLanguages(); }, timeout_languages);
             } else {                            // Polling has failed to many times, so there is a problem with the database  
                 timeout_counter = 0;
-                alert('The database encountered an error. Please try again later.');
+                console.log('The database encountered an error while trying to get the languages. Please try again later.');
             }
         } else {
             timeout_counter = 0;
@@ -295,7 +298,8 @@ function getTemplates(challengeID) {
                 setTimeout(function () { getTemplates(challengeID); }, timeout_templates);
             } else {                            // Polling has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
-                alert('The database encountered an error. Please try again later.');
+                console.log('The database encountered an error while trying to get the templates'
+                    + ' for the challenge. Please try again later.');
             }
         } else if (response == 'null') {        // There are no templates for this challenge
             timeout_counter = 0;
@@ -345,7 +349,8 @@ function getCompilerErrors(challengeID) {
                 setTimeout(function () { getCompilerErrors(challengeID); }, timeout_get_errors);
             } else {                                    // Polling has failed to many times, so there is a problem with the database
                 timeout_counter_errors = 0;
-                alert('The database encountered an error. Please try again later.');
+                console.log('The database encountered an error while trying to get the compiler errors'
+                    + ' and warnings. Please try again later.');
             }
         } else {
             timeout_counter_errors = 0;
@@ -365,6 +370,70 @@ function getCompilerErrors(challengeID) {
                 I HAVE THE INFO WHAT SHOULD I DO WITH IT?
 
             ******************************************************/
+        }
+    }
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    xhr.send();
+}
+
+/*
+    This function sends a request to the server to query the database for the
+    default version of the specific user bot.
+
+    Arguments:
+        1) botID - The id of the user bot
+*/
+function getUserBot(botID) {
+    var url = base_url + '/get_user_bot?botID=' + botID;
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('GET', url);
+    if (!xhr) {
+        alert('CORS not supported on the current browser');
+        return;
+    }
+
+    // Successfully got a response
+    xhr.onload = function () {
+        var response = xhr.responseText;
+        var default_version;
+        console.log('response: ' + response);
+        if (response == 'error') {                          // Server had an error
+            if (timeout_counter_user_bot < error_limit) {   // Poll the database again
+                timeout_counter_user_bot++;
+                setTimeout(function () { getUserBot(botID); }, timeout_user_bot);
+            } else {                                        // Polling has failed to many times, so there is a problem with the database
+                timeout_counter_user_bot = 0;
+                default_version = 0;
+                console.log('Database encountered an error when trying to get the default_version for a user bot.')
+            }
+        } else if (response == 'null') {                    // User bot does not exist
+            timeout_counter_user_bot = 0;
+            default_version = -1;
+        } else {
+            timeout_counter_user_bot = 0;
+            default_version = parseInt(response);
+
+
+
+
+
+
+            /****************************************************************************
+
+                    GOT THE DEFAULT VERSION, IT WILL BE -1 IF THE
+                    USER_BOT DOES NOT EXIST, 0 IF THE DB HAD AN ERROR
+
+            ****************************************************************************/
+
+
+
+
+
         }
     }
 
@@ -417,7 +486,7 @@ function uploadCode(selectedCode, challengeID, languageID) {
                 setTimeout(function () { uploadCode(selectedCode, challengeID, languageID); }, timeout_upload_code);
             } else {                            // Upload has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
-                alert('The database encountered an error. Please try again later.');
+                alert('The database encountered an error when trying to upload your source code. Please try again later.');
             }
         }
     }
@@ -466,7 +535,7 @@ function saveTestingArenaBot(selectedCode, challengeID, languageID, botName, bot
                     timeout_save_testing_bot);
             } else {                            // Upload has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
-                alert('The database encountered an error. Please try again later.');
+                alert('The database encountered an error while trying to save your bot. Please try again later.');
             }
         }
     }

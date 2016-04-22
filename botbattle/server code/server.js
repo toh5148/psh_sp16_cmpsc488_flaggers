@@ -291,6 +291,48 @@ function getLanguages(callback) {
 }
 
 /*
+    This function queries the database for a testing arena bots compiler errors
+    and warnings.
+
+    Arguments:
+        1) userID - The id of the user that is testing their bot.
+        2) challengeID - The id of the challenge that the user is currently testing.
+        3) callback(retval) - The callback method is called at the end of this function
+                        and passes back the following information via retval:
+                        1) 'error' if the database encountered an error.
+                        2) 'true' if the insertion was successfull.
+*/
+function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
+    var retval;
+
+    // Column names: uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, source_code 
+    db.query('SELECT errors, warnings, error_messages, warning_messages FROM test_arena_bots WHERE uid='
+        + userID + ' AND challenge_id=' + challengeID, function (err, rows) {
+            if (err) {  // Error with the database
+                retval = 'error';
+                //console.log(err);
+            } else {
+                var errors = rows[0].errors;
+                var warnings = rows[0].warnings;
+                var error_msgs = rows[0].error_messages;
+                var warning_msgs = rows[0].warning_messages;
+
+                // Construct a json object with the compiler errors and warnings
+                var json = '{' +
+                                '"errors": ' + errors + ',' +
+                                '"warnings": ' + warnings + ',' +
+                                '"error_messages": "' + error_msgs + '",' +
+                                '"warning_messages": "' + warning_msgs + '"' +
+                            '}';
+
+                retval = json;
+                //console.log('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
+            }
+            callback(retval);   // Send the result
+        });
+}
+
+/*
     This function queries the database for all of the code templates for a
     specific challenge.
 
@@ -337,22 +379,37 @@ function getTemplates(challengeID, callback) {
     });
 }
 
+/*
+    This function queries the database for the default version for a
+    specific user bot and returns it to the client.
 
+    Arguments:
+        1) botID - The id of the user bot.
+        2) callback(retval) - The callback method is called at the end of this function
+                        and passes back the following information via retval:
+                        1) 'error' if the database encountered an error.
+                        2) 'null' if the user bot does not exist.
+                        3) If successful, sends the default version to the client.
+*/
+function getUserBot(botID, callback) {
+    var retval;
 
-
-
-
-/**********************************************************************************************
-
-    removed needs_compiled parameter
-
-***********************************************************************************************/
-
-
-
-
-
-
+    // Column names: bot_id, uid, challenge_id, default_version, name, creation_date, descripion, public
+    db.query('SELECT default_version FROM user_bots WHERE bot_id = ?', botID, function (err, rows) {
+        console.log(rows);
+        if (err) {                          // Error with the database
+            retval = 'error';
+            //console.log(err);
+        } else if (rows[0] == undefined) {  // User bot does not exist
+            retval = 'null';
+            //console.log('ERROR: The bot with bot_id:' + botID + ' does not exist.');
+        } else {
+            retval = rows[0].default_version.toString();
+            //console.log('Sent default_version:' + retval + ' to the client for bot_id:' + botID + '.');
+        }
+        callback(retval);   // Send the result
+    });
+}
 
 /*
     This function inserts a users testing bot into the database. If the user already has
@@ -458,48 +515,6 @@ function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, bo
             });
         }
     });
-}
-
-/*
-    This function queries the database for a testing arena bots compiler errors
-    and warnings.
-
-    Arguments:
-        1) userID - The id of the user that is testing their bot.
-        2) challengeID - The id of the challenge that the user is currently testing.
-        3) callback(retval) - The callback method is called at the end of this function
-                        and passes back the following information via retval:
-                        1) 'error' if the database encountered an error.
-                        2) 'true' if the insertion was successfull.
-*/
-function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
-    var retval;
-
-    // Column names: uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, source_code 
-    db.query('SELECT errors, warnings, error_messages, warning_messages FROM test_arena_bots WHERE uid='
-        + userID + ' AND challenge_id=' + challengeID, function (err, rows) {
-            if (err) {  // Error with the database
-                retval = 'error';
-                //console.log(err);
-            } else {
-                var errors = rows[0].errors;
-                var warnings = rows[0].warnings;
-                var error_msgs = rows[0].error_messages;
-                var warning_msgs = rows[0].warning_messages;
-
-                // Construct a json object with the compiler errors and warnings
-                var json = '{' +
-                                '"errors": ' + errors + ',' +
-                                '"warnings": ' + warnings + ',' +
-                                '"error_messages": "' + error_msgs + '",' +
-                                '"warning_messages": "' + warning_msgs + '"' +
-                            '}';
-
-                retval = json;
-                //console.log('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
-            }
-            callback(retval);   // Send the result
-    });   
 }
 
 /******************************************************
@@ -618,6 +633,16 @@ app.get('/get_compiler_errors', function (req, res, next) {
     var challenge_id = req.query.cid;
 
     getCompilerErrorsAndWarnings(user_id, challenge_id, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
+// localhost:5050/get_user_bot?botID=3
+app.get('/get_user_bot', function (req, res, next) {
+    var user_bot_id = req.query.botID;
+
+    getUserBot(user_bot_id, function (data) {
         res.header('Access-Control-Allow-Origin', base);
         res.send(data);
     });
