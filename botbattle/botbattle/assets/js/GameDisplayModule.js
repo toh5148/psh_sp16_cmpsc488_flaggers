@@ -174,7 +174,8 @@ function onCreateWindow(){
     var bkg = gameDisplayWindow.add.image(0, 0, 'background');
     bkg.width = gameWidth;
     bkg.height = gameHeight;
-    spawnEnts();                            // Spawn entities
+    // Spawn entities
+    spawnEnts();
 }
 
 function spawnEnts() {
@@ -222,6 +223,7 @@ function drawTurn() {
     // Increase turn time
     turnFrame++;
     turnTime = (turnFrame * playbackSpeed) / (fps * turnLength);
+    gameDisplayWindow.world.sort();
 }
 
 function restoreGameState(turnNum) {
@@ -358,6 +360,15 @@ function Entity(e,ft) {
         if (this.isAnimated) {
             var anim = f.anim;
             this.obj.frame = anim.frames[Math.floor(time * anim.speed) % anim.frames.length];
+        }
+
+        // Depth
+        this.obj.z = this.obj.y;
+
+        // Special Actions
+        if('action' in f){
+            if(f.action in specialActions)
+                specialActions[f.action].call(this,f,{m,t1,t2,time,scaledTime});
         }
     };
     // For default values
