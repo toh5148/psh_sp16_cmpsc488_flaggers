@@ -327,10 +327,22 @@ function Entity(e,ft) {
         }
         this.obj.visible = true;
 
+        var t1,t2,time,scaledTime;
         // Movement
-        var m = 1 / (f.end - f.start),
-            t1 = (f.end - t) * m, t2 = 1 - t1,
-            time = t - f.start, scaledTime = time * m;
+        if('end' in f) {
+            var m = 1 / (f.end - f.start);
+            t1 = (f.end - t) * m;
+            t2 = 1 - t1;
+            time = t - f.start;
+            scaledTime = time * m;
+        }
+        else{
+            t1 = 0;
+            t2 = 1;
+            time = t - f.start;
+            scaledTime = 1;
+        }
+
         if ('x' in f)
             this.obj.x = (f.initX * t1 + f.x * t2);
         else
@@ -370,7 +382,7 @@ function Entity(e,ft) {
         // Special Actions
         if('action' in f){
             if(f.action in specialActions)
-                specialActions[f.action].call(this,f,{m,t1,t2,time,scaledTime});
+                specialActions[f.action].call(this,f,{t1,t2,time,scaledTime});
         }
     };
     // For default values
