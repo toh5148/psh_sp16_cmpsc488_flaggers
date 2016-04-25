@@ -7,15 +7,6 @@ var languageNames = [];
 var languageIDs = [];
 var templatesCode = [];
 
-//These are used to keep track of information for each player's bot
-var Player_1_Bot_ID, Player_2_Bot_ID; //Int Types
-var Player_1_Bot_Version, Player_2_Bot_Version; //Int Version Type
-var Player_1_Bot_Ready, Player_2_Bot_Ready; //Boolean types
-var Player_1_Bot_Type, Player_2_Bot_Type; //String type -- equal to one of the constants set below
-
-const USER_STRING = 'user';
-const TEST_ARENA_STRING = 'test_arena';
-
 function beginPageLoad() {
     setLoadingDisplay();
     var cid = getChallengeID(); //from QueryStringFunctions.js
@@ -28,16 +19,19 @@ function beginPageLoad() {
     else {
         //Passed all error checks
         //Begin Testing Mode Initilization
-        initTestingArena(cid);
+        initTestingArena1(cid);
     }
 }
 
 function initTestingArena(cid) {
     //Write first pending turn request
     writeFirstTurnRequest(cid);
-    //Get the first turn data...(This should be set )
-    //getCompilerErrors();
+    //Get the first turn data...
     //When this function is finished, it will call handleTestTurns with the true flag set
+}
+
+function initTestingArena1(cid) {
+    simulateNextTurn(-1);
 }
 
 function writeFirstTurnRequest(cid) {
@@ -58,22 +52,11 @@ function writeFirstTurnRequest(cid) {
     langID = 1;
     playerNum = 1;
     lastTurnIndex = -1;
-    
+
     putTurnRequest(challengeID, botType, langID, botID, botVersion, playerNum, lastTurnIndex);
 }
 
 function writeTurnRequest(cid) {
-    //Database schema for pending_test_arena_turns
-    //pending_turn_id		    → Auto Increment, Unique
-    //uid: integer			    → Primary Key, Foreign Key (users.uid)
-    //challenge_id: integer		→ Primary Key, Foreign Key (challenges.challenge_id)
-    //bot_type: varchar(10)
-    //language_id: int(11)		→ Foreign Key (languages.language_id ), NULLABLE
-    //bot_id: integer			→ Foreign Key (bot_versions.bot_id), NULLABLE
-    //bot_version: integer		→ Foreign Key (bot_versions.version), NULLABLE
-    //player: integer	
-    //last_turn_index: integer
-
     var challengeID = cid;
     var botType;
     var langID;
@@ -83,7 +66,6 @@ function writeTurnRequest(cid) {
     var lastTurnIndex;
 
     var Bot_Ready = false;
-
 
     switch (playerNum) {
         case 1:
@@ -139,16 +121,19 @@ function handleTestTurns(init, turnData, first) {
         //It's not the first turn, so set both turnData and first
         turns = turnData;
         gameInitializer = init;
-        //nextPlayer = getNextPlayer();
+        setNewTestingArenaTurn();
     }
 }
 
 function doNextTurn() {
     writeTurnRequest(getChallengeID()); //Upon completion of writing turn request, matchRequestSubmitted() is called
+    clearBots();
 }
 
 function undoTestTurn() {
     restoreGameState(turn - 1);
+    turns.pop();
+    clearBots();
 }
 
 function matchRequestSubmitted(first) {
@@ -159,7 +144,7 @@ function matchRequestSubmitted(first) {
 function getNextPlayer() {
     //This function should check "nextPlayer" field of the current turn in the turn data
     //If no turn data, current turn is player 1
-    var player = 1;
+    var player = turns[turns.length - 1].nextPlayer;
 
     return player;
 }
@@ -196,4 +181,9 @@ function setLoadingDisplay(visible) {
 
 function updateCurrentBot() {
 
+}
+
+function clearBots() {
+    Player_1_Bot_Ready = false;
+    Player_2_Bot_Ready = false;
 }

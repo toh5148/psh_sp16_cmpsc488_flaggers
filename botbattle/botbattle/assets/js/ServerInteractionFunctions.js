@@ -385,9 +385,10 @@ function getCompilerErrors(challengeID) {
     default version of the specific user bot.
 
     Arguments:
+        1) playerNum - just used to pass current player number on to callback function
         1) botID - The id of the user bot
 */
-function getUserBot(botID) {
+function getUserBot(playerNum, botID) {
     var url = base_url + '/get_user_bot?botID=' + botID;
 
     // Create the CORS request to the server
@@ -414,26 +415,13 @@ function getUserBot(botID) {
         } else if (response == 'null') {                    // User bot does not exist
             timeout_counter_user_bot = 0;
             default_version = -1;
+
+            handleUserBotResponse(playerNum, default_version);
         } else {
             timeout_counter_user_bot = 0;
             default_version = parseInt(response);
 
-
-
-
-
-
-            /****************************************************************************
-
-                    GOT THE DEFAULT VERSION, IT WILL BE -1 IF THE
-                    USER_BOT DOES NOT EXIST, 0 IF THE DB HAD AN ERROR
-
-            ****************************************************************************/
-
-
-
-
-
+            handleUserBotResponse(playerNum, default_version);
         }
     }
 

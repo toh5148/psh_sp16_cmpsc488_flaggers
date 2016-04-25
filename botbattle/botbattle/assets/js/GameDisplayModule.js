@@ -35,6 +35,8 @@ function preload() {
     }
     // Set default timestep
     defaultTimestep = gameInitializer.defaultTimestep;
+    //Load Default Bot ID from Game Init Message -- DEFAULT_BOT_ID is declared in BotUploader.js
+    DEFAULT_BOT_ID = gameInitializer.defaultBot;
     startGame();
 }
 

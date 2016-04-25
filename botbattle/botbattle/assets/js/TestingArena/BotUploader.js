@@ -1,4 +1,14 @@
-﻿
+﻿//These are used to keep track of information for each player's bot
+var Player_1_Bot_ID, Player_2_Bot_ID; //Int Types
+var Player_1_Bot_Version, Player_2_Bot_Version; //Int Version Type
+var Player_1_Bot_Ready, Player_2_Bot_Ready; //Boolean types
+var Player_1_Bot_Type, Player_2_Bot_Type; //String type -- equal to one of the constants set below
+
+var DEFAULT_BOT_ID;
+
+const USER_STRING = 'user';
+const TEST_ARENA_STRING = 'test_arena';
+
 function readText(f, playerNum) {
     //This function is called by onchange of the input file type
     //in the testing arena html page. It will change the code in the
@@ -32,8 +42,8 @@ function upload(playerNum) {
         case 3:
             publicBotChoice(playerNum);
             break;
-        default:
-            //setError("mes=t2");
+        case 4:
+            defaultBotChoice(playerNum);
             break;
     }
 }
@@ -105,10 +115,66 @@ function uploadCodeChoice(playerNum) {
     var warning_messages = 'none';
     var selectedCode = ace.edit("div_editorP" + playerNum).getValue();
 
-    uploadCode(selectedCode, challenge_id, language_id, needs_compiled);
+    uploadCode(selectedCode, challenge_id, language_id);
+
+    if (playerNum == 1) {
+        Player_1_Bot_Type = TEST_ARENA_STRING;
+        Player_1_Bot_ID = null;
+        Player_1_Bot_Version = null;
+        Player_1_Bot_Ready = true;
+    }
+    else if (playerNum == 2) {
+        Player_2_Bot_Type = TEST_ARENA_STRING;
+        Player_2_Bot_ID = null;
+        Player_2_Bot_Version = null;
+        Player_2_Bot_Ready = true;
+    }
 }
 
 function publicBotChoice(playerNum) {
+    if (playerNum == 1) {
+        getUserBot(playerNum, Player_1_Bot_ID);
+    } else if (playerNum == 2) {
+        getUserBot(playerNum, Player_2_Bot_ID);
+    }
+}
+
+function defaultBotChoice(playerNum) {
+    if (playerNum == 1) {
+        getUserBot(playerNum, DEFAULT_BOT_ID);
+    } else if (playerNum == 2) {
+        getUserBot(playerNum, DEFAULT_BOT_ID);
+    }
+}
+
+function handleUserBotResponse(playerNum, response) {
     //Should grab name of bot and attempt to find it in one of the databases...
     //Return an error code if it isn't found or isn't public
+    if (playerNum == 1) {
+        Player_1_Bot_Type = USER_STRING;
+
+        if (response == -1) {
+            //Bot ID wasn't found so we have no version
+            Player_1_Bot_Version = -1;
+            Player_1_Bot_Ready = false;
+        }
+        else {
+            //Bot ID was found, update bot version
+            Player_1_Bot_Version = response;
+            Player_1_Bot_Ready = true;
+        }
+    } else if (playerNum == 2) {
+        Player_2_Bot_Type = USER_STRING;
+
+        if (response == -1) {
+            //Bot ID wasn't found so we have no version
+            Player_2_Bot_Version = -1;
+            Player_2_Bot_Ready = false;
+        }
+        else {
+            //Bot ID was found, update bot version
+            Player_2_Bot_Version = response;
+            Player_2_Bot_Ready = true;
+        }
+    }
 }

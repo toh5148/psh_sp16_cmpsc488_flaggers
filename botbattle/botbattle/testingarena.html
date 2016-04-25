@@ -24,6 +24,8 @@
     <script type="text/javascript" src="assets/js/TestingArena/BotUploader.js"></script>
     <script type="text/javascript" src="assets/js/TestingArena/CompilerErrors.js"></script>
     <script type="text/javascript" src="assets/js/TestingArena/BotLanguageFunctions.js"></script>
+    <script type="text/javascript" src="assets/js/TestingArena/TestingArenaInitializer.js"></script>
+    <script type="text/javascript" src="assets/js/TestingArena/TestingArenaTestData.js"></script>
 
     <!--CSS IMPORTS-->
     <link href="/assets/css/testingarena.css" type="text/css" rel="stylesheet" />
@@ -116,9 +118,11 @@
                 </div>
 
             </div>
-
             <div id="div_GameDisplayTab" class="main_tab_hidden">
-                <div id="div_uploadWarnings"></div>
+                <button id="btn_undoTurn" onclick="simulateNextTurn(-1)">test0</button>
+                <button id="btn_undoTurn" onclick="simulateNextTurn(0)">test1</button>
+                <button id="btn_undoTurn" onclick="simulateNextTurn(1)">test2</button>
+                <button id="btn_undoTurn" onclick="simulateNextTurn(2)">test3</button>
                 <div id="div_gameCanvas"></div>
 
                 <div id="div_GameDisplayButtons">

@@ -9,6 +9,7 @@ function setGameInit() {
     gameInitializer = {
         "background": "assets/images/background.png",
         "defaultTimestep": 1,
+        "defaultBot": 1,
         "imagesToLoad": [{
             "imagePath": "games/checkers/basic_red.png",
             "name": "basic_red"
@@ -79,6 +80,11 @@ function setGameTurns() {
     turns = [
         {
             "timescale": 1,
+            "currentPlayer": 1,
+            "nextPlayer": 2,
+            "stdin": "aaa",
+            "stdout": "bbb",
+            "stderr": "ccc",
             "turnChanges": [
                 {
                     "id": 101,
@@ -147,13 +153,15 @@ function setGameTurns() {
                         }
                     ]
                 }
-            ],
-            "stdin": "aaa",
-            "stdout": "bbb",
-            "stderr": "ccc"
+            ]
         },
         {
             "timescale": 2,
+            "currentPlayer": 2,
+            "nextPlayer": 1,
+            "stdin": "aaa",
+            "stdout": "bbb",
+            "stderr": "ccc",
             "turnChanges": [
                 {
                     "id": 101,
@@ -242,12 +250,14 @@ function setGameTurns() {
                     ]
                 }
             ],
-            "stdin": "ddd",
-            "stdout": "eee",
-            "stderr": "fff"
         },
         {
             "timescale": 1,
+            "currentPlayer": 1,
+            "nextPlayer": 2,
+            "stdin": "aaa",
+            "stdout": "bbb",
+            "stderr": "ccc",
             "turnChanges": [
                 {
                     "id": 101,
@@ -312,11 +322,81 @@ function setGameTurns() {
                     ]
                 }
             ],
-            "stdin": "ggg",
-            "stdout": "hhh",
-            "stderr": "iii"
+        },
+        {
+            "timescale": 1,
+            "currentPlayer": 2,
+            "nextPlayer": 1,
+            "stdin": "aaa",
+            "stdout": "bbb",
+            "stderr": "ccc",
+            "turnChanges": [
+                {
+                    "id": 101,
+                    "changes": [
+                        {
+                            "action": "walk",
+                            "start": 0,
+                            "end": 0.2,
+                            "x": 300,
+                            "y": 200
+                        },
+                        {
+                            "action": "walk",
+                            "start": 0.2,
+                            "end": 0.3,
+                            "x": 350,
+                            "y": 150
+                        },
+                        {
+                            "action": "walk",
+                            "start": 0.3,
+                            "end": 1,
+                            "x": 300,
+                            "y": 50
+                        }
+                    ]
+                },
+                {
+                    "id": 102,
+                    "changes": [
+                        {
+                            "action": "walk",
+                            "visible": true,
+                            "start": 0.2,
+                            "end": 0.8,
+                            "x": 400,
+                            "y": 300,
+                            "flipped": false
+                        }
+                    ]
+                },
+                {
+                    "id": 103,
+                    "changes": [
+                        {
+                            "action": "jump",
+                            "start": 0,
+                            "end": 1,
+                            "x": 450,
+                            "y": 250,
+                        }
+                    ]
+                },
+                {
+                    "id": 104,
+                    "changes": [
+                        {
+                            "action": "setText",
+                            "start": 1,
+                            "value": "Turn: 4"
+                        }
+                    ]
+                }
+            ],
         }
     ];
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

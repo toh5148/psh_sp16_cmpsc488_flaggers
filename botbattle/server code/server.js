@@ -9,9 +9,9 @@ var port = 5050;
 var db; // Database Variable
 
 //Sawyer's base
-var base = 'http://localhost:13558';
+//var base = 'http://localhost:13558';
 //Tom's base
-//var base = 'http://localhost:50363';
+var base = 'http://localhost:50363';
 
 app.use(bodyParser.json());
 app.use(bodyParser.text());
@@ -29,11 +29,11 @@ function openConnection() {
 	    database: credentials.database
 	});
 	db.connect(function(err){
-	    /*if(err){
+	    if(err){
 	        console.log(err);
 	    } else {
 	        console.log('Connection established.');
-	    }*/
+	    }
 	});
 }
 
@@ -73,17 +73,17 @@ function getMatch(matchID, callback) {
     db.query('SELECT * FROM matches WHERE match_id = ?', matchID, function (err, rows) {
         if (err) {                          // Error with the database
             retval = 'error';
-            //console.log(err);
+            console.log(err);
         } else if (rows[0] == undefined) {  // Match does not exists
 			retval = 'null';
-			//console.log('ERROR: Match with id:' + matchID + ' not found.');
+			console.log('ERROR: Match with id:' + matchID + ' not found.');
         } else {
             var match = rows[0];           
             var ready = match.ready_for_playback.toString('hex');  
 			
             if (ready == false) {           // Match is not ready for playback
                 retval = 'pending';
-                //console.log('ERROR: Match with id:' + matchID + ' is not ready for playback.');
+                console.log('ERROR: Match with id:' + matchID + ' is not ready for playback.');
             } else {
                 var winnerSTR = match.winner;
 				var winnerOBJ = '{"winner": "' + winnerSTR + '"}';  // Convert the string to a JSON object
@@ -91,7 +91,7 @@ function getMatch(matchID, callback) {
                 var turns = match.turns;
 
                 retval = JSON.parse('[' + winnerOBJ + ',' + init_message + ',' + turns + ']');
-                //console.log('Data for match with id:' + matchID + ' sent to the client.');
+                console.log('Data for match with id:' + matchID + ' sent to the client.');
             }
         }
         callback(retval);   // Send the result
@@ -141,38 +141,38 @@ function getTestMatchTurn(userID, challengeID, callback){
 	'WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {			                // Error with the database
             retval = 'error';
-            //console.log(err);
+            console.log(err);
         } else if (rows[0] == undefined) {  // Match does not exists           
             retval = 'null';	
-            //console.log('ERROR: Test instance with user_id:' + userID + ' and challenge_id:' + challengeID + ' not found.');
+            console.log('ERROR: Test instance with user_id:' + userID + ' and challenge_id:' + challengeID + ' not found.');
         } else {       	
             var match = rows[0];		      
             var status = match.last_turn_status.toUpperCase();
             
             if (status == 'PENDING') {          // Turn is not ready to be displayed
                 retval = 'pending';
-                //console.log('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
-                //    ' is not ready to be displayed.');               
+                console.log('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                    ' is not ready to be displayed.');               
             } else if (status == 'DISPLAYED') { // Turn has already been displayed
                 retval = 'displayed';
-                //console.log('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
-                //    ' has already been displayed.');
+                console.log('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                    ' has already been displayed.');
             } else {
                 var turns = match.turns;
                 var init_message = match.game_initialization_message;
 
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
-                //console.log('Data for match with user_id:' + userID + ' and challenge_id:' + challengeID + ' sent to the client.');
+                console.log('Data for match with user_id:' + userID + ' and challenge_id:' + challengeID + ' sent to the client.');
 
                 // Change the last_turn_status to DISPLAYED
                 // Column names: uid, challenge_id, last_turn_status, game_initialization_message, turns
                 db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + userID
                     + ' AND challenge_id = ' + challengeID, function (err, rows) {
-                        /*if (err) {
+                        if (err) {
                             console.log(err);
                         } else {
                             console.log('Set match with user_id:' + userID + ' and challenge_id:' + challengeID + ' to DISPLAYED in test_arena_matches.');
-                        }*/
+                        }
                     });
             }
         }         
@@ -205,7 +205,7 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
     db.query('SELECT uid FROM pending_test_arena_turns WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                      // Error with the database
             retval = 'error';
-            //console.log(err);
+            console.log(err);
         } else {
             if (rows[0] == undefined) { // There is not a row for this challengeID and userID in the table, insert one
                 var turnToInsert = {
@@ -217,10 +217,10 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
                 db.query('INSERT INTO pending_test_arena_turns SET ?', turnToInsert, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        //console.log(err);
+                        console.log(err);
                     } else {
                         retval = 'true';
-                        //console.log('Row inserted into the pending_test_arena_turns table.');
+                        console.log('Row inserted into the pending_test_arena_turns table.');
                     }
                 });
             } else {                    // There is an entry for this challengeID and userID, update it
@@ -233,10 +233,10 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
                 db.query('UPDATE pending_test_arena_turns SET ?', turnToUpdate, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        //console.log(err);
+                        console.log(err);
                     } else {
                         retval = 'true';
-                        //console.log('Row updated in pending_test_arena_turns table.');
+                        console.log('Row updated in pending_test_arena_turns table.');
                     }
                 });
             }
@@ -263,10 +263,10 @@ function getLanguages(callback) {
     db.query('SELECT * FROM languages', function (err, rows) {
         if (err) {                          // Error with the database
             retVal = 'error';
-            //console.log(err);
+            console.log(err);
         } else if (rows[0] == undefined) {  // No languages in table
 			retVal = 'null';
-			//console.log('ERROR: No languages found');
+			console.log('ERROR: No languages found');
         } else {
 			var rowsLeft = true;
 			var i = 0;
@@ -284,7 +284,7 @@ function getLanguages(callback) {
 			}
 			retVal += ']';
 			retVal = JSON.parse(retVal);
-			//console.log('Returned language list.');
+			console.log('Returned language list.');
         }
         callback(retVal);   // Send the result
     });
@@ -310,7 +310,7 @@ function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
         + userID + ' AND challenge_id=' + challengeID, function (err, rows) {
             if (err) {  // Error with the database
                 retval = 'error';
-                //console.log(err);
+                console.log(err);
             } else {
                 var errors = rows[0].errors;
                 var warnings = rows[0].warnings;
@@ -326,7 +326,7 @@ function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
                             '}';
 
                 retval = json;
-                //console.log('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
+                console.log('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
             }
             callback(retval);   // Send the result
         });
@@ -352,10 +352,10 @@ function getTemplates(challengeID, callback) {
     db.query('SELECT language_id, source_code FROM test_arena_template_bots WHERE challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                          // Error with the database
             retVal = 'error';
-            //console.log(err);
+            console.log(err);
         } else if (rows[0] == undefined) {  // No templates found
 			retVal = 'null';
-			//console.log('ERROR: No templates found for challenge_id:' + cid + '.');
+			console.log('ERROR: No templates found for challenge_id:' + cid + '.');
         } else {
 			var rowsLeft = true;
 			var i = 0;
@@ -373,7 +373,7 @@ function getTemplates(challengeID, callback) {
 			}
 			retVal += ']';
 			retVal = JSON.parse(retVal);
-			//console.log('Returned test arena templates list.');
+			console.log('Returned test arena templates list.');
         }
         callback(retVal);   // Send the result
     });
@@ -399,13 +399,13 @@ function getUserBot(botID, callback) {
         console.log(rows);
         if (err) {                          // Error with the database
             retval = 'error';
-            //console.log(err);
+            console.log(err);
         } else if (rows[0] == undefined) {  // User bot does not exist
             retval = 'null';
-            //console.log('ERROR: The bot with bot_id:' + botID + ' does not exist.');
+            console.log('ERROR: The bot with bot_id:' + botID + ' does not exist.');
         } else {
             retval = rows[0].default_version.toString();
-            //console.log('Sent default_version:' + retval + ' to the client for bot_id:' + botID + '.');
+            console.log('Sent default_version:' + retval + ' to the client for bot_id:' + botID + '.');
         }
         callback(retval);   // Send the result
     });
@@ -433,7 +433,7 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
     db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                      // Error with the database
             retval = 'error';
-            //console.log(err);
+            console.log(err);
         } else {
             if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
                 var time = Date.now();
@@ -443,10 +443,10 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
                 db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        //console.log(err);
+                        console.log(err);
                     } else {
                         retval = 'true';
-                        //console.log('Row inserted into test_arena_bots.');
+                        console.log('Row inserted into test_arena_bots.');
                     }
                     callback(retval);   // Send the result
                 });
@@ -459,10 +459,10 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
                 db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        //console.log(err);
+                        console.log(err);
                     } else {
                         retval = 'true';
-                        //console.log('Row updated in test_arena_bots.');
+                        console.log('Row updated in test_arena_bots.');
                     }
                     callback(retval);   // Send the result
                 });
@@ -498,7 +498,7 @@ function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, bo
         if (err) {                      // Error with the database
             retval = 'error';
             callback(retval);           // Send the result
-            //console.log(err);
+            console.log(err);
         } else {
             var botID = rows.insertId;  // Get the bot_id of the newly inserted row            
             var botVersionToInsert = { bot_id: botID, version: 1, language_id: languageID, comments: 'none', source_code: sourceCode };
@@ -507,7 +507,7 @@ function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, bo
             db.query('INSERT INTO user_bots_versions SET ?', botVersionToInsert, function (err, rows) {
                 if (err) {              // Error with the database                    
                     retval = 'error';
-                    //console.log(err);
+                    console.log(err);
                 } else {
                     retval = botID.toString();
                 }
@@ -659,5 +659,5 @@ app.get('/get_user_bot', function (req, res, next) {
 openConnection();
 // Start the server
 http.createServer(app).listen(port, function() {
-	//console.log('Server listening on port ' + port + '.');
+	console.log('Server listening on port ' + port + '.');
 });
