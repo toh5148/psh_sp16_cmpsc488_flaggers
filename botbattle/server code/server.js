@@ -30,9 +30,9 @@ function openConnection() {
 	});
 	db.connect(function(err){
 	    if(err){
-	        console.log(err);
+	        logMessage(err);
 	    } else {
-	        console.log('Connection established.');
+	        logMessage('Connection established.');
 	    }
 	});
 }
@@ -52,6 +52,20 @@ function openConnection() {
 
 
 ********************************************************************/
+function putMatch(init, turn) {
+	
+	var turnToInsert = {
+                match_id: 1234, ready_for_playback: 1, winner: "Tombob",
+				game_initialization_message: init, turns: turn
+                };
+    db.query('UPDATE matches SET ?', turnToInsert, function (err, rows) {
+                    if (err) {          // Error with the database
+                        logMessage(err);
+                    } else {
+                        logMessage('Row inserted into matches.');
+                    }
+                });
+}
 
 /*
     This function queries the database for a match to playback to the user.
@@ -73,17 +87,17 @@ function getMatch(matchID, callback) {
     db.query('SELECT * FROM matches WHERE match_id = ?', matchID, function (err, rows) {
         if (err) {                          // Error with the database
             retval = 'error';
-            console.log(err);
+            logMessage(err);
         } else if (rows[0] == undefined) {  // Match does not exists
 			retval = 'null';
-			console.log('ERROR: Match with id:' + matchID + ' not found.');
+			logMessage('ERROR: Match with id:' + matchID + ' not found.');
         } else {
             var match = rows[0];           
             var ready = match.ready_for_playback.toString('hex');  
 			
             if (ready == false) {           // Match is not ready for playback
                 retval = 'pending';
-                console.log('ERROR: Match with id:' + matchID + ' is not ready for playback.');
+                logMessage('ERROR: Match with id:' + matchID + ' is not ready for playback.');
             } else {
                 var winnerSTR = match.winner;
 				var winnerOBJ = '{"winner": "' + winnerSTR + '"}';  // Convert the string to a JSON object
@@ -91,7 +105,7 @@ function getMatch(matchID, callback) {
                 var turns = match.turns;
 
                 retval = JSON.parse('[' + winnerOBJ + ',' + init_message + ',' + turns + ']');
-                console.log('Data for match with id:' + matchID + ' sent to the client.');
+                logMessage('Data for match with id:' + matchID + ' sent to the client.');
             }
         }
         callback(retval);   // Send the result
@@ -141,37 +155,37 @@ function getTestMatchTurn(userID, challengeID, callback){
 	'WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {			                // Error with the database
             retval = 'error';
-            console.log(err);
+            logMessage(err);
         } else if (rows[0] == undefined) {  // Match does not exists           
             retval = 'null';	
-            console.log('ERROR: Test instance with user_id:' + userID + ' and challenge_id:' + challengeID + ' not found.');
+            logMessage('ERROR: Test instance with user_id:' + userID + ' and challenge_id:' + challengeID + ' not found.');
         } else {       	
             var match = rows[0];		      
             var status = match.last_turn_status.toUpperCase();
             
             if (status == 'PENDING') {          // Turn is not ready to be displayed
                 retval = 'pending';
-                console.log('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                logMessage('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
                     ' is not ready to be displayed.');               
             } else if (status == 'DISPLAYED') { // Turn has already been displayed
                 retval = 'displayed';
-                console.log('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                logMessage('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
                     ' has already been displayed.');
             } else {
                 var turns = match.turns;
                 var init_message = match.game_initialization_message;
 
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
-                console.log('Data for match with user_id:' + userID + ' and challenge_id:' + challengeID + ' sent to the client.');
+                logMessage('Data for match with user_id:' + userID + ' and challenge_id:' + challengeID + ' sent to the client.');
 
                 // Change the last_turn_status to DISPLAYED
                 // Column names: uid, challenge_id, last_turn_status, game_initialization_message, turns
                 db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + userID
                     + ' AND challenge_id = ' + challengeID, function (err, rows) {
                         if (err) {
-                            console.log(err);
+                            logMessage(err);
                         } else {
-                            console.log('Set match with user_id:' + userID + ' and challenge_id:' + challengeID + ' to DISPLAYED in test_arena_matches.');
+                            logMessage('Set match with user_id:' + userID + ' and challenge_id:' + challengeID + ' to DISPLAYED in test_arena_matches.');
                         }
                     });
             }
@@ -205,7 +219,7 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
     db.query('SELECT uid FROM pending_test_arena_turns WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                      // Error with the database
             retval = 'error';
-            console.log(err);
+            logMessage(err);
         } else {
             if (rows[0] == undefined) { // There is not a row for this challengeID and userID in the table, insert one
                 var turnToInsert = {
@@ -217,10 +231,10 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
                 db.query('INSERT INTO pending_test_arena_turns SET ?', turnToInsert, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        console.log(err);
+                        logMessage(err);
                     } else {
                         retval = 'true';
-                        console.log('Row inserted into the pending_test_arena_turns table.');
+                        logMessage('Row inserted into the pending_test_arena_turns table.');
                     }
                 });
             } else {                    // There is an entry for this challengeID and userID, update it
@@ -233,10 +247,10 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
                 db.query('UPDATE pending_test_arena_turns SET ?', turnToUpdate, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        console.log(err);
+                        logMessage(err);
                     } else {
                         retval = 'true';
-                        console.log('Row updated in pending_test_arena_turns table.');
+                        logMessage('Row updated in pending_test_arena_turns table.');
                     }
                 });
             }
@@ -263,10 +277,10 @@ function getLanguages(callback) {
     db.query('SELECT * FROM languages', function (err, rows) {
         if (err) {                          // Error with the database
             retVal = 'error';
-            console.log(err);
+            logMessage(err);
         } else if (rows[0] == undefined) {  // No languages in table
 			retVal = 'null';
-			console.log('ERROR: No languages found');
+			logMessage('ERROR: No languages found');
         } else {
 			var rowsLeft = true;
 			var i = 0;
@@ -284,7 +298,7 @@ function getLanguages(callback) {
 			}
 			retVal += ']';
 			retVal = JSON.parse(retVal);
-			console.log('Returned language list.');
+			logMessage('Returned language list.');
         }
         callback(retVal);   // Send the result
     });
@@ -310,7 +324,7 @@ function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
         + userID + ' AND challenge_id=' + challengeID, function (err, rows) {
             if (err) {  // Error with the database
                 retval = 'error';
-                console.log(err);
+                logMessage(err);
             } else {
                 var errors = rows[0].errors;
                 var warnings = rows[0].warnings;
@@ -326,7 +340,7 @@ function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
                             '}';
 
                 retval = json;
-                console.log('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
+                logMessage('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
             }
             callback(retval);   // Send the result
         });
@@ -352,10 +366,10 @@ function getTemplates(challengeID, callback) {
     db.query('SELECT language_id, source_code FROM test_arena_template_bots WHERE challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                          // Error with the database
             retVal = 'error';
-            console.log(err);
+            logMessage(err);
         } else if (rows[0] == undefined) {  // No templates found
 			retVal = 'null';
-			console.log('ERROR: No templates found for challenge_id:' + cid + '.');
+			logMessage('ERROR: No templates found for challenge_id:' + cid + '.');
         } else {
 			var rowsLeft = true;
 			var i = 0;
@@ -373,7 +387,7 @@ function getTemplates(challengeID, callback) {
 			}
 			retVal += ']';
 			retVal = JSON.parse(retVal);
-			console.log('Returned test arena templates list.');
+			logMessage('Returned test arena templates list.');
         }
         callback(retVal);   // Send the result
     });
@@ -396,16 +410,16 @@ function getUserBot(botID, callback) {
 
     // Column names: bot_id, uid, challenge_id, default_version, name, creation_date, descripion, public
     db.query('SELECT default_version FROM user_bots WHERE bot_id = ?', botID, function (err, rows) {
-        console.log(rows);
+        logMessage(rows);
         if (err) {                          // Error with the database
             retval = 'error';
-            console.log(err);
+            logMessage(err);
         } else if (rows[0] == undefined) {  // User bot does not exist
             retval = 'null';
-            console.log('ERROR: The bot with bot_id:' + botID + ' does not exist.');
+            logMessage('ERROR: The bot with bot_id:' + botID + ' does not exist.');
         } else {
             retval = rows[0].default_version.toString();
-            console.log('Sent default_version:' + retval + ' to the client for bot_id:' + botID + '.');
+            logMessage('Sent default_version:' + retval + ' to the client for bot_id:' + botID + '.');
         }
         callback(retval);   // Send the result
     });
@@ -433,7 +447,7 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
     db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                      // Error with the database
             retval = 'error';
-            console.log(err);
+            logMessage(err);
         } else {
             if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
                 var time = Date.now();
@@ -443,10 +457,10 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
                 db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        console.log(err);
+                        logMessage(err);
                     } else {
                         retval = 'true';
-                        console.log('Row inserted into test_arena_bots.');
+                        logMessage('Row inserted into test_arena_bots.');
                     }
                     callback(retval);   // Send the result
                 });
@@ -459,10 +473,10 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
                 db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
                     if (err) {          // Error with the database
                         retval = 'error';
-                        console.log(err);
+                        logMessage(err);
                     } else {
                         retval = 'true';
-                        console.log('Row updated in test_arena_bots.');
+                        logMessage('Row updated in test_arena_bots.');
                     }
                     callback(retval);   // Send the result
                 });
@@ -498,7 +512,7 @@ function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, bo
         if (err) {                      // Error with the database
             retval = 'error';
             callback(retval);           // Send the result
-            console.log(err);
+            logMessage(err);
         } else {
             var botID = rows.insertId;  // Get the bot_id of the newly inserted row            
             var botVersionToInsert = { bot_id: botID, version: 1, language_id: languageID, comments: 'none', source_code: sourceCode };
@@ -507,7 +521,7 @@ function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, bo
             db.query('INSERT INTO user_bots_versions SET ?', botVersionToInsert, function (err, rows) {
                 if (err) {              // Error with the database                    
                     retval = 'error';
-                    console.log(err);
+                    logMessage(err);
                 } else {
                     retval = botID.toString();
                 }
@@ -655,9 +669,22 @@ app.get('/get_user_bot', function (req, res, next) {
 
 
 ******************************************************/
+var log = true;
+
+function logMessage(message) {
+	if(log) {
+		console.log(message);
+	}
+}
 
 openConnection();
 // Start the server
 http.createServer(app).listen(port, function() {
-	console.log('Server listening on port ' + port + '.');
+	logMessage('Server listening on port ' + port + '.');
 });
+
+//var gameInit = "{\"background\":\"games/checkers/CheckerBoard.png\",\"defaultTimestep\":1.0,\"defaultBot\":1,\"imagesToLoad\":[{\"imagePath\":\"games/checkers/basic_red.png\",\"name\":\"basic_red\"},{\"imagePath\":\"games/checkers/basic_white.png\",\"name\":\"basic_white\"},{\"imagePath\":\"games/checkers/king_red.png\",\"name\":\"king_red\"},{\"imagePath\":\"games/checkers/king_white.png\",\"name\":\"king_white\"}],\"entity\":[{\"id\":1,\"type\":\"object\",\"visible\":true,\"initX\":190,\"initY\":90,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":2,\"type\":\"object\",\"visible\":true,\"initX\":310,\"initY\":90,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":3,\"type\":\"object\",\"visible\":true,\"initX\":430,\"initY\":90,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":4,\"type\":\"object\",\"visible\":true,\"initX\":550,\"initY\":90,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":5,\"type\":\"object\",\"visible\":true,\"initX\":250,\"initY\":150,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":6,\"type\":\"object\",\"visible\":true,\"initX\":370,\"initY\":150,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":7,\"type\":\"object\",\"visible\":true,\"initX\":490,\"initY\":150,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":8,\"type\":\"object\",\"visible\":true,\"initX\":610,\"initY\":150,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":9,\"type\":\"object\",\"visible\":true,\"initX\":190,\"initY\":210,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":10,\"type\":\"object\",\"visible\":true,\"initX\":310,\"initY\":210,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":11,\"type\":\"object\",\"visible\":true,\"initX\":430,\"initY\":210,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":12,\"type\":\"object\",\"visible\":true,\"initX\":550,\"initY\":210,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_red\"},{\"id\":13,\"type\":\"object\",\"visible\":true,\"initX\":250,\"initY\":390,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":14,\"type\":\"object\",\"visible\":true,\"initX\":370,\"initY\":390,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":15,\"type\":\"object\",\"visible\":true,\"initX\":490,\"initY\":390,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":16,\"type\":\"object\",\"visible\":true,\"initX\":610,\"initY\":390,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":17,\"type\":\"object\",\"visible\":true,\"initX\":190,\"initY\":450,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":18,\"type\":\"object\",\"visible\":true,\"initX\":310,\"initY\":450,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":19,\"type\":\"object\",\"visible\":true,\"initX\":430,\"initY\":450,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":20,\"type\":\"object\",\"visible\":true,\"initX\":550,\"initY\":450,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":21,\"type\":\"object\",\"visible\":true,\"initX\":250,\"initY\":510,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":22,\"type\":\"object\",\"visible\":true,\"initX\":370,\"initY\":510,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":23,\"type\":\"object\",\"visible\":true,\"initX\":490,\"initY\":510,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"},{\"id\":24,\"type\":\"object\",\"visible\":true,\"initX\":610,\"initY\":510,\"width\":60,\"height\":60,\"flipped\":false,\"rotation\":0.0,\"value\":\"basic_white\"}]}";
+//gameInit = JSON.parse(gameInit);
+//var turns = "[{\"timescale\":1.0,\"turnChanges\":[{\"id\":9,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":270}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212121\\n12121212\\n01212121\\n12101010\\n01010101\\n14141414\\n41414141\\n14141414\\n\",\"stdout\":\"A3B4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":14,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":330}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212121\\n12121212\\n01212121\\n12101010\\n01014101\\n14101414\\n41414141\\n14141414\\n\",\"stdout\":\"D6E5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":9,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":190,\"y\":330}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212121\\n12121212\\n01212121\\n10101010\\n21014101\\n14101414\\n41414141\\n14141414\\n\",\"stdout\":\"B4A5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":19,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":370,\"y\":390}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212121\\n12121212\\n01212121\\n10101010\\n21014101\\n14141414\\n41410141\\n14141414\\n\",\"stdout\":\"E7D6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":12,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":610,\"y\":270}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212121\\n12121212\\n01212101\\n10101012\\n21014101\\n14141414\\n41410141\\n14141414\\n\",\"stdout\":\"G3H4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":22,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":450}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212121\\n12121212\\n01212101\\n10101012\\n21014101\\n14141414\\n41414141\\n14101414\\n\",\"stdout\":\"D8E7\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":10,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":270}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212121\\n12121212\\n01012101\\n12101012\\n21014101\\n14141414\\n41414141\\n14101414\\n\",\"stdout\":\"C3B4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":14,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":270}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212121\\n12121212\\n01012101\\n12101412\\n21010101\\n14141414\\n41414141\\n14101414\\n\",\"stdout\":\"E5F4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":11,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":330}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212121\\n12121212\\n01010101\\n12101412\\n21010121\\n14141414\\n41414141\\n14101414\\n\",\"stdout\":\"E3G5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":14,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":210}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212121\\n12121212\\n01010141\\n12101012\\n21010121\\n14141414\\n41414141\\n14101414\\n\",\"stdout\":\"F4G3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":8,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":270}},{\"id\":14,\"changes\":{\"visible\":false}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212121\\n12121210\\n01010101\\n12101212\\n21010121\\n14141414\\n41414141\\n14101414\\n\",\"stdout\":\"H2F4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":13,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":330}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212121\\n12121210\\n01010101\\n12101212\\n21410121\\n10141414\\n41414141\\n14101414\\n\",\"stdout\":\"B6C5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":8,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":330}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212121\\n12121210\\n01010101\\n12101012\\n21412121\\n10141414\\n41414141\\n14101414\\n\",\"stdout\":\"F4E5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":13,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":190,\"y\":210}},{\"id\":10,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212121\\n12121210\\n41010101\\n10101012\\n21012121\\n10141414\\n41414141\\n14101414\\n\",\"stdout\":\"C5A3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":4,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":610,\"y\":150}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n12121212\\n41010101\\n10101012\\n21012121\\n10141414\\n41414141\\n14101414\\n\",\"stdout\":\"G1H2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":19,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":270}},{\"id\":8,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n12121212\\n41010101\\n10101412\\n21010121\\n10101414\\n41414141\\n14101414\\n\",\"stdout\":\"D6F4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":9,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":390}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n12121212\\n41010101\\n10101412\\n01010121\\n12101414\\n41414141\\n14101414\\n\",\"stdout\":\"A5B6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":17,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":330}},{\"id\":9,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n12121212\\n41010101\\n10101412\\n01410121\\n10101414\\n01414141\\n14101414\\n\",\"stdout\":\"A7C5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":6,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":210}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n12101212\\n41210101\\n10101412\\n01410121\\n10101414\\n01414141\\n14101414\\n\",\"stdout\":\"D2C3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":17,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":270}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n12101212\\n41210101\\n14101412\\n01010121\\n10101414\\n01414141\\n14101414\\n\",\"stdout\":\"C5B4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":6,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":190,\"y\":330}},{\"id\":17,\"changes\":{\"visible\":false}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n12101212\\n41010101\\n10101412\\n21010121\\n10101414\\n01414141\\n14101414\\n\",\"stdout\":\"C3A5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":19,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":210}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n12101212\\n41014101\\n10101012\\n21010121\\n10101414\\n01414141\\n14101414\\n\",\"stdout\":\"F4E3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":370,\"y\":270}},{\"id\":19,\"changes\":{\"visible\":false}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n12101012\\n41010101\\n10121012\\n21010121\\n10101414\\n01414141\\n14101414\\n\",\"stdout\":\"F2D4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":16,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":270}},{\"id\":11,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n12101012\\n41010101\\n10121412\\n21010101\\n10101410\\n01414141\\n14101414\\n\",\"stdout\":\"H6F4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":12,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":330}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n12101012\\n41010101\\n10121410\\n21010121\\n10101410\\n01414141\\n14101414\\n\",\"stdout\":\"H4G5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":15,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":610,\"y\":270}},{\"id\":12,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n12101012\\n41010101\\n10121414\\n21010101\\n10101010\\n01414141\\n14101414\\n\",\"stdout\":\"F6H4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":5,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":210}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n10101012\\n41210101\\n10121414\\n21010101\\n10101010\\n01414141\\n14101414\\n\",\"stdout\":\"B2C3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":20,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":610,\"y\":390}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n10101012\\n41210101\\n10121414\\n21010101\\n10101014\\n01414101\\n14101414\\n\",\"stdout\":\"G7H6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":4,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":210}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21212101\\n10101010\\n41210121\\n10121414\\n21010101\\n10101014\\n01414101\\n14101414\\n\",\"stdout\":\"H2G3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":15,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":150}},{\"id\":4,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21212101\\n10101410\\n41210101\\n10121410\\n21010101\\n10101014\\n01414101\\n14101414\\n\",\"stdout\":\"H4F2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":3,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":210}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"21210101\\n10101410\\n41210121\\n10121410\\n21010101\\n10101014\\n01414101\\n14101414\\n\",\"stdout\":\"E1G3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":16,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":610,\"y\":150}},{\"id\":3,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"21210101\\n10101414\\n41210101\\n10121010\\n21010101\\n10101014\\n01414101\\n14101414\\n\",\"stdout\":\"F4H2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":1,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":150}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01210101\\n12101414\\n41210101\\n10121010\\n21010101\\n10101014\\n01414101\\n14101414\\n\",\"stdout\":\"A1B2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":15,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":90}},{\"id\":15,\"changes\":{\"value\":\"king_white\"}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01215101\\n12101014\\n41210101\\n10121010\\n21010101\\n10101014\\n01414101\\n14101414\\n\",\"stdout\":\"F2E1\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":6,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":390}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01215101\\n12101014\\n41210101\\n10121010\\n01010101\\n12101014\\n01414101\\n14101414\\n\",\"stdout\":\"A5B6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":18,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":190,\"y\":330}},{\"id\":6,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01215101\\n12101014\\n41210101\\n10121010\\n41010101\\n10101014\\n01014101\\n14101414\\n\",\"stdout\":\"C7A5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":330}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01215101\\n12101014\\n41210101\\n10101010\\n41210101\\n10101014\\n01014101\\n14101414\\n\",\"stdout\":\"D4C5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":21,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":190,\"y\":450}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01215101\\n12101014\\n41210101\\n10101010\\n41210101\\n10101014\\n41014101\\n10101414\\n\",\"stdout\":\"B8A7\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":2,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":370,\"y\":150}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n12121014\\n41210101\\n10101010\\n41210101\\n10101014\\n41014101\\n10101414\\n\",\"stdout\":\"C1D2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":13,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":90}},{\"id\":1,\"changes\":{\"visible\":false}},{\"id\":13,\"changes\":{\"value\":\"king_white\"}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01515101\\n10121014\\n01210101\\n10101010\\n41210101\\n10101014\\n41014101\\n10101414\\n\",\"stdout\":\"A3C1\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":2,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":210}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01515101\\n10101014\\n01212101\\n10101010\\n41210101\\n10101014\\n41014101\\n10101414\\n\",\"stdout\":\"D2E3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":18,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":270}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01515101\\n10101014\\n01212101\\n14101010\\n01210101\\n10101014\\n41014101\\n10101414\\n\",\"stdout\":\"A5B4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":5,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":190,\"y\":330}},{\"id\":18,\"changes\":{\"visible\":false}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01515101\\n10101014\\n01012101\\n10101010\\n21210101\\n10101014\\n41014101\\n10101414\\n\",\"stdout\":\"C3A5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":13,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":370,\"y\":150}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10151014\\n01012101\\n10101010\\n21210101\\n10101014\\n41014101\\n10101414\\n\",\"stdout\":\"C1D2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":5,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":390}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10151014\\n01012101\\n10101010\\n01210101\\n12101014\\n41014101\\n10101414\\n\",\"stdout\":\"A5B6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":13,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":270}},{\"id\":2,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01210101\\n12101014\\n41014101\\n10101414\\n\",\"stdout\":\"D2F4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":5,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":450}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01210101\\n10101014\\n41214101\\n10101414\\n\",\"stdout\":\"B6C7\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":22,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":370,\"y\":390}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01210101\\n10141014\\n41210101\\n10101414\\n\",\"stdout\":\"E7D6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":450}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01010101\\n10141014\\n41212101\\n10101414\\n\",\"stdout\":\"C5E7\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":21,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":390}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01010101\\n14141014\\n01212101\\n10101414\\n\",\"stdout\":\"A7B6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":5,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":510}},{\"id\":5,\"changes\":{\"value\":\"king_red\"}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01010101\\n14141014\\n01012101\\n13101414\\n\",\"stdout\":\"C7B8\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":15,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":150}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01010101\\n10101514\\n01010101\\n10101510\\n01010101\\n14141014\\n01012101\\n13101414\\n\",\"stdout\":\"E1F2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":5,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":190,\"y\":450}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01010101\\n10101514\\n01010101\\n10101510\\n01010101\\n14141014\\n31012101\\n10101414\\n\",\"stdout\":\"B8A7\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":15,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":90}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01010101\\n14141014\\n31012101\\n10101414\\n\",\"stdout\":\"F2E1\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":5,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":330}},{\"id\":21,\"changes\":{\"visible\":false}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10101014\\n01010101\\n10101510\\n01310101\\n10141014\\n01012101\\n10101414\\n\",\"stdout\":\"A7C5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":22,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":250,\"y\":270}},{\"id\":5,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10101014\\n01010101\\n14101510\\n01010101\\n10101014\\n01012101\\n10101414\\n\",\"stdout\":\"D6B4\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":370,\"y\":510}},{\"id\":7,\"changes\":{\"value\":\"king_red\"}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10101014\\n01010101\\n14101510\\n01010101\\n10101014\\n01010101\\n10131414\\n\",\"stdout\":\"E7D8\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":23,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":450}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10101014\\n01010101\\n14101510\\n01010101\\n10101014\\n01014101\\n10131014\\n\",\"stdout\":\"F8E7\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":490,\"y\":390}},{\"id\":23,\"changes\":{\"visible\":false}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10101014\\n01010101\\n14101510\\n01010101\\n10101314\\n01010101\\n10101014\\n\",\"stdout\":\"D8F6\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":16,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":90}},{\"id\":16,\"changes\":{\"value\":\"king_white\"}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015151\\n10101010\\n01010101\\n14101510\\n01010101\\n10101314\\n01010101\\n10101014\\n\",\"stdout\":\"H2G1\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":330}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015151\\n10101010\\n01010101\\n14101510\\n01010131\\n10101014\\n01010101\\n10101014\\n\",\"stdout\":\"F6G5\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":16,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":610,\"y\":150}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015101\\n10101015\\n01010101\\n14101510\\n01010131\\n10101014\\n01010101\\n10101014\\n\",\"stdout\":\"G1H2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":430,\"y\":210}},{\"id\":13,\"changes\":{\"visible\":false}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015101\\n10101015\\n01013101\\n14101010\\n01010101\\n10101014\\n01010101\\n10101014\\n\",\"stdout\":\"G5E3\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":16,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":550,\"y\":90}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01015151\\n10101010\\n01013101\\n14101010\\n01010101\\n10101014\\n01010101\\n10101014\\n\",\"stdout\":\"H2G1\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":7,\"changes\":{\"start\":0.0,\"end\":0.39,\"x\":370,\"y\":150}}],\"currentPlayer\":1,\"nextPlayer\":2,\"stdin\":\"01015151\\n10131010\\n01010101\\n14101010\\n01010101\\n10101014\\n01010101\\n10101014\\n\",\"stdout\":\"E3D2\"},{\"timescale\":1.0,\"turnChanges\":[{\"id\":15,\"changes\":{\"action\":\"jump\",\"start\":0.0,\"end\":0.39,\"x\":310,\"y\":210}},{\"id\":7,\"changes\":{\"visible\":false}}],\"currentPlayer\":2,\"nextPlayer\":1,\"stdin\":\"01010151\\n10101010\\n01510101\\n14101010\\n01010101\\n10101014\\n01010101\\n10101014\\n\",\"stdout\":\"E1C3\"}]";
+//turns = JSON.parse(turns);
+//putMatch(gameInit, turns);
