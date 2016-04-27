@@ -1,0 +1,29 @@
+﻿header {
+	background-color: #0000cc;
+	text-align: center; position : fixed;
+	width: 100%;
+	top: 0;
+	position: fixed;
+}
+
+footer {
+	bottom: 0;
+	position: fixed;
+	width: 100%;
+	height: 34px;
+}
+
+header h1 {
+	color: white;
+	margin: 0;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+footer {
+	text-align: center;
+}
+
+header nav,footer {
+	background-color: #e0ebeb;
+}

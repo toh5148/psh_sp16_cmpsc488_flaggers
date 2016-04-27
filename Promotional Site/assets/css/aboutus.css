@@ -1,17 +1,10 @@
-﻿body {
-    margin:0;
-}
-
-#container {
-    margin: 0 auto;
-    width: 960px;
-}
-
+﻿
 .studentName {
     font-weight: bold;
-    font-size: 24px;
+    font-size: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
+    color:#23527E;
 }
 
 .div_studentAbout {
@@ -20,6 +13,18 @@
 }
 
 .studentInfo {
-    font-size: 16px;
+    font-size: 18px;
     padding-left:20px;
+}
+
+.linkedInInfo {
+    font-weight: bold;
+}
+
+#aboutUsHeader {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color:#23527E;
 }

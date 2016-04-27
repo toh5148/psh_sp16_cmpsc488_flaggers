@@ -1,9 +1,16 @@
-﻿body {
-    margin:0;
+﻿.document {
+    margin-left:20px;
+    margin-top:5px;
+    width:50%;
+    font-size: 18px;
+    text-decoration: none;
+    display:block;
 }
 
-#container {
-    margin: 0 auto;
-    width: 960px;
+.sectionHeader {
+    margin-left:10px;
+    font-weight: bold;
+    font-size: 20px;
+    margin-top: 10px;
+    color:#23527E;
 }
-

@@ -1,4 +1,6 @@
-﻿function retrieveMatch() {
+﻿var useTestGame = true;
+
+function retrieveMatch() {
     PLAYBACK_MODE = true;
     var matchID = getMatchID();
 
@@ -10,8 +12,12 @@
         sendError(10, "");
     }
     else {
-        setInput();
-        //getMatch(matchID);
+        if (useTestGame) {
+            setInput();
+        }
+        else {
+            getMatch(matchID);
+        }
     }
 }
 

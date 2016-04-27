@@ -1,8 +1,14 @@
-﻿body {
-    margin:0;
+﻿
+.trymetext {
+    margin-left:20px;
+    font-size: 18px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    color:#23527E;
 }
 
-#container {
-    margin: 0 auto;
-    width: 960px;
+.trymelink {
+    font-size: 18px;
+    padding-top: 20px;
+    color:#23527E;
 }

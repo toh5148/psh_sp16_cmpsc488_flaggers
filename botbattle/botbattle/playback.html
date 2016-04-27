@@ -23,13 +23,18 @@
 
     <!--CSS IMPORTS-->
     <link href="/assets/css/playback.css" type="text/css" rel="stylesheet" />
+    <link href="/assets/css/main.css" type="text/css" rel="stylesheet" />
     <link href="/assets/css/statusbar.css" type="text/css" rel="stylesheet" />
     
 </head>
 <body onload="retrieveMatch()">
+    <header>
+        <h1>Bot!Battle!</h1>
+    </header>
+
     <div id="div_container">
         <div id="div_gameHolder">
-            <div id="div_gameCanvas" />
+            <div id="div_gameCanvas"> </div>
         </div>
         <div id="div_controlsHolder">
             <div id="div_controlsBar">
@@ -42,8 +47,6 @@
 
                 <input id="sldr_Speed" type="range" min=".25" max="2" step=".25" value="1" onchange="changePlaybackSpeed()" />
             </div>
-            <br />
-            <div id="div_status">Status: Paused</div>
         </div>
 
         <hr />
@@ -59,6 +62,12 @@
             </table>
         </div>
     </div>
+    
+    <footer>
+        <nav>
+            <a href="#">About Bot!Battle!</a> | <a href="#">Contact us</a>
+        </nav>
+    </footer>
 </body>
 
 </html>
