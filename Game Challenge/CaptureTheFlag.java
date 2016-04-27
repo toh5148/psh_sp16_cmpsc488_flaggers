@@ -85,6 +85,7 @@ public class CaptureTheFlag extends Game {
 		entity.flipped = false;
 		entity.rotation = 0.0;
 		entity.args = new ArrayList<String>();
+		entity.args.add("value:Game Starting...");
 		entity.args.add("font:Times New Roman");
 		entity.args.add("wordWrap:true");
 		entity.args.add("strokeThickness:2em");
@@ -418,7 +419,6 @@ public class CaptureTheFlag extends Game {
 		changes.get(changenum).id = 1;
 		changes.get(changenum).actions = new ArrayList<Action>();
 		changes.get(changenum).actions.add(new Action());
-		changes.get(changenum).actions.get(0).args.add("action:walk");
 		changes.get(changenum).actions.get(0).args.add("start:0.0");
 		changes.get(changenum).actions.get(0).args.add("end:1.0");
 		changes.get(changenum).actions.get(0).args.add("value:" + move);
@@ -832,7 +832,6 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).id = 1;
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
-				changes.get(changenum).actions.get(0).args.add("action:walk");
 				changes.get(changenum).actions.get(0).args.add("start:0.0");
 				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changes.get(changenum).actions.get(0).args.add("value:" + "Player 1 Wins");
@@ -843,7 +842,6 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).id = 1;
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
-				changes.get(changenum).actions.get(0).args.add("action:walk");
 				changes.get(changenum).actions.get(0).args.add("start:0.0");
 				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changes.get(changenum).actions.get(0).args.add("value:" + "Player 2 Wins");
