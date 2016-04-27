@@ -19,12 +19,13 @@ function beginPageLoad() {
     else {
         //Passed all error checks
         //Begin Testing Mode Initilization
-        initTestingArena1(cid);
+        initTestingArena(cid);
     }
 }
 
 function initTestingArena(cid) {
     //Write first pending turn request
+    setLoadingDisplay(true);
     writeFirstTurnRequest(cid);
     //Get the first turn data...
     //When this function is finished, it will call handleTestTurns with the true flag set
@@ -110,6 +111,7 @@ function writeTurnRequest(cid) {
 }
 
 function handleTestTurns(init, turnData, first) {
+    setLoadingDisplay(false);
     if (first) {
         //If it's the first turn, just set the initMessage
         //turnData will be null in this condition
@@ -144,8 +146,10 @@ function matchRequestSubmitted(first) {
 function getNextPlayer() {
     //This function should check "nextPlayer" field of the current turn in the turn data
     //If no turn data, current turn is player 1
-    var player = turns[turns.length - 1].nextPlayer;
-
+    var player = 1;
+    if (turns[turns.length-1] != undefined) {
+        var player = turns[turns.length - 1].nextPlayer;
+    }
     return player;
 }
 

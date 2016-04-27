@@ -1,4 +1,4 @@
-﻿var useTestGame = true;
+﻿var useTestGame = false;
 
 function retrieveMatch() {
     PLAYBACK_MODE = true;

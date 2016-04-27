@@ -584,5 +584,4 @@ function simulateNextTurn(turnNumber1) {
     else if (turnNumber1 == 2) {
         handleTestTurns(init, test3, false);
     }
-    console.log('tom you fucked up');
 }

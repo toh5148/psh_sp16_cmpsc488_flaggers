@@ -1,6 +1,15 @@
 ﻿
-#div_videoHolder {
+.holder {
     width:800px;
     margin:0 auto;
     margin-top: 20px;
+}
+
+.document {
+    margin-left:20px;
+    margin-top:5px;
+    width:40%;
+    font-size: 18px;
+    text-decoration: none;
+    display:block;
 }

@@ -1,7 +1,7 @@
 ﻿.document {
     margin-left:20px;
     margin-top:5px;
-    width:50%;
+    width:60%;
     font-size: 18px;
     text-decoration: none;
     display:block;
@@ -12,5 +12,12 @@
     font-weight: bold;
     font-size: 20px;
     margin-top: 10px;
+    color:#23527E;
+}
+
+#div_descriptions {
+    margin-left: 20px;
+    font-size: 18px;
+    text-decoration: none;
     color:#23527E;
 }

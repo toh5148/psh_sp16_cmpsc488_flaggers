@@ -24,7 +24,6 @@
     <script type="text/javascript" src="assets/js/TestingArena/BotUploader.js"></script>
     <script type="text/javascript" src="assets/js/TestingArena/CompilerErrors.js"></script>
     <script type="text/javascript" src="assets/js/TestingArena/BotLanguageFunctions.js"></script>
-    <script type="text/javascript" src="assets/js/TestingArena/TestingArenaInitializer.js"></script>
     <script type="text/javascript" src="assets/js/TestingArena/TestingArenaTestData.js"></script>
 
     <!--CSS IMPORTS-->
@@ -39,7 +38,6 @@
 
     <div id="div_container">
         <div id="div_mainHolder">
-            <div id="loading" style="display:none;">Loading...Please be patient</div>
             <div id="tabs_player1" class="tab_select" onclick="tab_click(this)">Player 1</div>
             <div id="tabs_player2" class="tab_noselect" onclick="tab_click(this)">Player 2</div>
             <div id="tabs_gamedisplay" class="tab_noselect" onclick="tab_click(this)">Game Display</div>
@@ -124,11 +122,12 @@
 
             </div>
             <div id="div_GameDisplayTab" class="main_tab_hidden">
-                <button id="btn_undoTurn" onclick="simulateNextTurn(-1)">test0</button>
+                <!--<button id="btn_undoTurn" onclick="simulateNextTurn(-1)">test0</button>
                 <button id="btn_undoTurn" onclick="simulateNextTurn(0)">test1</button>
                 <button id="btn_undoTurn" onclick="simulateNextTurn(1)">test2</button>
-                <button id="btn_undoTurn" onclick="simulateNextTurn(2)">test3</button>
+                <button id="btn_undoTurn" onclick="simulateNextTurn(2)">test3</button>--> <!--THESE ARE USED FOR TESTING TEST ARENA-->
                 <div id="div_gameCanvas"></div>
+                <div id="loading" style="display:none;">Loading...Please be patient</div>
 
                 <div id="div_GameDisplayButtons">
                     <br />
