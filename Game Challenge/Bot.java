@@ -5,7 +5,8 @@ public class Bot {
 		Scanner sc = new Scanner(System.in);
 		String input = sc.nextLine();
 		input = sc.nextLine();
-		
+		sc.close();
+
 		String[] info = input.split(";");
 		int numStudents = Integer.parseInt(info[0]);
 		int numSeniors = Integer.parseInt(info[1]);
@@ -28,7 +29,8 @@ public class Bot {
         //and will attempt to free any students it can to reach a comfortable
         //50 students to send.
         else returnString = "free";
-		System.out.print(returnString);
+		
+		System.out.println(returnString);
 		
 		
 	}
