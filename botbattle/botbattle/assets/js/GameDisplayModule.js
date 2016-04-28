@@ -269,7 +269,7 @@ function setNewTestingArenaTurn() {
     startGame();
     spawnEnts();
     // Set turn
-    restoreGameState(turns.length-1);
+    restoreGameState(turns.length);
 }
 
 function Entity(e,ft) {

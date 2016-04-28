@@ -209,7 +209,7 @@ function getTestTurn(challengeID, firstTurn) {
             var json = JSON.parse(response);           
             var init_message = json[0];
             var turns = json[1];
-           
+
             handleTestTurns(init_message, turns, firstTurn);
         }
     };

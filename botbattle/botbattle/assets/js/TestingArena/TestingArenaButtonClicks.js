@@ -62,7 +62,7 @@ function Player1_BotTypeClick(ele) {
             break;
         case "PreloadedBot":
             Player_1_Bot_Type = USER_STRING;
-            Player_1_Bot_ID = Default_Bot_ID;
+            Player_1_Bot_ID = DEFAULT_BOT_ID;
             break;
     }
 }
@@ -94,7 +94,7 @@ function Player2_BotTypeClick(ele) {
             break;
         case "PreloadedBot":
             Player_2_Bot_Type = USER_STRING;
-            Player_2_Bot_ID = Default_Bot_ID;
+            Player_2_Bot_ID = DEFAULT_BOT_ID;
             break;
     }
 }
