@@ -116,3 +116,10 @@
     padding-top: 10px;
     background: url('../images/spinner.gif') no-repeat;
 }
+
+#div_currentPlayer {
+    margin: 0 auto;
+    width: 200px;
+    font-weight: bold;
+    font-size: 24px;
+}

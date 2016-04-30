@@ -32,6 +32,7 @@ function initTestingArena(cid) {
 }
 
 function initTestingArena1(cid) {
+    //This is used to simulate testing 
     simulateNextTurn(-1);
 }
 
@@ -118,12 +119,14 @@ function handleTestTurns(init, turnData, first) {
         gameInitializer = init;
         turns = [];
         create();
+        setCurrentPlayerText(getNextPlayer());
     }
     else {
         //It's not the first turn, so set both turnData and first
         turns = turnData;
         gameInitializer = init;
         setNewTestingArenaTurn();
+        setCurrentPlayerText(getNextPlayer());
     }
 }
 
@@ -135,6 +138,7 @@ function doNextTurn() {
 function undoTestTurn() {
     restoreGameState(turn - 1);
     turns.pop();
+    setCurrentPlayerText(getNextPlayer());
     clearBots();
 }
 
@@ -183,11 +187,16 @@ function setLoadingDisplay(visible) {
     }
 }
 
-function updateCurrentBot() {
-
-}
-
 function clearBots() {
     Player_1_Bot_Ready = false;
     Player_2_Bot_Ready = false;
+}
+
+function setCurrentPlayerText(playerNum) {
+    if (playerNum == 1) {
+        document.getElementById('div_currentPlayer').innerHTML = "Current Player : 1"
+    }
+    else if (playerNum == 2) {
+        document.getElementById('div_currentPlayer').innerHTML = "Current Player : 2"
+    }
 }
