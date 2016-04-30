@@ -1,7 +1,4 @@
-﻿var nextPlayer = 1;
-var tempCounter = 1; //TODO REMOVE
-
-
+﻿
 //These are used for keeping track of language and templates
 var languageNames = [];
 var languageIDs = [];
@@ -168,13 +165,13 @@ function getGDMTurn() {
 }
 
 function attemptUpload(playerNum) {
-    if (nextPlayer == playerNum) {
+    if (playerNum == getNextPlayer()) {
         upload(playerNum);
     }
     else {
         //Attempting to upload a bot for playerNum...but it isn't playerNum's turn so bot would overwrite
         //So throw alert and don't upload
-        alert('Woops! You are attempting to upload a bot for player ' + playerNum + ', but it is currently player ' + nextPlayer + '\'s turn. Upload was aborted');
+        alert('Woops! You are attempting to upload a bot for player ' + playerNum + ', but it is currently player ' + getNextPlayer() + '\'s turn. Upload was aborted');
     }
 }
 
