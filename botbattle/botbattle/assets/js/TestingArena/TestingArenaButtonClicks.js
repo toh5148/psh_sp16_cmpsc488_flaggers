@@ -41,19 +41,19 @@ function Player1_BotTypeClick(ele) {
     document.getElementById("div_editorHolder1").style.display = "none";
     document.getElementById("file_p1Upload").style.display = "none";
     document.getElementById("div_p1PublicBot").style.display = "none";
-    document.getElementById("btn_P1Save").style.display = "none";
+    //document.getElementById("btn_P1Save").style.display = "none";
 
     switch (value) {
         case "UploadFile":
             document.getElementById("file_p1Upload").style.display = "block";
-            document.getElementById("btn_P1Save").style.display = "block";
+            //document.getElementById("btn_P1Save").style.display = "block";
             Player_1_Bot_Type = TEST_ARENA_STRING;
             break;
         case "EditCode":
             document.getElementById("div_editorHolder1").style.display = "inline-block";
             var editor = ace.edit("div_editorP1");
             editor.resize();
-            document.getElementById("btn_P1Save").style.display = "block";
+            //document.getElementById("btn_P1Save").style.display = "block";
             Player_1_Bot_Type = TEST_ARENA_STRING;
             break;
         case "PublicBot":
@@ -73,19 +73,19 @@ function Player2_BotTypeClick(ele) {
     document.getElementById("div_editorHolder2").style.display = "none";
     document.getElementById("file_p2Upload").style.display = "none";
     document.getElementById("div_p2PublicBot").style.display = "none";
-    document.getElementById("btn_P2Save").style.display = "none";
+    //document.getElementById("btn_P2Save").style.display = "none";
 
     switch (value) {
         case "UploadFile":
             document.getElementById("file_p2Upload").style.display = "block";
-            document.getElementById("btn_P2Save").style.display = "block";
+            //document.getElementById("btn_P2Save").style.display = "block";
             Player_2_Bot_Type = TEST_ARENA_STRING;
             break;
         case "EditCode":
             document.getElementById("div_editorHolder2").style.display = "inline-block";
             var editor = ace.edit("div_editorP2");
             editor.resize();
-            document.getElementById("btn_P2Save").style.display = "block";
+            //document.getElementById("btn_P2Save").style.display = "block";
             Player_2_Bot_Type = TEST_ARENA_STRING;
             break;
         case "PublicBot":
