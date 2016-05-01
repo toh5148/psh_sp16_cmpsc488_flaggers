@@ -23,7 +23,7 @@ function generateRow(num, turn) {
         stdErr = arrToString(turn.stderr);
     else
         stdErr = '';
-    return newRow(num, stdIn, stdOut, stdErr);
+    return newRow(num-1, stdIn, stdOut, stdErr);
 }
 
 function arrToString(arr){

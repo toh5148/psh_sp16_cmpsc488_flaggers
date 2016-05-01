@@ -59,7 +59,7 @@ function getMatch(matchID) {
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -73,7 +73,6 @@ function getMatch(matchID) {
                 setTimeout(function () { getMatch(matchID); }, timeout_playback_match);
             } else {                            // Polling has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
-                alert('The database encountered an error while trying to get the match. Please try again later.');
             }
         } else if (response == 'null') {        // Match does not exist
             timeout_counter = 0;
@@ -137,7 +136,7 @@ function putTurnRequest(challengeID, botType, languageID, botID, botVersion, pla
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -182,7 +181,7 @@ function getTestTurn(challengeID, firstTurn) {
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -196,13 +195,10 @@ function getTestTurn(challengeID, firstTurn) {
                 setTimeout(function () { getTestTurn(challengeID, firstTurn); }, timeout_test_turn);
             } else {                            // Polling has failed to many times, so there is a problem with the database  
                 timeout_counter = 0;
-                alert('The database encountered an error while trying to get the next ' +
+                console.log('The database encountered an error while trying to get the next ' +
                     'testing turn. Please try again later.');
             }
-        } else if (response == 'null') {        // Match does not exist
-            timeout_counter = 0;
-            alert('The specified match with challenge_id:' + challengeID + ' does not exist.');
-        } else if (response == 'pending' || response == 'displayed') { // Match is not ready for playback, poll the database until it is ready for playback
+        } else if (response == 'pending' || response == 'displayed' || response == 'null') { // Match is not ready for playback, poll the database until it is ready for playback
             setTimeout(function () { getTestTurn(challengeID, firstTurn); }, timeout_test_turn);
         } else {
             timeout_counter = 0;
@@ -236,7 +232,7 @@ function getLanguages() {
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -284,7 +280,7 @@ function getTemplates(challengeID) {
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -303,11 +299,12 @@ function getTemplates(challengeID) {
             }
         } else if (response == 'null') {        // There are no templates for this challenge
             timeout_counter = 0;
-            alert('No source code templates found for the given challenge.');
+            console.log('No source code templates found for the given challenge.');
         } else {
             timeout_counter = 0;
-            var json = JSON.parse(response);
+            var json = response;
             setTemplateVariables(json);
+            initTestingArena(challengeID);
         }
     };
 
@@ -335,7 +332,7 @@ function getCompilerErrors(challengeID) {
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -394,7 +391,7 @@ function getUserBot(playerNum, botID) {
     // Create the CORS request to the server
     var xhr = createCORSRequest('GET', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -402,7 +399,6 @@ function getUserBot(playerNum, botID) {
     xhr.onload = function () {
         var response = xhr.responseText;
         var default_version;
-        console.log('response: ' + response);
         if (response == 'error') {                          // Server had an error
             if (timeout_counter_user_bot < error_limit) {   // Poll the database again
                 timeout_counter_user_bot++;
@@ -424,6 +420,51 @@ function getUserBot(playerNum, botID) {
             handleUserBotResponse(playerNum, default_version);
         }
     }
+
+    xhr.onerror = function () {
+        console.error('Woops, there was an error making the request.');
+    };
+
+    xhr.send();
+}
+
+function checkChallengeID(challengeID) {
+    var url = base_url + '/get_cid?cid=' + challengeID;
+
+    // Create the CORS request to the server
+    var xhr = createCORSRequest('GET', url);
+    if (!xhr) {
+        console.log('CORS not supported on the current browser');
+        return;
+    }
+
+    // Successfully got a response
+    xhr.onload = function () {
+        var response = xhr.responseText;
+
+        if (response == 'error') {              // Database encountered an error
+            if (timeout_counter < error_limit) {// Poll the database again
+                timeout_counter++;
+                setTimeout(function () { getTemplates(challengeID); }, timeout_templates);
+            } else {                            // Polling has failed to many times, so there is a problem with the database
+                timeout_counter = 0;
+                console.log('The database encountered an error while trying to get the templates'
+                    + ' for the challenge. Please try again later.');
+            }
+        } else if (response == 'false') {        // There are no templates for this challenge
+            timeout_counter = 0;
+            challengeExists = false;
+        } else if (response == 'true' ){
+            timeout_counter = 0;
+            challengeExists = true;
+        } else {
+            //Should be unreachable but just in case
+            timeout_counter = 0;
+            challengeExists = false;
+        }
+
+        challengeCheckReady();
+    };
 
     xhr.onerror = function () {
         console.error('Woops, there was an error making the request.');
@@ -457,7 +498,7 @@ function uploadCode(selectedCode, challengeID, languageID) {
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -467,14 +508,14 @@ function uploadCode(selectedCode, challengeID, languageID) {
 
         if (response == 'true') {
             timeout_counter = 0;
-            alert('Code uploaded successfully.');
+            console.log('Code uploaded successfully.');
         } else {
             if (timeout_counter < error_limit) {// Try to upload the code again
                 timeout_counter++;
                 setTimeout(function () { uploadCode(selectedCode, challengeID, languageID); }, timeout_upload_code);
             } else {                            // Upload has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
-                alert('The database encountered an error when trying to upload your source code. Please try again later.');
+                console.log('The database encountered an error when trying to upload your source code. Please try again later.');
             }
         }
     }
@@ -505,7 +546,7 @@ function saveTestingArenaBot(selectedCode, challengeID, languageID, botName, bot
     // Create the CORS request to the server
     var xhr = createCORSRequest('POST', url);
     if (!xhr) {
-        alert('CORS not supported on the current browser');
+        console.log('CORS not supported on the current browser');
         return;
     }
 
@@ -515,7 +556,7 @@ function saveTestingArenaBot(selectedCode, challengeID, languageID, botName, bot
 
         if (response == 'true') {
             timeout_counter = 0;
-            alert('Code saved successfully. The botID is ' + xhr.responseText);            
+            console.log('Code saved successfully. The botID is ' + xhr.responseText);
         } else {
             if (timeout_counter < error_limit) {// Try to upload the code again
                 timeout_counter++;
@@ -523,7 +564,7 @@ function saveTestingArenaBot(selectedCode, challengeID, languageID, botName, bot
                     timeout_save_testing_bot);
             } else {                            // Upload has failed to many times, so there is a problem with the database
                 timeout_counter = 0;
-                alert('The database encountered an error while trying to save your bot. Please try again later.');
+                console.log('The database encountered an error while trying to save your bot. Please try again later.');
             }
         }
     }

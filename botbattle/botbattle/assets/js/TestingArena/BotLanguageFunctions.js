@@ -26,20 +26,16 @@ function setTemplateVariables(templates) {
     var tempID;
 
     while (templatesLeft) {
-        tempSource = templates[i];
-        tempID = templates[i + 1];
+        tempSource = templates;
+        tempID = 1;
         
         for(var j = 0; j < languageIDs.length; j++) {
-            if(languageIDs[j] == tempID) {
+            if (languageIDs[j] == tempID) {
                 templatesCode[j] = tempSource;
             }
         }
 
-        i = i + 2;
-
-        if (templates[i] == undefined) {
-            templatesLeft = false;
-        }
+        templatesLeft = false;
     }
 
 

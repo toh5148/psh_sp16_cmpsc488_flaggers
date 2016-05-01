@@ -10,13 +10,14 @@
     <script src="//cdn.jsdelivr.net/ace/1.2.3/min/mode-java.js" type="text/javascript" charset="utf-8"></script>
 
     <!--GENERIC SCRIPTS-->
-    <script type="text/javascript" src="./assets/js/Sprites.js"></script>
-    <script type="text/javascript" src="./assets/js/SpecialActions.js"></script>
-    <script type="text/javascript" src="./assets/js/QueryStringFunctions.js"></script>
-    <script type="text/javascript" src="./assets/js/GameDisplayModule.js"></script>
-    <script type="text/javascript" src="./assets/js/Error.js"></script>
-    <script type="text/javascript" src="./assets/js/StatusTable.js"></script>
-    <script type="text/javascript" src="./assets/js/ServerInteractionFunctions.js"></script>
+    <script type="text/javascript" src="./assets/js/Display/Sprites.js"></script>
+    <script type="text/javascript" src="./assets/js/Display/SpecialActions.js"></script>
+    <script type="text/javascript" src="./assets/js/Display/StatusTable.js"></script>
+    <script type="text/javascript" src="./assets/js/Display/GameDisplayModule.js"></script>
+
+    <script type="text/javascript" src="./assets/js/Tasks/QueryStringFunctions.js"></script>
+    <script type="text/javascript" src="./assets/js/Tasks/Error.js"></script>
+    <script type="text/javascript" src="./assets/js/Tasks/ServerInteractionFunctions.js"></script>
 
     <!--TESTING ARENA SPECIFIC-->
     <script type="text/javascript" src="./assets/js/TestingArena/TestingArenaButtonClicks.js"></script>
@@ -24,7 +25,6 @@
     <script type="text/javascript" src="./assets/js/TestingArena/BotUploader.js"></script>
     <script type="text/javascript" src="./assets/js/TestingArena/CompilerErrors.js"></script>
     <script type="text/javascript" src="./assets/js/TestingArena/BotLanguageFunctions.js"></script>
-    <script type="text/javascript" src="./assets/js/TestingArena/TestingArenaTestData.js"></script>
 
     <!--CSS IMPORTS-->
     <link href="./assets/css/testingarena.css" type="text/css" rel="stylesheet" />
@@ -77,8 +77,6 @@
                         <select id="ddl_languages1" onchange="langChange(1)"></select>
                         <input id="chk_changeTemplates1" type="checkbox" checked="checked"/> Change Templates
                     </div>
-
-                    <div id="div_compilerErrors1" class="compilerErrors">Compilers Errors will be here.</div> 
                 </div>
             </div>
 
@@ -116,8 +114,6 @@
                         <select id="ddl_languages2" onchange="langChange(2)"></select>
                         <input id="chk_changeTemplates2" type="checkbox" checked="checked" /> Change Templates
                     </div>
-
-                    <div id="div_compilerErrors2" class="compilerErrors">Compilers Errors will be here.</div>
                 </div>
 
             </div>

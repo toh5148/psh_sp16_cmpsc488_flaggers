@@ -133,8 +133,10 @@ function uploadCodeChoice(playerNum) {
 
 function publicBotChoice(playerNum) {
     if (playerNum == 1) {
+        Player_1_Bot_ID = parseInt(document.getElementById('name_p1PublicBot').value);
         getUserBot(playerNum, Player_1_Bot_ID);
     } else if (playerNum == 2) {
+        Player_2_Bot_ID = parseInt(document.getElementById('name_p2PublicBot').value);
         getUserBot(playerNum, Player_2_Bot_ID);
     }
 }

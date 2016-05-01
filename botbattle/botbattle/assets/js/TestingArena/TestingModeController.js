@@ -1,26 +1,29 @@
-﻿
+﻿var challengeExists;
+
 //These are used for keeping track of language and templates
 var languageNames = [];
 var languageIDs = [];
 var templatesCode = [];
 
 function beginPageLoad() {
+    challengeExists = false;
     setLoadingDisplay();
     var cid = getChallengeID(); //from QueryStringFunctions.js
-    getLanguages(); // getTemplates(cid) is called after languages are returned
+    checkChallengeID(cid);
+}
 
-    if (cid == -1) {
-        // No challenge specified
-        sendError(20, "");
+function challengeCheckReady() {
+    if (challengeExists) {
+        getLanguages(); // getTemplates(cid) is called after languages are returned
     }
     else {
-        //Passed all error checks
-        //Begin Testing Mode Initilization
-        initTestingArena(cid);
+        alert('This challenge does not exist. Please try another.')
     }
 }
 
 function initTestingArena(cid) {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
+    //This is called at the conclusion of getLanguages();
     //Write first pending turn request
     setLoadingDisplay(true);
     writeFirstTurnRequest(cid);
@@ -34,6 +37,7 @@ function initTestingArena1(cid) {
 }
 
 function writeFirstTurnRequest(cid) {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     var challengeID;
     var botType;
     var langID;
@@ -56,6 +60,7 @@ function writeFirstTurnRequest(cid) {
 }
 
 function writeTurnRequest(cid) {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     var challengeID = cid;
     var botType;
     var langID;
@@ -109,6 +114,7 @@ function writeTurnRequest(cid) {
 }
 
 function handleTestTurns(init, turnData, first) {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     setLoadingDisplay(false);
     if (first) {
         //If it's the first turn, just set the initMessage
@@ -128,11 +134,13 @@ function handleTestTurns(init, turnData, first) {
 }
 
 function doNextTurn() {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     writeTurnRequest(getChallengeID()); //Upon completion of writing turn request, matchRequestSubmitted() is called
     clearBots();
 }
 
 function undoTestTurn() {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     restoreGameState(turn - 1);
     turns.pop();
     setCurrentPlayerText(getNextPlayer());
@@ -140,17 +148,25 @@ function undoTestTurn() {
 }
 
 function matchRequestSubmitted(first) {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     //Since the turn request was successfully submitted we can make the request for the turn data
     getTestTurn(getChallengeID(), first);
 }
 
 function getNextPlayer() {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     //This function should check "nextPlayer" field of the current turn in the turn data
     //If no turn data, current turn is player 1
     var player = 1;
+
+    if (turns == undefined) {
+        return player;
+    }
+
     if (turns[turns.length-1] != undefined) {
         var player = turns[turns.length - 1].nextPlayer;
     }
+
     return player;
 }
 
@@ -165,6 +181,7 @@ function getGDMTurn() {
 }
 
 function attemptUpload(playerNum) {
+    if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     if (playerNum == getNextPlayer()) {
         upload(playerNum);
     }

@@ -4,7 +4,7 @@
 
 .IDE {
     display:inline-block;
-    width: 550px;
+    width: 750px;
     height: 700px;
 }
 
@@ -24,14 +24,6 @@
     vertical-align:top;
 }
 
-#div_inputType {
-}
-
-#div_GameDisplayTab {
-
-
-}
-
 #div_gameCanvas {
     width: 825px;
     margin:0 auto;
@@ -44,10 +36,6 @@
 
 .headerText {
     font-weight:bold;
-}
-
-.div_selectBot {
-
 }
 
 .tab_select {
@@ -87,7 +75,7 @@
 .main_left {
     display:inline-block;
     vertical-align:top;
-    width:500px;
+    width:300px;
 }
 
 #btn_undoTurn {

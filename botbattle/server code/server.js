@@ -127,6 +127,31 @@ function getMatch(matchID, callback) {
 
 
 ********************************************************************/
+/*
+    This function queries the database to make sure the challenge exists.
+
+    Arguments:
+        1) challengeID - The id of the challenge
+*/
+
+function checkChallengeID(challengeID, callback){
+    var retval;
+
+	db.query('SELECT challenge_id FROM challenges ' + 'WHERE challenge_id = ' + challengeID, function (err, rows) {
+        if (err) {			                // Error with the database
+            retval = 'error';
+            logMessage(err);
+        } else if (rows[0] == undefined) {  // challenge id does not exists           
+            retval = 'false';	
+            logMessage('ERROR: Challenge ID : ' + challengeID + ', does not exist');
+        } else {       	//challenge id does exist
+            retval = 'true'
+			logMessage('Challenge ID exists');
+        }
+        callback(retval);   // Send the result        
+    }); 
+}
+
 
 /*
     This function queries the database for all the data needed to display
@@ -135,7 +160,7 @@ function getMatch(matchID, callback) {
     testing arena match is 'READY' in the database.
 
     Arguments:
-        1) userID - The id of the user that is testing their bot.
+        1) uid - The id of the user that is testing their bot.
         2) challengeID - The id of the challenge the user is testing.
         3) callback(retval) - The callback method is called at the end of this function
                         and passes back the following information via retval:
@@ -147,45 +172,46 @@ function getMatch(matchID, callback) {
                             a json object that contains all of the information needed to
                             playback a testing arena match.
 */
-function getTestMatchTurn(userID, challengeID, callback){
+
+function getTestMatchTurn(uid, challengeID, callback){
     var retval;
 
 	// Column names: uid, challenge_id, last_turn_status, game_initialization_message, turns
 	db.query('SELECT game_initialization_message, turns, last_turn_status FROM test_arena_matches ' + 
-	'WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
+	'WHERE uid = ' + uid + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {			                // Error with the database
             retval = 'error';
             logMessage(err);
         } else if (rows[0] == undefined) {  // Match does not exists           
             retval = 'null';	
-            logMessage('ERROR: Test instance with user_id:' + userID + ' and challenge_id:' + challengeID + ' not found.');
+            logMessage('ERROR: Test instance with user_id:' + uid + ' and challenge_id:' + challengeID + ' not found.');
         } else {       	
             var match = rows[0];		      
             var status = match.last_turn_status.toUpperCase();
             
             if (status == 'PENDING') {          // Turn is not ready to be displayed
                 retval = 'pending';
-                logMessage('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                logMessage('ERROR: Test instance with user_id: ' + uid + ' and challenge_id:' + challengeID +
                     ' is not ready to be displayed.');               
             } else if (status == 'DISPLAYED') { // Turn has already been displayed
                 retval = 'displayed';
-                logMessage('ERROR: Test instance with user_id: ' + userID + ' and challenge_id:' + challengeID +
+                logMessage('ERROR: Test instance with user_id: ' + uid + ' and challenge_id:' + challengeID +
                     ' has already been displayed.');
             } else {
                 var turns = match.turns;
                 var init_message = match.game_initialization_message;
 
                 retval = JSON.parse('[' + init_message + ',' + turns + ']');
-                logMessage('Data for match with user_id:' + userID + ' and challenge_id:' + challengeID + ' sent to the client.');
+                logMessage('Data for match with user_id:' + uid + ' and challenge_id:' + challengeID + ' sent to the client.');
 
                 // Change the last_turn_status to DISPLAYED
                 // Column names: uid, challenge_id, last_turn_status, game_initialization_message, turns
-                db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + userID
+                db.query('UPDATE test_arena_matches SET last_turn_status = "DISPLAYED" WHERE uid = ' + uid
                     + ' AND challenge_id = ' + challengeID, function (err, rows) {
                         if (err) {
                             logMessage(err);
                         } else {
-                            logMessage('Set match with user_id:' + userID + ' and challenge_id:' + challengeID + ' to DISPLAYED in test_arena_matches.');
+                            logMessage('Set match with user_id:' + uid + ' and challenge_id:' + challengeID + ' to DISPLAYED in test_arena_matches.');
                         }
                     });
             }
@@ -199,7 +225,7 @@ function getTestMatchTurn(userID, challengeID, callback){
     to be evaluated.
 
     Arguments:
-        1) userID - The id of the user that is testing their bot.
+        1) uid - The id of the user that is testing their bot.
         2) challengeID - The id of the challenge the user is testing.
         3) botType - String version of the type of bot (e.g. TEST_ARENA, USER, etc.).
         4) languageID - The id of the language that the bot is written in.
@@ -212,18 +238,19 @@ function getTestMatchTurn(userID, challengeID, callback){
                         1) 'error' if the database encountered an error.
                         2) 'true' if the insertion was successfull.
 */
-function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botVersion, playerNum, lastTurnIndex, callback) {
+function uploadTurnRequest(uid, challengeID, botType, languageID, botID, botVersion, playerNum, lastTurnIndex, callback) {
     var retval;
 
+	
     // Column names: pending_turn_id, uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
-    db.query('SELECT uid FROM pending_test_arena_turns WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
+    db.query('SELECT uid FROM pending_test_arena_turns WHERE uid = ' + uid + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                      // Error with the database
             retval = 'error';
             logMessage(err);
         } else {
-            if (rows[0] == undefined) { // There is not a row for this challengeID and userID in the table, insert one
+            if (rows[0] == undefined) { // There is not a row for this challengeID and uid in the table, insert one
                 var turnToInsert = {
-                    uid: userID, challenge_id: challengeID, bot_type: botType, language_id: languageID,
+                    uid: uid, challenge_id: challengeID, bot_type: botType, language_id: languageID,
                     bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex
                 };
 
@@ -237,26 +264,34 @@ function uploadTurnRequest(userID, challengeID, botType, languageID, botID, botV
                         logMessage('Row inserted into the pending_test_arena_turns table.');
                     }
                 });
-            } else {                    // There is an entry for this challengeID and userID, update it
-                var turnToUpdate = {
-                    bot_type: botType, language_id: languageID,
-                    bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex
-                };
+            } else {                    // There is an entry for this challengeID and uid, update it
+                db.query('DELETE FROM pending_test_arena_turns WHERE uid = ' + uid + ' AND challenge_id = ' + challengeID, function (err, rows) {
+					if (err) {                      // Error with the database
+						retval = 'error';
+						logMessage(err);
+					}
+					else {
+						var turnToInsert = {
+							uid: uid, challenge_id: challengeID, bot_type: botType, language_id: languageID,
+							bot_id: botID, bot_version: botVersion, player: playerNum, last_turn_index: lastTurnIndex
+						};
 
-                // Column names: pending_turn_id, uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
-                db.query('UPDATE pending_test_arena_turns SET ?', turnToUpdate, function (err, rows) {
-                    if (err) {          // Error with the database
-                        retval = 'error';
-                        logMessage(err);
-                    } else {
-                        retval = 'true';
-                        logMessage('Row updated in pending_test_arena_turns table.');
-                    }
-                });
-            }
-        }
+						// Column names: pending_turn_id, uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
+						db.query('INSERT INTO pending_test_arena_turns SET ?', turnToInsert, function (err, rows) {
+							if (err) {          // Error with the database
+								retval = 'error';
+								logMessage(err);
+							} else {
+								retval = 'true';
+								logMessage('Row inserted into the pending_test_arena_turns table.');
+							}
+						});
+					}
+				});
+			}
         callback(retval);   // Send the result
-    });
+		}
+	});
 }
 
 /*
@@ -309,19 +344,19 @@ function getLanguages(callback) {
     and warnings.
 
     Arguments:
-        1) userID - The id of the user that is testing their bot.
+        1) uid - The id of the user that is testing their bot.
         2) challengeID - The id of the challenge that the user is currently testing.
         3) callback(retval) - The callback method is called at the end of this function
                         and passes back the following information via retval:
                         1) 'error' if the database encountered an error.
                         2) 'true' if the insertion was successfull.
 */
-function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
+function getCompilerErrorsAndWarnings(uid, challengeID, callback) {
     var retval;
 
     // Column names: uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, source_code 
     db.query('SELECT errors, warnings, error_messages, warning_messages FROM test_arena_bots WHERE uid='
-        + userID + ' AND challenge_id=' + challengeID, function (err, rows) {
+        + uid + ' AND challenge_id=' + challengeID, function (err, rows) {
             if (err) {  // Error with the database
                 retval = 'error';
                 logMessage(err);
@@ -340,7 +375,7 @@ function getCompilerErrorsAndWarnings(userID, challengeID, callback) {
                             '}';
 
                 retval = json;
-                logMessage('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + userID);
+                logMessage('Sent compiler error messages for challenge_id:' + challengeID + ' and user_id:' + uid);
             }
             callback(retval);   // Send the result
         });
@@ -369,24 +404,20 @@ function getTemplates(challengeID, callback) {
             logMessage(err);
         } else if (rows[0] == undefined) {  // No templates found
 			retVal = 'null';
-			logMessage('ERROR: No templates found for challenge_id:' + cid + '.');
+			logMessage('ERROR: No templates found for challenge_id:' + challengeID + '.');
         } else {
 			var rowsLeft = true;
 			var i = 0;
-			retVal = '[';
+			retVal = 'No Templates';
 			while (rowsLeft) {              // Construct json object with all the templates
-				retVal += '\"' + rows[i].source_code + '\",' + rows[i].language_id;
+				if(rows[i].language_id == 1) retVal = rows[i].source_code
+				
 				i++;
 				
 				if(rows[i] == undefined) {
 					rowsLeft = false;
 				}
-				else {
-					retVal += ',';
-				}
 			}
-			retVal += ']';
-			retVal = JSON.parse(retVal);
 			logMessage('Returned test arena templates list.');
         }
         callback(retVal);   // Send the result
@@ -432,7 +463,7 @@ function getUserBot(botID, callback) {
 
     Arguments:
         1) botSourceCode - String version of the source code to be uploaded to the database.
-        2) userID - The id of the user that is testing their bot.
+        2) uid - The id of the user that is testing their bot.
         3) challengeID - The id of the challenge that the user is currently testing.
         4) languageID - The id of the language that the source code is written in.
         5) callback(retval) - The callback method is called at the end of this function
@@ -440,18 +471,17 @@ function getUserBot(botID, callback) {
                         1) 'error' if the database encountered an error.
                         2) 'true' if the insertion was successfull.
 */
-function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
+function uploadCode(botSourceCode, uid, challengeID, languageID, callback) {
     var retval;
 
     // Column names: uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, source_code
-    db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + userID + ' AND challenge_id = ' + challengeID, function (err, rows) {
+    db.query('SELECT uid FROM test_arena_bots WHERE uid = ' + uid + ' AND challenge_id = ' + challengeID, function (err, rows) {
         if (err) {                      // Error with the database
             retval = 'error';
             logMessage(err);
         } else {
             if (rows[0] == undefined) { // Code for this challenge does not exist in the db, insert new row
-                var time = Date.now();
-                var codeToUpload = { uid: userID, challenge_id: challengeID, language_id: languageID, needs_compiled: time, source_code: botSourceCode, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+                var codeToUpload = { uid: uid, challenge_id: challengeID, language_id: languageID, source_code: botSourceCode, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
 
                 // Column names: uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, source_code
                 db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
@@ -466,20 +496,26 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
                 });
             }
             else {                      // Code for this challenge exists in the db, update the row
-                var time = Date.now();
-                var codeToUpdate = { language_id: languageID, source_code: botSourceCode, needs_compiled: time, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
 
-                // Column names: uid, challenge_id, language_id, needs_compiled, errors, warnings, error_messages, warning_messages, source_code
-                db.query('UPDATE test_arena_bots SET ?', codeToUpdate, function (err, rows) {
-                    if (err) {          // Error with the database
-                        retval = 'error';
-                        logMessage(err);
-                    } else {
-                        retval = 'true';
-                        logMessage('Row updated in test_arena_bots.');
-                    }
-                    callback(retval);   // Send the result
-                });
+				db.query('DELETE FROM test_arena_bots WHERE uid = ' + uid + ' AND challenge_id = ' + challengeID, function (err, rows) {
+					if (err) {                      // Error with the database
+						retval = 'error';
+						logMessage(err);
+					}
+					else {
+						var codeToUpload = { uid: uid, challenge_id: challengeID, language_id: languageID, source_code: botSourceCode, errors: 0, error_messages: 'none', warnings: 0, warning_messages: 'none' };
+						// Column names: pending_turn_id, uid, challenge_id, bot_type, language_id, bot_id, bot_version, player, last_turn_index
+						db.query('INSERT INTO test_arena_bots SET ?', codeToUpload, function (err, rows) {
+							if (err) {          // Error with the database
+								retval = 'error';
+								logMessage(err);
+							} else {
+								retval = 'true';
+								logMessage('Row inserted into the test_arena_bots.');
+							}
+						});
+					}
+				});
             }
         }
     });
@@ -487,12 +523,12 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
 
 /*
     This function saves a users testing bot in the database. First, this function
-    inserts a new bot into the user_bots table with the userID and challengeID and
+    inserts a new bot into the user_bots table with the uid and challengeID and
     saves the bot_id of the newly inserted bot. Then, the function uses the bot_id
     to insert a new row into the user_bots_versions table.
 
     Arguments:        
-        1) userID - The id of the user that is testing their bot.
+        1) uid - The id of the user that is testing their bot.
         2) challengeID - The id of the challenge that the user is currently testing.
         3) languageID - The id of the language that the source code is written in.
         4) sourceCode - String version of the source code to be uploaded to the database.
@@ -503,9 +539,9 @@ function uploadCode(botSourceCode, userID, challengeID, languageID, callback) {
                         1) 'error' if the database encountered an error.
                         2) 'true' if the insertion was successfull.
 */
-function saveTestingBot(userID, challengeID, languageID, sourceCode, botName, botDescription, callback) {
+function saveTestingBot(uid, challengeID, languageID, sourceCode, botName, botDescription, callback) {
     var retval;
-    var botToInsert = { uid: userID, challenge_id: challengeID, default_version: 1, name: botName, description: botDescription };
+    var botToInsert = { uid: uid, challenge_id: challengeID, default_version: 1, name: botName, description: botDescription };
     
     // Column names: bot_id, uid, challenge_id, default_version, name, creation_date, description, public
     db.query('INSERT INTO user_bots SET ?', botToInsert, function (err, rows) {
@@ -635,6 +671,16 @@ app.get('/get_templates', function(req, res, next){
 	var challenge_id = req.query.cid;
 	
     getTemplates(challenge_id, function (data) {
+        res.header('Access-Control-Allow-Origin', base);
+        res.send(data);
+    });
+});
+
+// localhost:5050/get_cid?cid=1
+app.get('/get_cid', function(req, res, next){
+	var challenge_id = req.query.cid;
+	
+    checkChallengeID(challenge_id, function (data) {
         res.header('Access-Control-Allow-Origin', base);
         res.send(data);
     });

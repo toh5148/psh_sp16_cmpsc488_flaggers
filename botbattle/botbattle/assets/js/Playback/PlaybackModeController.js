@@ -1,29 +1,19 @@
-﻿var useTestGame = false;
-
-function retrieveMatch() {
+﻿function retrieveMatch() {
     PLAYBACK_MODE = true;
     var matchID = getMatchID();
 
     //Handle query string errors
     if (matchID == -1) {
-        /*No match id was provided in the query string
-          Redirect them to an error page with links and
-          possible causes of error */
+        /* No match id was provided in the query string */
         sendError(10, "");
     }
     else {
-        if (useTestGame) {
-            setInput();
-        }
-        else {
-            getMatch(matchID);
-        }
+        getMatch(matchID);
     }
 }
 
 function handleCommands(winner, initMessage, turnData) {
     gameInitializer = initMessage;
     turns = turnData;
-    console.log("Set database commands to GDM vars.");
     create();
 }
