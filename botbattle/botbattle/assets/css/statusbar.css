@@ -35,6 +35,8 @@
 #tbl_status {
     width:1000px;
     margin:0 auto;
+    position : relative; 
+    bottom:0;
 }
 
 #status_rowHeader {

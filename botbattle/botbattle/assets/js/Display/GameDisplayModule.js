@@ -266,6 +266,7 @@ function setNewTestingArenaTurn() {
     // Call when receiving a new set of turns
     for(var i=0;i<entityList.length;i++)
         entityList[i].obj.destroy();
+    resetRows(); //In status table
     startGame();
     spawnEnts();
     // Set turn

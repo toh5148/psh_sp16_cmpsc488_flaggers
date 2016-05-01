@@ -1,5 +1,6 @@
 ﻿body {
     margin-top: 100px;
+    margin-bottom: 100px;
 }
 
 .IDE {
@@ -107,7 +108,15 @@
 
 #div_currentPlayer {
     margin: 0 auto;
-    width: 250px;
+    width: 100%;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 18px;
+}
+
+.green {
+    color:chartreuse;
+}
+
+.red {
+    color:red;
 }

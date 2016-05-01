@@ -55,10 +55,15 @@ function updateStatusTable(turnNum) {
     for (var i = 0; i < turnNum+2; i++)
         tbl += rows[i];
     document.getElementById("tbl_status").innerHTML = tbl;
+    document.getElementById('div_statusHolder').scrollTop = document.getElementById('div_statusHolder').scrollHeight;
 }
 
 function addRow(turnNum, stdIn, stdOut, stdErr) {
     // Add a new row, mostly for testing purposes
     var cur = document.getElementById("tbl_status").innerHTML;
     document.getElementById("tbl_status").innerHTML = cur + newRow(turnNum, stdIn, stdOut, stdErr);
+}
+
+function resetRows() {
+    rows = [newRow('Turn', 'Standard Input', 'Standard Output', 'Standard Error')];
 }

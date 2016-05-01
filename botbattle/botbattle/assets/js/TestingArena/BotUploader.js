@@ -1,7 +1,7 @@
 ﻿//These are used to keep track of information for each player's bot
 var Player_1_Bot_ID, Player_2_Bot_ID; //Int Types
 var Player_1_Bot_Version, Player_2_Bot_Version; //Int Version Type
-var Player_1_Bot_Ready, Player_2_Bot_Ready; //Boolean types
+var Player_1_Bot_Ready = false, Player_2_Bot_Ready = false; //Boolean types
 var Player_1_Bot_Type, Player_2_Bot_Type; //String type -- equal to one of the constants set below
 
 var DEFAULT_BOT_ID;
@@ -122,13 +122,16 @@ function uploadCodeChoice(playerNum) {
         Player_1_Bot_ID = null;
         Player_1_Bot_Version = null;
         Player_1_Bot_Ready = true;
+        Player_2_Bot_Ready = false;
     }
     else if (playerNum == 2) {
         Player_2_Bot_Type = TEST_ARENA_STRING;
         Player_2_Bot_ID = null;
         Player_2_Bot_Version = null;
         Player_2_Bot_Ready = true;
+        Player_1_Bot_Ready = false;
     }
+    setCurrentPlayerText(getNextPlayer());
 }
 
 function publicBotChoice(playerNum) {
@@ -179,4 +182,5 @@ function handleUserBotResponse(playerNum, response) {
             Player_2_Bot_Ready = true;
         }
     }
+    setCurrentPlayerText(getNextPlayer());
 }

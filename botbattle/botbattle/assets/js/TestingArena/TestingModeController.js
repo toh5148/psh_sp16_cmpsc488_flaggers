@@ -7,6 +7,7 @@ var templatesCode = [];
 
 function beginPageLoad() {
     challengeExists = false;
+    setCurrentPlayerText(1);
     setLoadingDisplay();
     var cid = getChallengeID(); //from QueryStringFunctions.js
     checkChallengeID(cid);
@@ -136,7 +137,6 @@ function handleTestTurns(init, turnData, first) {
 function doNextTurn() {
     if (!challengeExists) return; //Allow nothing to happen (especially server interactions if challenge id isn't there
     writeTurnRequest(getChallengeID()); //Upon completion of writing turn request, matchRequestSubmitted() is called
-    clearBots();
 }
 
 function undoTestTurn() {
@@ -204,13 +204,20 @@ function setLoadingDisplay(visible) {
 function clearBots() {
     Player_1_Bot_Ready = false;
     Player_2_Bot_Ready = false;
+    setCurrentPlayerText(getNextPlayer());
 }
 
 function setCurrentPlayerText(playerNum) {
+    var p1, p2;
+    if (Player_1_Bot_Ready) p1 = "<span class='green'>Ready</span>";
+    else p1 = "<span class='red'>Not Ready</span>";
+    if (Player_2_Bot_Ready) p2 = "<span class='green'>Ready</span>";
+    else p2 = "<span class='red'>Not Ready</span>";
+
     if (playerNum == 1) {
-        document.getElementById('div_currentPlayer').innerHTML = "Current Player : 1"
+        document.getElementById('div_currentPlayer').innerHTML = "Current Player : 1&nbsp;&nbsp;|&nbsp;&nbsp;Player 1 Bot Status - " + p1 + "&nbsp;&nbsp;|&nbsp;&nbsp;Player 2 Bot Status - " + p2;
     }
     else if (playerNum == 2) {
-        document.getElementById('div_currentPlayer').innerHTML = "Current Player : 2"
+        document.getElementById('div_currentPlayer').innerHTML = "Current Player : 2&nbsp;&nbsp;|&nbsp;&nbsp;Player 1 Bot Status - " + p1 + "&nbsp;&nbsp;|&nbsp;&nbsp;Player 2 Bot Status - " + p2;
     }
 }
