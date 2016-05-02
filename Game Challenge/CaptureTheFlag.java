@@ -78,26 +78,25 @@ public class CaptureTheFlag extends Game {
 		entity.id = 1;
 		entity.type = "text";
 		entity.visible = true;
-		entity.initX =  400;
-		entity.initY = 50;
+		entity.initX =  325;
+		entity.initY = 550;
 		entity.width = 300;
 		entity.height = 50;
 		entity.flipped = false;
 		entity.rotation = 0.0;
 		entity.args = new ArrayList<String>();
 		entity.args.add("value:Game Starting...");
-		entity.args.add("font:Times New Roman");
+		entity.args.add("font:30pt Times New Roman");
 		entity.args.add("wordWrap:true");
 		entity.args.add("strokeThickness:2em");
 		entity.args.add("tabs:3");
-		entity.args.add("fontSize:10");
 		entities.add(entity);
 		
 		entity = new Entity();
 		entity.id = 2;
 		entity.type = "spriteChicken";
 		entity.visible = true;
-		entity.initX =  250;
+		entity.initX =  150;
 		entity.initY = 100;
 		entity.width = 50;
 		entity.height = 50;
@@ -110,7 +109,7 @@ public class CaptureTheFlag extends Game {
 		entity.id = 3;
 		entity.type = "spriteChicken";
 		entity.visible = true;
-		entity.initX =  250;
+		entity.initX =  150;
 		entity.initY = 350;
 		entity.width = 50;
 		entity.height = 50;
@@ -123,7 +122,7 @@ public class CaptureTheFlag extends Game {
 		entity.id = 4;
 		entity.type = "spriteRabbit";
 		entity.visible = true;
-		entity.initX =  550;
+		entity.initX =  650;
 		entity.initY = 350;
 		entity.width = 50;
 		entity.height = 50;
@@ -136,7 +135,7 @@ public class CaptureTheFlag extends Game {
 		entity.id = 5;
 		entity.type = "spriteRabbit";
 		entity.visible = true;
-		entity.initX =  550;
+		entity.initX =  650;
 		entity.initY = 100;
 		entity.width = 50;
 		entity.height = 50;
@@ -145,18 +144,54 @@ public class CaptureTheFlag extends Game {
 		entity.args = new ArrayList<String>();
 		entities.add(entity);
 		
+		entity = new Entity();
+		entity.id = 6;
+		entity.type = "text";
+		entity.visible = true;
+		entity.initX =  0;
+		entity.initY = 25;
+		entity.width = 100;
+		entity.height = 50;
+		entity.flipped = false;
+		entity.rotation = 0.0;
+		entity.args = new ArrayList<String>();
+		entity.args.add("value:Flags Captured- 0");
+		entity.args.add("font:16pt Times New Roman");
+		entity.args.add("wordWrap:true");
+		entity.args.add("strokeThickness:2em");
+		entity.args.add("tabs:3");
+		entities.add(entity);
+		
+		entity = new Entity();
+		entity.id = 7;
+		entity.type = "text";
+		entity.visible = true;
+		entity.initX =  625;
+		entity.initY = 25;
+		entity.width = 100;
+		entity.height = 50;
+		entity.flipped = false;
+		entity.rotation = 0.0;
+		entity.args = new ArrayList<String>();
+		entity.args.add("value:Flags Captured- 0");
+		entity.args.add("font:16pt Times New Roman");
+		entity.args.add("wordWrap:true");
+		entity.args.add("strokeThickness:2em");
+		entity.args.add("tabs:3");
+		entities.add(entity);
+		
 		// Map 3 asset names to their url paths
 		//assets.add("asset1:" + assetBasePath + "CaptureTheFlag/asset1.png");
 		//assets.add("asset2:" + assetBasePath + "CaptureTheFlag/asset2.png");
 		//assets.add("asset3:" + assetBasePath + "CaptureTheFlag/asset3.png");
 
 		// Uncomment to print JSON object prior to being returned
-		// JsonObject result = initializeJson("url/sample.jpg", 1.0, 1, entities).build();
+		//JsonObject result = initializeJson("url/sample.jpg", 1.0, 1, entities).build();
 		//System.out.println("Sample initial state JSON object:\n\n");
 		//System.out.println(result.toString());
 
 		return new GameState(inputForBot, gameState, initializeJson(
-			assetBasePath + "CaptureTheFlag/background.png", 1.0, 1, assets, entities));
+			assetBasePath + "CaptureTheFlag/background.png", 4.0, 1, assets, entities));
 	}
 
 	public int getCurrentPlayer() {
@@ -415,15 +450,6 @@ public class CaptureTheFlag extends Game {
 		// Add logic to update state based on valid move
 		// This is done in isValidMove mostly
 		
-		changes.add(new Change());
-		changes.get(changenum).id = 1;
-		changes.get(changenum).actions = new ArrayList<Action>();
-		changes.get(changenum).actions.add(new Action());
-		changes.get(changenum).actions.get(0).args.add("start:0.0");
-		changes.get(changenum).actions.get(0).args.add("end:1.0");
-		changes.get(changenum).actions.get(0).args.add("value:" + move);
-		changenum++;
-		
 		// determine next current player
 		if (getCurrentPlayer() == 1){
 			currentPlayer = 2;
@@ -451,29 +477,109 @@ public class CaptureTheFlag extends Game {
 			if (!attackSenior && !defendSenior){
 				playeroneprevious += attackingStudents + ":" + defendingStudents + ":";
 			}
+			
+			
+			if (rounds != 1) {
+				changes.add(new Change());
+				changes.get(changenum).id = 5;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("action:walk");
+				changes.get(changenum).actions.get(0).args.add("start:0.0");
+				changes.get(changenum).actions.get(0).args.add("end:0.4");
+				changes.get(changenum).actions.get(0).args.add("x:650");
+				changes.get(changenum).actions.get(0).args.add("flipped:false");
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 3;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("action:walk");
+				changes.get(changenum).actions.get(0).args.add("start:0.0");
+				changes.get(changenum).actions.get(0).args.add("end:0.4");
+				changes.get(changenum).actions.get(0).args.add("x:150");
+				changes.get(changenum).actions.get(0).args.add("flipped:true");
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 2;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("action:walk");
+				changes.get(changenum).actions.get(0).args.add("start:0.4");
+				changes.get(changenum).actions.get(0).args.add("end:0.5");
+				changes.get(changenum).actions.get(0).args.add("visible:true");
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 3;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("action:walk");
+				changes.get(changenum).actions.get(0).args.add("start:0.4");
+				changes.get(changenum).actions.get(0).args.add("end:0.5");
+				changes.get(changenum).actions.get(0).args.add("visible:true");
+				changes.get(changenum).actions.get(0).args.add("flipped:false");
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 4;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("action:walk");
+				changes.get(changenum).actions.get(0).args.add("start:0.4");
+				changes.get(changenum).actions.get(0).args.add("end:0.5");
+				changes.get(changenum).actions.get(0).args.add("visible:true");
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 5;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("action:walk");
+				changes.get(changenum).actions.get(0).args.add("start:0.4");
+				changes.get(changenum).actions.get(0).args.add("end:0.5");
+				changes.get(changenum).actions.get(0).args.add("visible:true");
+				changes.get(changenum).actions.get(0).args.add("flipped:true");
+				changenum++;
+			}
+			
+			changes.add(new Change());
+			changes.get(changenum).id = 1;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).args.add("start:0.5");
+			changes.get(changenum).actions.get(0).args.add("end:1.0");
+			changes.get(changenum).actions.get(0).args.add("value:" + move);
+			changes.get(changenum).actions.get(0).args.add("visible:true");
+			changenum++;
+			
 			//Need JSON here to represent player 1 unit growth
 			changes.add(new Change());
 			changes.get(changenum).id = 2;
 			changes.get(changenum).actions = new ArrayList<Action>();
 			changes.get(changenum).actions.add(new Action());
-			changes.get(changenum).actions.get(0).args.add("action:walk");
-			changes.get(changenum).actions.get(0).args.add("start:0.0");
-			changes.get(changenum).actions.get(0).args.add("end:2.0");
+			changes.get(changenum).actions.get(0).args.add("action:defend");
+			changes.get(changenum).actions.get(0).args.add("start:0.5");
+			changes.get(changenum).actions.get(0).args.add("end:1.0");
 			changes.get(changenum).actions.get(0).args.add("width:" + defendwidth);
 			changes.get(changenum).actions.get(0).args.add("height:" + defendheight);
 			changenum++;
+			
 			
 			changes.add(new Change());
 			changes.get(changenum).id = 3;
 			changes.get(changenum).actions = new ArrayList<Action>();
 			changes.get(changenum).actions.add(new Action());
 			changes.get(changenum).actions.get(0).args.add("action:walk");
-			changes.get(changenum).actions.get(0).args.add("start:0.0");
-			changes.get(changenum).actions.get(0).args.add("end:2.0");
-			changes.get(changenum).actions.get(0).args = new ArrayList<String>();
+			changes.get(changenum).actions.get(0).args.add("start:0.5");
+			changes.get(changenum).actions.get(0).args.add("end:1.0");
 			changes.get(changenum).actions.get(0).args.add("width:" + attackwidth);
 			changes.get(changenum).actions.get(0).args.add("height:" + attackheight);
 			changenum++;
+			
+			
 		}
 		else if (getCurrentPlayer() == 2){
 			currentPlayer = 1;
@@ -506,12 +612,21 @@ public class CaptureTheFlag extends Game {
 			//Need JSON here to represent player 2 unit growth
 			
 			changes.add(new Change());
+			changes.get(changenum).id = 1;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).args.add("start:0.0");
+			changes.get(changenum).actions.get(0).args.add("end:0.5");
+			changes.get(changenum).actions.get(0).args.add("value:" + move);
+			changenum++;
+			
+			changes.add(new Change());
 			changes.get(changenum).id = 4;
 			changes.get(changenum).actions = new ArrayList<Action>();
 			changes.get(changenum).actions.add(new Action());
-			changes.get(changenum).actions.get(0).args.add("action:walk");
+			changes.get(changenum).actions.get(0).args.add("action:defend");
 			changes.get(changenum).actions.get(0).args.add("start:0.0");
-			changes.get(changenum).actions.get(0).args.add("end:2.0");
+			changes.get(changenum).actions.get(0).args.add("end:0.5");
 			changes.get(changenum).actions.get(0).args.add("width:" + defendwidth);
 			changes.get(changenum).actions.get(0).args.add("height:" + defendheight);
 			changenum++;
@@ -522,11 +637,40 @@ public class CaptureTheFlag extends Game {
 			changes.get(changenum).actions.add(new Action());
 			changes.get(changenum).actions.get(0).args.add("action:walk");
 			changes.get(changenum).actions.get(0).args.add("start:0.0");
-			changes.get(changenum).actions.get(0).args.add("end:2.0");
+			changes.get(changenum).actions.get(0).args.add("end:0.5");
 			changes.get(changenum).actions.get(0).args.add("width:" + attackwidth);
 			changes.get(changenum).actions.get(0).args.add("height:" + attackheight);
 			changenum++;
 			
+			changes.add(new Change());
+			changes.get(changenum).id = 5;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).args.add("action:walk");
+			changes.get(changenum).actions.get(0).args.add("start:0.5");
+			changes.get(changenum).actions.get(0).args.add("end:0.9");
+			changes.get(changenum).actions.get(0).args.add("x:175");
+			changenum++;
+			
+			changes.add(new Change());
+			changes.get(changenum).id = 3;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).args.add("action:walk");
+			changes.get(changenum).actions.get(0).args.add("start:0.5");
+			changes.get(changenum).actions.get(0).args.add("end:0.9");
+			changes.get(changenum).actions.get(0).args.add("x:625");
+			changenum++;
+			
+			changes.add(new Change());
+			changes.get(changenum).id = 1;
+			changes.get(changenum).actions = new ArrayList<Action>();
+			changes.get(changenum).actions.add(new Action());
+			changes.get(changenum).actions.get(0).args.add("start:0.5");
+			changes.get(changenum).actions.get(0).args.add("end:1.0");
+			changes.get(changenum).actions.get(0).args.add("value:" + move);
+			changes.get(changenum).actions.get(0).args.add("visible:false");
+			changenum++;
 			
 				//If one side sends a senior while the other does not, that side
 			//will claim the round and capture all opposing students.
@@ -543,8 +687,9 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:attack");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("x:50");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changenum++;
 				
 				changes.add(new Change());
@@ -552,12 +697,21 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:fall");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
+				changes.get(changenum).actions.get(0).args.add("visible:false");
 				changes.get(changenum).actions.get(0).args.add("width:50");
 				changes.get(changenum).actions.get(0).args.add("height:50");
 				changenum++;
 				
+				changes.add(new Change());
+				changes.get(changenum).id = 7;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
+				changes.get(changenum).actions.get(0).args.add("value:" + "Flags Captured- " + EnemyFlagsCaptured);
+				changenum++;
 			}
 			if (attackSenior && !botDefendSenior){
 				EnemyStudents -= botDefendingStudents;
@@ -570,8 +724,9 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:attack");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("x:750");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changenum++;
 				
 				changes.add(new Change());
@@ -579,10 +734,20 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:fall");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
+				changes.get(changenum).actions.get(0).args.add("visible:false");
 				changes.get(changenum).actions.get(0).args.add("width:50");
 				changes.get(changenum).actions.get(0).args.add("height:50");
+				changenum++;
+				
+				changes.add(new Change());
+				changes.get(changenum).id = 6;
+				changes.get(changenum).actions = new ArrayList<Action>();
+				changes.get(changenum).actions.add(new Action());
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
+				changes.get(changenum).actions.get(0).args.add("value:" + "Flags Captured- " + flagsCaptured);
 				changenum++;
 			}
 			if (botDefendSenior && !attackSenior){
@@ -594,8 +759,8 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:defend");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changenum++;
 				
 				changes.add(new Change());
@@ -603,8 +768,9 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:fall");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
+				changes.get(changenum).actions.get(0).args.add("visible:false");
 				changes.get(changenum).actions.get(0).args.add("width:50");
 				changes.get(changenum).actions.get(0).args.add("height:50");
 				changenum++;
@@ -617,9 +783,9 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).id = 2;
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
-				changes.get(changenum).actions.get(0).args.add("action:defend");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("action:attack");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changenum++;
 				
 				changes.add(new Change());
@@ -627,8 +793,9 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:fall");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
+				changes.get(changenum).actions.get(0).args.add("visible:false");
 				changes.get(changenum).actions.get(0).args.add("width:50");
 				changes.get(changenum).actions.get(0).args.add("height:50");
 				changenum++;
@@ -646,8 +813,9 @@ public class CaptureTheFlag extends Game {
 					changes.get(changenum).actions = new ArrayList<Action>();
 					changes.get(changenum).actions.add(new Action());
 					changes.get(changenum).actions.get(0).args.add("action:attack");
-					changes.get(changenum).actions.get(0).args.add("start:0.0");
-					changes.get(changenum).actions.get(0).args.add("end:2.0");
+					changes.get(changenum).actions.get(0).args.add("x:750");
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
 					changenum++;
 					
 					changes.add(new Change());
@@ -655,10 +823,20 @@ public class CaptureTheFlag extends Game {
 					changes.get(changenum).actions = new ArrayList<Action>();
 					changes.get(changenum).actions.add(new Action());
 					changes.get(changenum).actions.get(0).args.add("action:fall");
-					changes.get(changenum).actions.get(0).args.add("start:0.0");
-					changes.get(changenum).actions.get(0).args.add("end:2.0");
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
+					changes.get(changenum).actions.get(0).args.add("visible:false");
 					changes.get(changenum).actions.get(0).args.add("width:50");
 					changes.get(changenum).actions.get(0).args.add("height:50");
+					changenum++;
+					
+					changes.add(new Change());
+					changes.get(changenum).id = 6;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
+					changes.get(changenum).actions.get(0).args.add("value:" + "Flags Captured- " + flagsCaptured);
 					changenum++;
 				}
 				if (attackingStudents < botDefendingStudents){
@@ -670,8 +848,8 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:defend");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changenum++;
 				
 				changes.add(new Change());
@@ -679,8 +857,9 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions = new ArrayList<Action>();
 				changes.get(changenum).actions.add(new Action());
 				changes.get(changenum).actions.get(0).args.add("action:fall");
-				changes.get(changenum).actions.get(0).args.add("start:0.0");
-				changes.get(changenum).actions.get(0).args.add("end:2.0");
+				changes.get(changenum).actions.get(0).args.add("start:0.9");
+				changes.get(changenum).actions.get(0).args.add("end:1.0");
+				changes.get(changenum).actions.get(0).args.add("visible:false");
 				changes.get(changenum).actions.get(0).args.add("width:50");
 				changes.get(changenum).actions.get(0).args.add("height:50");
 				changenum++;
@@ -695,9 +874,9 @@ public class CaptureTheFlag extends Game {
 					changes.get(changenum).id = 2;
 					changes.get(changenum).actions = new ArrayList<Action>();
 					changes.get(changenum).actions.add(new Action());
-					changes.get(changenum).actions.get(0).args.add("action:defend");
-					changes.get(changenum).actions.get(0).args.add("start:0.0");
-					changes.get(changenum).actions.get(0).args.add("end:2.0");
+					changes.get(changenum).actions.get(0).args.add("action:attack");
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
 					changenum++;
 					
 					changes.add(new Change());
@@ -705,8 +884,9 @@ public class CaptureTheFlag extends Game {
 					changes.get(changenum).actions = new ArrayList<Action>();
 					changes.get(changenum).actions.add(new Action());
 					changes.get(changenum).actions.get(0).args.add("action:fall");
-					changes.get(changenum).actions.get(0).args.add("start:0.0");
-					changes.get(changenum).actions.get(0).args.add("end:2.0");
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
+					changes.get(changenum).actions.get(0).args.add("visible:false");
 					changes.get(changenum).actions.get(0).args.add("width:50");
 					changes.get(changenum).actions.get(0).args.add("height:50");
 					changenum++;
@@ -722,8 +902,9 @@ public class CaptureTheFlag extends Game {
 					changes.get(changenum).actions = new ArrayList<Action>();
 					changes.get(changenum).actions.add(new Action());
 					changes.get(changenum).actions.get(0).args.add("action:attack");
-					changes.get(changenum).actions.get(0).args.add("start:0.0");
-					changes.get(changenum).actions.get(0).args.add("end:2.0");
+					changes.get(changenum).actions.get(0).args.add("x:50");
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
 					changenum++;
 					
 					changes.add(new Change());
@@ -731,10 +912,20 @@ public class CaptureTheFlag extends Game {
 					changes.get(changenum).actions = new ArrayList<Action>();
 					changes.get(changenum).actions.add(new Action());
 					changes.get(changenum).actions.get(0).args.add("action:fall");
-					changes.get(changenum).actions.get(0).args.add("start:0.0");
-					changes.get(changenum).actions.get(0).args.add("end:2.0");
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
+					changes.get(changenum).actions.get(0).args.add("visible:false");
 					changes.get(changenum).actions.get(0).args.add("width:50");
 					changes.get(changenum).actions.get(0).args.add("height:50");
+					changenum++;
+					
+					changes.add(new Change());
+					changes.get(changenum).id = 7;
+					changes.get(changenum).actions = new ArrayList<Action>();
+					changes.get(changenum).actions.add(new Action());
+					changes.get(changenum).actions.get(0).args.add("start:0.9");
+					changes.get(changenum).actions.get(0).args.add("end:1.0");
+					changes.get(changenum).actions.get(0).args.add("value:" + "Flags Captured- " + EnemyFlagsCaptured);
 					changenum++;
 				}
 			}
@@ -835,6 +1026,7 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions.get(0).args.add("start:0.0");
 				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changes.get(changenum).actions.get(0).args.add("value:" + "Player 1 Wins");
+				changes.get(changenum).actions.get(0).args.add("visible:true");
 				changenum++;
 			}
 			else {
@@ -845,6 +1037,7 @@ public class CaptureTheFlag extends Game {
 				changes.get(changenum).actions.get(0).args.add("start:0.0");
 				changes.get(changenum).actions.get(0).args.add("end:1.0");
 				changes.get(changenum).actions.get(0).args.add("value:" + "Player 2 Wins");
+				changes.get(changenum).actions.get(0).args.add("visible:true");
 				changenum++;
 			}
 		}
@@ -891,9 +1084,9 @@ public class CaptureTheFlag extends Game {
 		}
 		
 		// Uncomment to view turn json prior to being returned in object
-		// JsonObjectBuilder turn = buildTurnJson(1.0, changes, 1, 1);
-		// System.out.println("\n\nSample turn JSON object\n\n");
-		// System.out.println(turn.build().toString());
+		 //JsonObjectBuilder turn = buildTurnJson(1.0, changes, 1, 1);
+		 //System.out.println("\n\nSample turn JSON object\n\n");
+		 //System.out.println(turn.build().toString());
 
 		return new GameState(inputForBot, gameState, buildTurnJson(
 			1.0, changes, pastPlayer, getCurrentPlayer()));
