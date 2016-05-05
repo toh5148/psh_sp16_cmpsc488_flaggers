@@ -27,3 +27,9 @@
     text-decoration: none;
     display:block;
 }
+
+#documentsDescription {
+    margin-left:10px;
+    font-size: 18px;
+    color:#23527E;
+}
