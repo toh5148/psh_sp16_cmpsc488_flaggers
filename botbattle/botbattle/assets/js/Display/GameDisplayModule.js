@@ -4,7 +4,7 @@
 
 const gameWidth=800,gameHeight=600,fps=60;
 var gameDisplayWindow, playing, turn, defaultTimestep, turnTime, turnFrame, turnLength, playbackSpeed,
-	entities, entityList, entityChangeNums, gameStates, gameInitializer, turns,
+	entities, entityList, gameStates, gameInitializer, turns,
     defaultValues = ['visible', 'initX', 'initY', 'initWidth', 'initHeight', 'flipped', 'value'],
     defaultReplace = ['visible', 'x', 'y', 'width', 'height', 'flipped', 'value'],
     textProperties = ['font', 'backgroundColor', 'fill'],
@@ -202,15 +202,9 @@ function drawTurn() {
     // Iterate through the turn changes
     for (var i = 0; i < tc.length; i++) {
         // Get the change to execute for this entity
-        var c = tc[i], e = entities[c.id];
-        if (!(e.id in entityChangeNums))
-            entityChangeNums[e.id] = 0;
-        var cn = entityChangeNums[e.id];
-        var changes = c.changes;
-        while (cn < changes.length - 1 && changes[cn + 1].start <= turnTime) {
-            entityChangeNums[e.id]++;
-            cn = entityChangeNums[e.id];
-        }
+        var c = tc[i], e = entities[c.id], cn = 0, changes = c.changes;
+        while (cn < changes.length - 1 && changes[cn + 1].start <= turnTime)
+            cn++;
         // Execute change
         if (cn < changes.length) {
             var c2 = changes[cn];
@@ -259,7 +253,6 @@ function startTurn(tn) {
     turnTime = 0;
     turnLength = defaultTimestep * turns[turn].timescale;
     turnFrame = 0;
-    entityChangeNums = {};
 }
 
 function setNewTestingArenaTurn() {
